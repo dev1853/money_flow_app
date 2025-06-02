@@ -1,8 +1,9 @@
 // src/App.jsx
-import { Routes, Route, Outlet, Navigate, useLocation, Link  } from 'react-router-dom'; // 1. Импортируем Navigate и useLocation
+import { Routes, Route, Outlet, Navigate, useLocation, Link  } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
-import { useAuth } from './contexts/AuthContext'; // 2. Импортируем useAuth
+import { useAuth } from './contexts/AuthContext';
+import Loader from './components/Loader'; // <--- ИЗМЕНЕНИЕ: ДОБАВЛЕН ЭТОТ ИМПОРТ
 
 // Импортируем наши страницы
 import DdsArticlesPage from './pages/DdsArticlesPage';
@@ -22,17 +23,20 @@ const NotFoundPage = () => (<div className="p-4 text-center"><h1 className="text
 
 // Компонент-обертка для страниц с основным макетом приложения (теперь он защищенный)
 const ProtectedRoutesWithMainLayout = () => {
-  const { isAuthenticated, isLoading } = useAuth(); // 3. Получаем статус аутентификации и загрузки
+  const { isAuthenticated, isLoading } = useAuth(); // Получаем статус аутентификации и загрузки
   const location = useLocation(); // Для передачи state при редиректе
 
-  if (isLoading) {
+  if (isLoading) { // Это isLoading из useAuth(), который отвечает за проверку токена
     // Показываем заглушку или спиннер, пока идет проверка аутентификации
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <svg className="mx-auto h-16 w-16 animate-spin text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
+      // Этот внешний div отвечает за полноэкранное центрирование
+      <div className="flex justify-center items-center min-h-screen bg-gray-100"> {/* */}
+        {/* --- ИЗМЕНЕНИЕ ЗДЕСЬ --- */}
+        <Loader 
+          size="h-16 w-16" // Задаем размер как был у оригинального SVG
+          spinnerColor="text-indigo-600" // Цвет как у оригинального SVG
+        />
+        {/* --- КОНЕЦ ИЗМЕНЕНИЯ --- */}
       </div>
     );
   }
@@ -40,48 +44,48 @@ const ProtectedRoutesWithMainLayout = () => {
   if (!isAuthenticated) {
     // Если пользователь не аутентифицирован, перенаправляем на страницу входа
     // state: { from: location } позволяет вернуться на предыдущую страницу после логина
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />; //
   }
 
   // Если аутентифицирован, показываем основной макет с контентом
   return (
-    <MainLayout>
-      <Outlet />
+    <MainLayout> {/* */}
+      <Outlet /> {/* */}
     </MainLayout>
   );
 };
 
 // Компонент-обертка для страниц аутентификации (без изменений)
 const AppWithAuthLayout = () => (
-  <AuthLayout>
-    <Outlet />
+  <AuthLayout> {/* */}
+    <Outlet /> {/* */}
   </AuthLayout>
 );
 
 function App() {
   return (
-    <Routes>
+    <Routes> {/* */}
       {/* ... (маршруты для AuthLayout) ... */}
-      <Route element={<AppWithAuthLayout />}>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />ы       
+      <Route element={<AppWithAuthLayout />}> {/* */}
+        <Route path="/login" element={<LoginPage />} /> {/* */}
+        <Route path="/register" element={<RegisterPage />} />       
       </Route>
 
-      <Route element={<ProtectedRoutesWithMainLayout />}>
-        <Route path="/" element={<DashboardPage />} /> {/* <-- 2. Главная страница теперь Дашборд */}
-        <Route path="/dashboard" element={<DashboardPage />} /> {/* <-- 3. Явный маршрут для Дашборда */}
-        <Route path="/articles" element={<DdsArticlesPage />} />
-        <Route path="/accounts" element={<AccountsPage />} />
-        <Route path="/transactions" element={<TransactionsPage />} />
-        <Route path="/reports/dds" element={<DdsReportPage />} />
-        <Route path="/reports/account-balances" element={<AccountBalancesReportPage />} />
-        <Route path="/admin" element={<AdminPanelPage />} />
+      <Route element={<ProtectedRoutesWithMainLayout />}> {/* */}
+        <Route path="/" element={<DashboardPage />} /> {/* */}
+        <Route path="/dashboard" element={<DashboardPage />} /> {/* */}
+        <Route path="/articles" element={<DdsArticlesPage />} /> {/* */}
+        <Route path="/accounts" element={<AccountsPage />} /> {/* */}
+        <Route path="/transactions" element={<TransactionsPage />} /> {/* */}
+        <Route path="/reports/dds" element={<DdsReportPage />} /> {/* */}
+        <Route path="/reports/account-balances" element={<AccountBalancesReportPage />} /> {/* */}
+        <Route path="/admin" element={<AdminPanelPage />} /> {/* */}
         {/* <Route path="/settings" element={<SettingsPage />} /> */}
       </Route>
       
-      <Route path="*" element={<NotFoundPage />} />
+      <Route path="*" element={<NotFoundPage />} /> {/* */}
     </Routes>
   );
 }
 
-export default App;
+export default App; {/* */}

@@ -1,6 +1,8 @@
 // src/pages/AdminPanelPage.jsx
 import React from 'react';
-import UserManagement from '../components/admin/UserManagement'; // <-- Импортируем
+import UserManagement from '../components/admin/UserManagement'; //
+import PageTitle from '../components/PageTitle'; // <--- ДОБАВЛЕН ИМПОРТ
+
 // import RoleManagement from '../components/admin/RoleManagement'; // Для будущего
 
 const AdminPanelPage = () => {
@@ -11,24 +13,22 @@ const AdminPanelPage = () => {
   // }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-bold text-gray-900">Панель Администратора</h2>
-      </div>
+    <div className="space-y-8"> {/* */}
+      <PageTitle title="Панель Администратора" />
 
       {/* Секция Управления Пользователями */}
-      <div className="bg-white shadow-xl rounded-2xl p-6">
-        <UserManagement /> {/* <-- Вставляем компонент */}
+      <div className="bg-white shadow-xl rounded-2xl p-6"> {/* */}
+        <UserManagement /> {/* */}
       </div>
 
       {/* Заглушка для Управления Ролями */}
-      <div className="bg-white shadow-xl rounded-2xl p-6 mt-8">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Управление Ролями</h3>
-        <p className="text-gray-600">Здесь будет интерфейс для управления ролями.</p>
+      <div className="bg-white shadow-xl rounded-2xl p-6 mt-8"> {/* */}
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">Управление Ролями</h3> {/* */}
+        <p className="text-gray-600">Здесь будет интерфейс для управления ролями.</p> {/* */}
         {/* TODO: Вставить компонент RoleManagement */}
       </div>
     </div>
   );
 };
 
-export default AdminPanelPage;
+export default AdminPanelPage; //
