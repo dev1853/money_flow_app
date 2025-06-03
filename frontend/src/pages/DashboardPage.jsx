@@ -1,22 +1,24 @@
-// src/pages/DashboardPage.jsx
+// frontend/src/pages/DashboardPage.jsx
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../contexts/AuthContext'; //
-import { useNavigate } from 'react-router-dom'; //
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import {
-  ArrowUpCircleIcon, //
-  ArrowDownCircleIcon, //
-  ScaleIcon, //
-  CurrencyDollarIcon, //
-  ChartBarIcon // Используется для PageTitle
-} from '@heroicons/react/24/outline'; //
+  ArrowUpCircleIcon,
+  ArrowDownCircleIcon,
+  ScaleIcon,
+  CurrencyDollarIcon,
+  ChartBarIcon // Для PageTitle
+} from '@heroicons/react/24/outline';
 
-// Наши новые компоненты
+// Наши UI компоненты и сервис
 import PageTitle from '../components/PageTitle';
 import KpiCard from '../components/KpiCard';
 import Loader from '../components/Loader';
 import Alert from '../components/Alert';
+import EmptyState from '../components/EmptyState'; // Добавим EmptyState
+import { apiService, ApiError } from '../services/apiService';
 
-import { Line } from 'react-chartjs-2'; //
+import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -27,9 +29,9 @@ import {
   Tooltip,
   Legend,
   Filler,
-} from 'chart.js'; //
+} from 'chart.js';
 
-ChartJS.register( //
+ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
@@ -40,67 +42,61 @@ ChartJS.register( //
   Filler
 );
 
-import { format, parseISO } from 'date-fns'; //
+import { format, parseISO } from 'date-fns';
 
 const DashboardPage = () => {
-  const { token, isAuthenticated, isLoading: isAuthLoading } = useAuth(); //
+  const { isAuthenticated, isLoading: isAuthLoading, logout } = useAuth(); //
   const navigate = useNavigate(); //
 
   const [kpis, setKpis] = useState(null); //
   const [trendData, setTrendData] = useState(null); //
-  const [isLoadingData, setIsLoadingData] = useState(true); // Общий лоадер для данных дашборда
+  const [isLoadingData, setIsLoadingData] = useState(true); //
   const [error, setError] = useState(null); //
 
   const formatCurrency = (amount, currency = 'RUB') => { //
     const value = parseFloat(amount);
     return isNaN(value) ? 'N/A' : value.toLocaleString('ru-RU', { style: 'currency', currency: currency, minimumFractionDigits: 0, maximumFractionDigits: 0 });
   };
-  const formatCurrencyForChart = (amount, currency = 'RUB') => { //
+  const formatCurrencyForChart = (amount) => { //
     const value = parseFloat(amount);
     return isNaN(value) ? 'N/A' : value.toLocaleString('ru-RU', { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 0 });
   };
 
   const fetchDashboardData = useCallback(async () => { //
     if (isAuthLoading) return;
-    if (!isAuthenticated || !token) { navigate('/login'); return; }
-    setIsLoadingData(true); setError(null); setKpis(null); setTrendData(null);
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    setIsLoadingData(true); setError(null); setKpis(null); setTrendData(null); //
+
     try {
-      const headers = { 'Authorization': `Bearer ${token}` }; //
-      const kpisPromise = fetch('http://localhost:8000/dashboard/kpis', { headers }); //
-      const trendPromise = fetch('http://localhost:8000/dashboard/cashflow-trend', { headers }); //
+      const [kpisData, trendResult] = await Promise.all([
+        apiService.get('/dashboard/kpis'), //
+        apiService.get('/dashboard/cashflow-trend') //
+      ]);
 
-      const [kpisResponse, trendResponse] = await Promise.all([kpisPromise, trendPromise]); //
-
-      let kpisErrorMsg, trendErrorMsg;
-
-      if (!kpisResponse.ok) { //
-        const kpisErrorData = await kpisResponse.json().catch(() => ({}));
-        kpisErrorMsg = `KPIs: ${kpisResponse.status} ${kpisErrorData.detail || 'Ошибка загрузки'}`;
-      } else {
-        const kpisData = await kpisResponse.json(); //
-        setKpis(kpisData); //
-      }
-
-      if (!trendResponse.ok) { //
-        const trendErrorData = await trendResponse.json().catch(() => ({}));
-        trendErrorMsg = `Тренд: ${trendResponse.status} ${trendErrorData.detail || 'Ошибка загрузки'}`;
-      } else {
-        const trendResult = await trendResponse.json(); //
-        setTrendData(trendResult); //
-      }
-
-      const combinedError = [kpisErrorMsg, trendErrorMsg].filter(Boolean).join('; ');
-      if (combinedError) {
-        throw new Error(combinedError);
-      }
+      setKpis(kpisData); //
+      setTrendData(trendResult); //
 
     } catch (err) { //
-      setError(err.message); //
-      if (err.message.includes("401")) navigate('/login'); //
+      console.error("DashboardPage: Ошибка загрузки данных:", err);
+      if (err instanceof ApiError) {
+        if (err.status === 401) {
+          setError('Сессия истекла. Пожалуйста, войдите снова.');
+          logout();
+        } else {
+          setError(err.message || "Не удалось загрузить данные для дашборда.");
+        }
+      } else {
+        setError("Произошла неизвестная ошибка при загрузке данных.");
+      }
+      setKpis(null);
+      setTrendData(null);
     } finally {
       setIsLoadingData(false); //
     }
-  }, [token, isAuthenticated, isAuthLoading, navigate]); //
+  }, [isAuthenticated, isAuthLoading, navigate, logout]); //
 
   useEffect(() => { //
     if (!isAuthLoading && isAuthenticated) {
@@ -161,7 +157,6 @@ const DashboardPage = () => {
   };
 
 
-  // Лоадер на время проверки аутентификации (первичная загрузка страницы)
   if (isAuthLoading) {
     return (
       <div className="flex flex-col justify-center items-center min-h-[calc(100vh-8rem)]">
@@ -169,8 +164,7 @@ const DashboardPage = () => {
       </div>
     );
   }
-  // Сообщение, если не аутентифицирован (хотя ProtectedRoute должен редиректить)
-  if (!isAuthenticated && !isAuthLoading) {
+  if (!isAuthenticated && !isAuthLoading) { // Должно быть обработано ProtectedRoute, но на всякий случай
     return (
         <div className="p-4 text-center">
             <Alert type="error" title="Доступ запрещен" message="Пожалуйста, войдите в систему для просмотра дашборда."/>
@@ -180,28 +174,24 @@ const DashboardPage = () => {
 
 
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6 lg:space-y-8"> {/* */}
       <PageTitle
         title="Дашборд"
-        icon={<ChartBarIcon className="h-8 w-8 text-indigo-600" />} // Передаем элемент иконки
+        icon={<ChartBarIcon className="h-8 w-8 text-indigo-600" />} //
       />
 
-      {/* Отображение общей ошибки загрузки данных */}
       {error && !isLoadingData && (
         <Alert type="error" title="Ошибка загрузки данных" message={error} />
       )}
 
-      {/* Отображение общего лоадера, пока грузятся KPI и тренды */}
       {isLoadingData && (
         <div className="col-span-full text-center py-10">
           <Loader message="Загрузка данных дашборда..." />
         </div>
       )}
 
-      {/* Сетка для KPI и графика */}
-      {!isLoadingData && kpis && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-          {/* KPI Карточки */}
+      {!isLoadingData && !error && kpis && ( //
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12"> {/* */}
           {Object.entries(kpis.total_balances_by_currency).map(([currency, balance]) => ( //
             <KpiCard
               key={`balance-${currency}`}
@@ -237,9 +227,8 @@ const DashboardPage = () => {
             valueColor={parseFloat(kpis.net_cash_flow_last_30_days) >= 0 ? 'text-green-600' : 'text-red-600'}
           />
 
-          {/* Карточка для Графика */}
           {trendData && trendData.daily_flows && trendData.daily_flows.length > 0 && ( //
-            <div className="lg:col-span-12 col-span-12 rounded-lg bg-white p-5 shadow-md hover:shadow-lg transition-shadow">
+            <div className="lg:col-span-12 col-span-12 rounded-lg bg-white p-5 shadow-md hover:shadow-lg transition-shadow"> {/* */}
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                   Динамика денежных потоков <span className="text-sm text-gray-500">({trendData.period_start_date ? format(parseISO(trendData.period_start_date), 'dd.MM.yy') : ''} - {trendData.period_end_date ? format(parseISO(trendData.period_end_date), 'dd.MM.yy') : ''})</span> {/* */}
               </h3>
@@ -251,11 +240,10 @@ const DashboardPage = () => {
         </div>
       )}
 
-      {/* Сообщение, если нет данных KPI после загрузки (например, ошибка была только для трендов) */}
-      {!isLoadingData && !kpis && !error && (
+      {!isLoadingData && !error && !kpis && (
         <EmptyState
             title="Нет данных для отображения"
-            message="Не удалось загрузить ключевые показатели."
+            message="Не удалось загрузить ключевые показатели для дашборда."
             icon={<ChartBarIcon />}
         />
       )}

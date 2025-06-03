@@ -1,50 +1,60 @@
-// src/components/ConfirmationModal.jsx
+// frontend/src/components/ConfirmationModal.jsx
 import React from 'react';
-import Modal from './Modal'; // Мы будем использовать наш ранее созданный Modal
+import Modal from './Modal'; // Наш базовый Modal
+import Button from './Button'; // Наш кастомный Button
 
 function ConfirmationModal({
   isOpen,
-  onClose, // Функция для закрытия модального окна (например, при нажатии "Отмена")
-  onConfirm, // Функция, которая выполнится при подтверждении
-  title = "Подтвердите действие",
+  onClose,
+  onConfirm,
+  title = "Подтвердите действие", //
   message,
-  confirmText = "Подтвердить",
-  cancelText = "Отмена",
-  confirmButtonVariant = "danger" // 'danger', 'primary', 'success'
+  confirmText = "Подтвердить", //
+  cancelText = "Отмена", //
+  confirmButtonVariant = "primary" // 'danger', 'primary', 'success'
 }) {
-  let confirmButtonClass = "bg-indigo-600 hover:bg-indigo-700 focus-visible:outline-indigo-600"; // primary по умолчанию
-  if (confirmButtonVariant === "danger") {
-    confirmButtonClass = "bg-red-600 hover:bg-red-700 focus-visible:outline-red-600";
-  } else if (confirmButtonVariant === "success") {
-    confirmButtonClass = "bg-green-600 hover:bg-green-700 focus-visible:outline-green-600";
-  }
+
+  // Формируем JSX для футера модального окна
+  const modalFooter = (
+    <div className="flex justify-end space-x-3"> {/* Сохраняем выравнивание и отступы */}
+      <Button
+        variant="secondary"
+        size="md" // Стандартный размер для кнопок в модалках
+        onClick={onClose}
+      >
+        {cancelText}
+      </Button>
+      <Button
+        variant={confirmButtonVariant} // Используем variant из пропсов
+        size="md"
+        onClick={() => {
+          onConfirm();
+          // onClose(); // Закрытие модалки теперь может быть ответственностью вызывающего кода или Modal, если нужно
+                       // Либо оставить здесь, если это стандартное поведение для ConfirmationModal
+                       // В текущем Modal.jsx onClose вызывается по клику на X или оверлей.
+                       // Для кнопок в футере, вызывающий код (или onConfirm) должен управлять закрытием.
+                       // Я оставлю onClose() здесь, так как это логично для кнопки подтверждения в данном компоненте.
+          onClose(); 
+        }}
+      >
+        {confirmText}
+      </Button>
+    </div>
+  );
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <div className="mt-2">
-        <p className="text-sm text-gray-600 whitespace-pre-wrap"> {/* whitespace-pre-wrap для переноса строк в message */}
+    <Modal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      title={title}
+      footer={modalFooter} // <--- Передаем кнопки в новый проп footer
+      maxWidth="max-w-md" // Можно задать стандартную ширину для confirmation модалок
+    >
+      {/* Основное сообщение остается как children для Modal */}
+      <div className="mt-2"> {/* Оригинальный отступ для сообщения */}
+        <p className="text-sm text-gray-600 whitespace-pre-wrap"> {/* */}
           {message}
         </p>
-      </div>
-
-      <div className="mt-6 flex justify-end space-x-3">
-        <button
-          type="button"
-          className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          onClick={onClose}
-        >
-          {cancelText}
-        </button>
-        <button
-          type="button"
-          className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 ${confirmButtonClass}`}
-          onClick={() => {
-            onConfirm();
-            onClose(); // Автоматически закрываем модалку после подтверждения
-          }}
-        >
-          {confirmText}
-        </button>
       </div>
     </Modal>
   );

@@ -14,7 +14,7 @@ import PageTitle from '../components/PageTitle';
 import Alert from '../components/Alert';
 import EmptyState from '../components/EmptyState';
 import Pagination from '../components/Pagination';
-import { API_BASE_URL } from '../apiConfig';
+import { apiService, ApiError } from '../services/apiService'; // Используем apiService
 
 import {
     PlusIcon,
@@ -39,7 +39,7 @@ const TransactionsPage = () => {
   const location = useLocation();
 
   const [transactions, setTransactions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Для загрузки транзакций
+  const [isLoading, setIsLoading] = useState(true); // Для загрузки списка транзакций
   const [error, setError] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -61,31 +61,27 @@ const TransactionsPage = () => {
   const [availableAccounts, setAvailableAccounts] = useState([]);
 
   const navigate = useNavigate();
-  const { token, isAuthenticated, isLoading: isAuthLoading } = useAuth(); // isAuthLoading для проверки токена
+  const { isAuthenticated, isLoading: isAuthLoading, logout } = useAuth();
 
   const commonLabelClasses = "block text-sm font-medium text-gray-700 mb-1";
   const commonInputClasses = "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10";
 
   const totalPages = Math.ceil(totalTransactions / ITEMS_PER_PAGE);
 
-  // Определение fetchAccountsForFilter ДО его использования в useEffect
   const fetchAccountsForFilter = useCallback(async () => {
-    if (!token || isAuthLoading) { // Если токена нет или идет проверка аутентификации
+    if (isAuthLoading || !isAuthenticated) {
       setAvailableAccounts([]);
       return;
     }
-    const headers = { 'Authorization': `Bearer ${token}` };
     try {
-      const response = await fetch(`${API_BASE_URL}/accounts/?limit=500&is_active=true`, { headers });
-      if (!response.ok) throw new Error('Ошибка загрузки счетов для фильтра');
-      const data = await response.json();
-      setAvailableAccounts(data);
+      const data = await apiService.get('/accounts/?limit=500&is_active=true');
+      setAvailableAccounts(data || []);
     } catch (err) {
-      console.error("TransactionsPage: Ошибка загрузки счетов для фильтра:", err.message);
-      // Можно установить setError здесь, если это критично для UI
+      console.error("TransactionsPage: Ошибка загрузки счетов для фильтра:", err);
       setAvailableAccounts([]);
+      // Не устанавливаем глобальный setError здесь, чтобы не мешать другим ошибкам
     }
-  }, [token, isAuthLoading]); // API_BASE_URL не нужен в зависимостях, т.к. он константа из импорта
+  }, [isAuthLoading, isAuthenticated]);
 
   const updateUrlWithParams = useCallback((page = currentPage, currentFilters) => {
     const params = new URLSearchParams();
@@ -101,8 +97,8 @@ const TransactionsPage = () => {
 
 
   const fetchTransactions = useCallback(async (pageToFetch, currentFiltersToUse) => {
-    if (isAuthLoading || !isAuthenticated || !token) {
-      setIsLoading(false); // Останавливаем локальный лоадер, если нет аутентификации
+    if (isAuthLoading || !isAuthenticated) {
+      setIsLoading(false);
       if (!isAuthLoading && !isAuthenticated && location.pathname !== '/login') navigate('/login');
       return;
     }
@@ -119,24 +115,29 @@ const TransactionsPage = () => {
     params.append('limit', ITEMS_PER_PAGE.toString());
 
     try {
-      const headers = { 'Authorization': `Bearer ${token}` };
-      const response = await fetch(`${API_BASE_URL}/transactions/?${params.toString()}`, { method: 'GET', headers: headers });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: `Ошибка сервера: ${response.status}` }));
-        if (response.status === 401) {
-            setError('Сессия истекла. Пожалуйста, войдите снова.');
-            if (location.pathname !== '/login') navigate('/login');
-        } else { setError(`HTTP error! status: ${response.status}, message: ${errorData.detail || 'Не удалось загрузить транзакции'}`); }
-        setTransactions([]); setTotalTransactions(0); return;
-      }
-      const data = await response.json();
+      const data = await apiService.get(`/transactions/?${params.toString()}`);
       setTransactions(data.items || []);
       setTotalTransactions(data.total_count || 0);
-      setCurrentPage(pageToFetch); // Устанавливаем текущую страницу здесь
-    } catch (e) {
-      setError(e.message); console.error("TransactionsPage: Error in fetchTransactions:", e);
-    } finally { setIsLoading(false); }
-  }, [token, isAuthenticated, isAuthLoading, navigate, location.pathname]);
+      setCurrentPage(pageToFetch);
+    } catch (err) {
+      console.error("TransactionsPage: Error in fetchTransactions:", err);
+      if (err instanceof ApiError) {
+        if (err.status === 401) {
+            setError('Сессия истекла. Пожалуйста, войдите снова.');
+            logout(); // Выход при 401
+            // navigate('/login') // logout уже должен делать редирект
+        } else {
+            setError(err.message || 'Не удалось загрузить транзакции');
+        }
+      } else {
+        setError('Произошла неизвестная ошибка при загрузке транзакций.');
+      }
+      setTransactions([]);
+      setTotalTransactions(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, isAuthLoading, navigate, location.pathname, logout]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -160,10 +161,10 @@ const TransactionsPage = () => {
 
     if (!isAuthLoading && isAuthenticated) {
         fetchTransactions(pageFromUrl, currentFiltersFromUrl);
-        fetchAccountsForFilter(); // Загружаем счета для фильтров
+        fetchAccountsForFilter();
     }
-  }, [location.search, isAuthLoading, isAuthenticated, fetchTransactions, fetchAccountsForFilter]);
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search, isAuthLoading, isAuthenticated]); // Убрали fetchTransactions и fetchAccountsForFilter из зависимостей здесь
 
   const handlePageChange = (newPage) => {
     const currentFilters = { startDate: filterStartDate, endDate: filterEndDate, accountId: filterAccountId, ddsArticleIds: filterDdsArticleIds, minAmount: filterMinAmount, maxAmount: filterMaxAmount };
@@ -177,13 +178,16 @@ const TransactionsPage = () => {
 
   const handleResetFiltersAndPage = () => {
     const emptyFilters = { startDate: null, endDate: null, accountId: '', ddsArticleIds: [], minAmount: '', maxAmount: '' };
-    // Сначала обновляем состояния фильтров, чтобы updateUrlWithParams использовал их
     setFilterStartDate(null); setFilterEndDate(null);
     setFilterAccountId(''); setFilterMinAmount(''); setFilterMaxAmount('');
     setFilterDdsArticleIds([]);
-    // Затем обновляем URL, который вызовет useEffect и fetchTransactions
     updateUrlWithParams(1, emptyFilters);
   };
+
+  const getCurrentFilters = () => ({
+    startDate: filterStartDate, endDate: filterEndDate, accountId: filterAccountId,
+    ddsArticleIds: filterDdsArticleIds, minAmount: filterMinAmount, maxAmount: filterMaxAmount
+  });
 
   const handleOpenCreateModal = (type) => setFormModalState({ isOpen: true, type: type, editingTransaction: null });
   const handleOpenEditModal = (transaction) => {
@@ -192,15 +196,10 @@ const TransactionsPage = () => {
     setFormModalState({ isOpen: true, type: operationType, editingTransaction: transaction });
   };
   const handleCloseFormModal = () => setFormModalState({ isOpen: false, type: null, editingTransaction: null });
-  
-  const getCurrentFilters = () => ({
-    startDate: filterStartDate, endDate: filterEndDate, accountId: filterAccountId, 
-    ddsArticleIds: filterDdsArticleIds, minAmount: filterMinAmount, maxAmount: filterMaxAmount
-  });
 
   const handleTransactionProcessedSuccess = () => {
     fetchTransactions(currentPage, getCurrentFilters());
-    setFormModalState({ isOpen: false, type: null, editingTransaction: null });
+    handleCloseFormModal();
   };
   const handleUploadSuccess = () => {
     setIsUploadModalOpen(false);
@@ -208,24 +207,31 @@ const TransactionsPage = () => {
   };
   const handleOpenDeleteConfirmModal = (transaction) => { setTransactionToDelete(transaction); setIsConfirmDeleteModalOpen(true); };
   const handleCloseDeleteConfirmModal = () => { setTransactionToDelete(null); setIsConfirmDeleteModalOpen(false); };
-  
+
   const handleConfirmDeleteTransaction = async () => {
-    if (!transactionToDelete || !token) { setError("Транзакция для удаления не выбрана или нет авторизации."); setIsConfirmDeleteModalOpen(false); return; }
+    if (!transactionToDelete) { return; }
+    setError(null);
     try {
-      const headers = { 'Authorization': `Bearer ${token}` };
-      const response = await fetch(`${API_BASE_URL}/transactions/${transactionToDelete.id}`, { method: 'DELETE', headers: headers });
-      if (!response.ok) { 
-        const errorData = await response.json().catch(() => ({ detail: `Не удалось удалить транзакцию` }));
-        throw new Error(errorData.detail || `Ошибка удаления: ${response.status}`);
+      await apiService.del(`/transactions/${transactionToDelete.id}`);
+      const newTotal = totalTransactions - 1;
+      const newTotalPages = Math.ceil(newTotal / ITEMS_PER_PAGE);
+      const newPage = (transactions.length === 1 && currentPage > 1 && currentPage > newTotalPages) ? currentPage - 1 : currentPage;
+      
+      // Обновляем URL перед загрузкой данных, если страница изменилась
+      if (newPage !== currentPage) {
+          updateUrlWithParams(newPage, getCurrentFilters());
+      } else {
+          fetchTransactions(newPage, getCurrentFilters());
       }
-      // Если удалили последний элемент на странице, и это не первая страница, переходим на предыдущую
-      const newPage = (transactions.length === 1 && currentPage > 1) ? currentPage - 1 : currentPage;
-      fetchTransactions(newPage, getCurrentFilters());
-      setError(null);
-    } catch (err) { setError(err.message); }
-    finally { handleCloseDeleteConfirmModal(); }
+
+    } catch (err) {
+      console.error("TransactionsPage: Ошибка удаления:", err);
+      setError( (err instanceof ApiError ? err.message : null) || "Не удалось удалить транзакцию.");
+    } finally {
+      handleCloseDeleteConfirmModal();
+    }
   };
-  
+
   const formatCurrency = (amount, currency = 'RUB') => {
     const value = parseFloat(amount);
     return isNaN(value) ? 'N/A' : value.toLocaleString('ru-RU', { style: 'currency', currency: currency, minimumFractionDigits: 2 });
@@ -298,7 +304,7 @@ const TransactionsPage = () => {
                 <Button variant="link" size="sm" onClick={handleResetFiltersAndPage} className="ml-2 !p-0">Сбросить все фильтры</Button>
             </div>
           )}
-          {/* Показываем ошибку от фильтров только если нет глобальной ошибки загрузки транзакций И транзакции уже есть */}
+          {/* Показываем ошибку от фильтров/операций, если транзакции уже есть на странице */}
           {error && !isLoading && transactions.length > 0 && (
             <Alert type="error" message={error} className="mt-4" />
           )}
@@ -313,7 +319,6 @@ const TransactionsPage = () => {
         <div className="mt-8">
           {isLoading && ( <Loader message="Загрузка операций..." containerClassName="text-center py-10" /> )}
           
-          {/* Показываем ошибку загрузки списка только если список пуст */}
           {!isLoading && error && transactions.length === 0 &&(
             <Alert type="error" title="Ошибка загрузки транзакций" message={error} className="my-4" />
           )}
@@ -379,7 +384,7 @@ const TransactionsPage = () => {
                 </table>
               </div>
             </div>
-            {totalPages > 0 && ( // Показываем пагинацию, только если есть страницы
+            {totalPages > 0 && (
                 <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

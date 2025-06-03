@@ -1,25 +1,26 @@
-// src/pages/DdsArticlesPage.jsx
+// frontend/src/pages/DdsArticlesPage.jsx
 import { useState, useEffect, useCallback, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Modal from '../components/Modal'; //
-import ArticleForm from '../components/ArticleForm'; //
-import ArticleNode from '../components/ArticleNode'; //
-import ConfirmationModal from '../components/ConfirmationModal'; //
-import { useAuth } from '../contexts/AuthContext'; //
+import Modal from '../components/Modal';
+import ArticleForm from '../components/ArticleForm';
+import ArticleNode from '../components/ArticleNode';
+import ConfirmationModal from '../components/ConfirmationModal';
+import { useAuth } from '../contexts/AuthContext';
 
-// Наши новые компоненты
+// Наши UI компоненты и сервис
 import PageTitle from '../components/PageTitle';
 import Button from '../components/Button';
 import Loader from '../components/Loader';
 import Alert from '../components/Alert';
 import EmptyState from '../components/EmptyState';
+import { apiService, ApiError } from '../services/apiService';
 
-import { PlusIcon, DocumentDuplicateIcon } from '@heroicons/react/24/solid'; // ExclamationTriangleIcon убран, т.к. Alert его содержит
+import { PlusIcon, DocumentDuplicateIcon } from '@heroicons/react/24/solid';
 
 const DdsArticlesPage = () => {
   const [articles, setArticles] = useState([]); //
   const [error, setError] = useState(null); //
-  const [isLoading, setIsLoading] = useState(true); // Локальная загрузка для статей
+  const [isLoading, setIsLoading] = useState(true); //
 
   const [editingArticle, setEditingArticle] = useState(null); //
   const [isFormModalOpen, setIsFormModalOpen] = useState(false); //
@@ -33,15 +34,14 @@ const DdsArticlesPage = () => {
     confirmButtonVariant: "primary"
   });
 
-  const { token, isAuthenticated, isLoading: isAuthLoading } = useAuth(); //
+  const { isAuthenticated, isLoading: isAuthLoading, logout } = useAuth(); //
   const navigate = useNavigate(); //
 
+  const ARTICLE_FORM_ID = "article-form-in-modal";
+
   const fetchArticles = useCallback(async () => { //
-    if (isAuthLoading) {
-      setIsLoading(true);
-      return;
-    }
-    if (!isAuthenticated || !token) {
+    if (isAuthLoading) { setIsLoading(true); return; }
+    if (!isAuthenticated) {
       setError('Для доступа к этой странице необходимо войти в систему.');
       setIsLoading(false);
       navigate('/login');
@@ -51,28 +51,25 @@ const DdsArticlesPage = () => {
     setIsLoading(true); //
     setError(null); //
     try {
-      const headers = { 'Authorization': `Bearer ${token}` }; //
-      const response = await fetch('http://localhost:8000/articles/', { headers }); //
-      if (!response.ok) { //
-        const errorText = await response.text().catch(() => "Ошибка сервера");
-        if (response.status === 401) {
-            setError('Сессия истекла или токен недействителен. Пожалуйста, войдите снова.');
-            navigate('/login');
-        } else {
-            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-        }
-        setArticles([]);
-        return;
-      }
-      const data = await response.json(); //
-      setArticles(data); //
+      const data = await apiService.get('/articles/');
+      setArticles(data || []); //
     } catch (e) { //
-      setError(e.message);
       console.error("DdsArticlesPage: Ошибка при загрузке статей:", e); //
+      if (e instanceof ApiError) {
+        if (e.status === 401) {
+            setError('Сессия истекла. Пожалуйста, войдите снова.');
+            logout();
+        } else {
+            setError(e.message || "Не удалось загрузить статьи.");
+        }
+      } else {
+        setError("Произошла неизвестная ошибка при загрузке статей.");
+      }
+      setArticles([]);
     } finally {
       setIsLoading(false); //
     }
-  }, [token, isAuthenticated, isAuthLoading, navigate]); //
+  }, [isAuthenticated, isAuthLoading, navigate, logout]); //
 
   useEffect(() => { //
     if (!isAuthLoading) {
@@ -81,58 +78,54 @@ const DdsArticlesPage = () => {
   }, [fetchArticles, isAuthLoading]); //
 
   const handleOpenCreateModal = () => { //
-    setEditingArticle(null); //
-    setIsFormModalOpen(true); //
+    setEditingArticle(null);
+    setError(null); // Сбрасываем ошибку перед открытием модалки
+    setIsFormModalOpen(true);
   };
 
   const handleOpenEditModal = (article) => { //
-    setEditingArticle(article); //
-    setIsFormModalOpen(true); //
+    setEditingArticle(article);
+    setError(null); // Сбрасываем ошибку перед открытием модалки
+    setIsFormModalOpen(true);
   };
 
   const handleCloseFormModal = () => { //
-    setIsFormModalOpen(false); //
-    setEditingArticle(null); //
+    setIsFormModalOpen(false);
+    setEditingArticle(null);
+    setError(null); // Также сбрасываем ошибку при закрытии
   };
 
   const handleFormSubmitSuccess = () => { //
-    fetchArticles(); //
-    setIsFormModalOpen(false); //
-    setEditingArticle(null); //
+    fetchArticles();
+    handleCloseFormModal(); // Используем единую функцию для закрытия и сброса
   };
 
   const handleArchiveArticle = async (articleToToggle) => { //
     const newArchivedState = !articleToToggle.is_archived;
     const actionText = newArchivedState ? 'архивировать' : 'разархивировать';
+    setError(null);
 
     setConfirmModalProps({ //
-      title: "Подтверждение",
-      message: `Вы уверены, что хотите ${actionText} статью "${articleToToggle.name}"?`,
-      confirmText: newArchivedState ? "Архивировать" : "Разархивировать",
-      confirmButtonVariant: "primary",
+      title: "Подтверждение", //
+      message: `Вы уверены, что хотите ${actionText} статью "${articleToToggle.name}"?`, //
+      confirmText: newArchivedState ? "Архивировать" : "Разархивировать", //
+      confirmButtonVariant: "primary", //
       onConfirm: async () => {
+        setIsLoading(true);
         try {
-          setError(null);
-          const payload = {
+          const payload = { //
             name: articleToToggle.name,
             article_type: articleToToggle.article_type,
             parent_id: articleToToggle.parent_id,
             is_archived: newArchivedState
           };
-          const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`};
-
-          const response = await fetch(`http://localhost:8000/articles/${articleToToggle.id}`, {
-            method: 'PUT',
-            headers: headers,
-            body: JSON.stringify(payload),
-          });
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({detail: `Не удалось ${actionText} статью`}));
-            throw new Error(errorData.detail || `Не удалось ${actionText} статью`);
-          }
+          await apiService.put(`/articles/${articleToToggle.id}`, payload);
           fetchArticles();
-        } catch (err) {
-          setError(err.message || `Ошибка при ${actionText}`);
+        } catch (err) { //
+          console.error("DdsArticlesPage: Ошибка архивации", err);
+          setError(err instanceof ApiError ? err.message : `Не удалось ${actionText} статью`);
+        } finally {
+            setIsLoading(false);
         }
       }
     });
@@ -140,26 +133,22 @@ const DdsArticlesPage = () => {
   };
 
   const handleDeleteArticle = async (articleToDelete) => { //
+    setError(null);
     setConfirmModalProps({ //
-      title: "Подтверждение удаления",
-      message: `ВЫ УВЕРЕНЫ, что хотите ПОЛНОСТЬЮ УДАЛИТЬ статью "${articleToDelete.name}"?\n\nЭто действие необратимо.`,
-      confirmText: "Удалить",
-      confirmButtonVariant: "danger",
+      title: "Подтверждение удаления", //
+      message: `ВЫ УВЕРЕНЫ, что хотите ПОЛНОСТЬЮ УДАЛИТЬ статью "${articleToDelete.name}"?\n\nЭто действие необратимо.`, //
+      confirmText: "Удалить", //
+      confirmButtonVariant: "danger", //
       onConfirm: async () => {
+        setIsLoading(true);
         try {
-          setError(null);
-          const headers = { 'Authorization': `Bearer ${token}`};
-          const response = await fetch(`http://localhost:8000/articles/${articleToDelete.id}`, {
-            method: 'DELETE',
-            headers: headers,
-          });
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({detail: 'Не удалось удалить статью'}));
-            throw new Error(errorData.detail || 'Не удалось удалить статью');
-          }
+          await apiService.del(`/articles/${articleToDelete.id}`);
           fetchArticles();
-        } catch (err) {
-          setError(err.message || 'Ошибка при удалении');
+        } catch (err) { //
+          console.error("DdsArticlesPage: Ошибка удаления", err);
+          setError(err instanceof ApiError ? err.message : 'Не удалось удалить статью');
+        } finally {
+            setIsLoading(false);
         }
       }
     });
@@ -173,18 +162,38 @@ const DdsArticlesPage = () => {
       </div>
     );
   }
+  
+  const articleFormFooter = (
+    <div className="flex justify-end space-x-3">
+      <Button variant="secondary" size="md" onClick={handleCloseFormModal}>
+        Отмена
+      </Button>
+      <Button
+        type="submit"
+        form={ARTICLE_FORM_ID}
+        variant="primary"
+        size="md"
+        // isLoading из ArticleForm теперь внутренний, и эта кнопка не знает о нем напрямую.
+        // Если isLoading относится к отправке формы в ArticleForm, ArticleForm сам заблокирует поля.
+        // Если isLoading здесь относится к isLoading страницы (например, во время других операций), то можно его использовать:
+        // disabled={isLoading} 
+      >
+        {editingArticle ? 'Сохранить изменения' : 'Создать статью'}
+      </Button>
+    </div>
+  );
 
   return (
     <>
       <PageTitle
         title="Статьи ДДС"
-        titleClassName="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight" // Сохраняем оригинальные стили заголовка
+        titleClassName="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight" //
         actions={
           <Button
             variant="primary"
-            size="md" // Оригинальный класс h-10, px-3 py-2
+            size="md"
             onClick={handleOpenCreateModal} //
-            disabled={!isAuthenticated} //
+            disabled={!isAuthenticated || isAuthLoading} // Добавили isAuthLoading для надежности
             iconLeft={<PlusIcon className="h-5 w-5" />} //
             className="w-full sm:w-auto" //
           >
@@ -193,42 +202,49 @@ const DdsArticlesPage = () => {
         }
       />
 
-      <Modal
-        isOpen={isFormModalOpen} //
-        onClose={handleCloseFormModal} //
-        title={editingArticle ? `Редактировать: ${editingArticle.name}` : "Добавить новую статью ДДС"} //
-      >
-        <ArticleForm
-          onArticleCreated={handleFormSubmitSuccess} //
-          articleToEdit={editingArticle} //
-          onCancelEdit={handleCloseFormModal} //
-          key={editingArticle ? `edit-article-${editingArticle.id}` : 'create-article'} //
-        />
-      </Modal>
+      {isFormModalOpen && (
+        <Modal
+          isOpen={isFormModalOpen} //
+          onClose={handleCloseFormModal} //
+          title={editingArticle ? `Редактировать: ${editingArticle.name}` : "Добавить новую статью ДДС"} //
+          footer={articleFormFooter}
+          maxWidth="max-w-2xl"
+        >
+          <ArticleForm
+            formId={ARTICLE_FORM_ID}
+            onArticleCreated={handleFormSubmitSuccess} //
+            articleToEdit={editingArticle} //
+            key={editingArticle ? `edit-article-${editingArticle.id}` : 'create-article'} //
+          />
+        </Modal>
+      )}
 
       <ConfirmationModal
         isOpen={isConfirmModalOpen} //
-        onClose={() => setIsConfirmModalOpen(false)} //
-        title={confirmModalProps.title} //
-        message={confirmModalProps.message} //
-        onConfirm={confirmModalProps.onConfirm} //
-        confirmText={confirmModalProps.confirmText} //
-        cancelText="Отмена" //
-        confirmButtonVariant={confirmModalProps.confirmButtonVariant} //
+        onClose={() => { setIsConfirmModalOpen(false); setError(null); }} // Сбрасываем ошибку при закрытии
+        {...confirmModalProps} //
       />
 
-      <div className="mt-8"> {/* */}
-        {isLoading && !isAuthLoading && ( // Показываем лоадер статей, только если проверка auth завершена
-            <Loader message="Загрузка статей..." containerClassName="text-center py-10" /> //
+      <div className="mt-6">
+        {/* Лоадер для первоначальной загрузки списка */}
+        {isLoading && articles.length === 0 && !isAuthLoading && (
+            <Loader message="Загрузка статей..." containerClassName="text-center py-10" />
         )}
 
-        {!isLoading && error && ( //
-          <Alert type="error" title="Ошибка загрузки данных" message={error} className="my-4" /> //
+        {/* Ошибка при первоначальной загрузке списка */}
+        {!isLoading && error && articles.length === 0 && (
+          <Alert type="error" title="Ошибка загрузки данных" message={error} className="my-4" />
         )}
+        
+        {/* Ошибка операции, если список уже был загружен */}
+        {!isLoading && error && articles.length > 0 && (
+            <Alert type="error" title="Ошибка операции" message={error} className="my-4" />
+        )}
+
 
         {!isLoading && !error && articles.length === 0 && ( //
           <EmptyState
-            icon={DocumentDuplicateIcon} //
+            icon={<DocumentDuplicateIcon />} //
             title="Статей пока нет" //
             message="Начните с добавления новой статьи." //
             actionButton={
@@ -240,7 +256,7 @@ const DdsArticlesPage = () => {
         )}
 
         {!isLoading && !error && articles.length > 0 && ( //
-          <div className="space-y-0.5"> {/* */}
+          <div className="space-y-0.5 bg-white p-4 shadow-md rounded-lg"> {/* */}
             {articles.map((rootArticle) => ( //
               <ArticleNode
                 key={rootArticle.id} //

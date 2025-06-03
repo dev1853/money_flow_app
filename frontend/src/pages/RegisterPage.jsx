@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; //
 import { LockClosedIcon, UserCircleIcon, EnvelopeIcon, IdentificationIcon } from '@heroicons/react/24/outline'; //
 
-// Наши новые компоненты и конфигурация
+// Наши новые компоненты и сервис
 import Button from '../components/Button';
 import Alert from '../components/Alert';
-import { API_BASE_URL } from '../apiConfig';
+// API_BASE_URL больше не нужен напрямую, используется в apiService
+import { apiService, ApiError } from '../services/apiService'; // <--- ИМПОРТ ApiService
 
 const RegisterPage = () => {
   const [username, setUsername] = useState(''); //
@@ -36,22 +37,15 @@ const RegisterPage = () => {
     setIsLoading(true); //
 
     try {
-      const response = await fetch(`${API_BASE_URL}/users/`, { // Используем API_BASE_URL
-        method: 'POST', //
-        headers: { 'Content-Type': 'application/json' }, //
-        body: JSON.stringify({ //
-            username,
-            email,
-            password,
-            full_name: fullName || null,
-        }),
+      // Используем apiService.post. Он сам обработает JSON.stringify и Content-Type.
+      // Токен авторизации не нужен для регистрации, apiService не будет его добавлять, если его нет в localStorage.
+      await apiService.post('/users/', { //
+          username,
+          email,
+          password,
+          full_name: fullName || null,
       });
-
-      const data = await response.json(); //
-
-      if (!response.ok) { //
-        throw new Error(data.detail || `Ошибка регистрации: ${response.status}`); //
-      }
+      // data от /users/ POST обычно содержит созданного пользователя, но мы его здесь не используем напрямую.
 
       setSuccessMessage('Регистрация прошла успешно! Теперь вы можете войти.'); //
       setTimeout(() => { //
@@ -59,8 +53,12 @@ const RegisterPage = () => {
       }, 3000);
 
     } catch (err) { //
-      setError(err.message); //
       console.error("RegisterPage: Ошибка регистрации:", err); //
+      if (err instanceof ApiError) {
+        setError(err.message || `Ошибка регистрации: Статус ${err.status}`);
+      } else {
+        setError(err.message || "Произошла неизвестная ошибка при регистрации.");
+      }
     } finally {
       setIsLoading(false); //
     }
@@ -69,7 +67,6 @@ const RegisterPage = () => {
   const commonInputDivClasses = "relative"; //
   const commonInputClasses = "block w-full rounded-md border-0 py-2.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"; //
   const commonIconClasses = "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"; //
-
 
   return (
     <>
@@ -135,7 +132,7 @@ const RegisterPage = () => {
           <Button
             type="submit"
             variant="primary"
-            size="md" // Оригинальный py-2.5, наш md py-2. Достаточно близко.
+            size="md"
             disabled={isLoading} //
             fullWidth
           >

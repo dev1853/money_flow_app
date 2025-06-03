@@ -1,211 +1,188 @@
 // frontend/src/components/ArticleForm.jsx
 import { useState, useEffect, useCallback } from 'react';
-import Button from './Button';
+// Button здесь больше не нужен, т.к. кнопки вынесены в Modal на странице
 import Alert from './Alert';
-import { API_BASE_URL } from '../apiConfig';
-import { useAuth } from '../contexts/AuthContext'; // <--- ДОБАВЛЕН ИМПОРТ useAuth
+import Loader from './Loader';
+import { apiService, ApiError } from '../services/apiService';
 
-function ArticleForm({ onArticleCreated, articleToEdit, onCancelEdit }) { //
-  const [name, setName] = useState(''); //
-  const [articleType, setArticleType] = useState('expense'); //
-  const [parentId, setParentId] = useState(''); //
-  const [isArchived, setIsArchived] = useState(false); //
+// Проп onCancelEdit удален, так как кнопка "Отмена" теперь внешняя (в футере модального окна)
+function ArticleForm({ formId, onArticleCreated, articleToEdit }) {
+  const [name, setName] = useState('');
+  const [articleType, setArticleType] = useState('expense');
+  const [parentId, setParentId] = useState('');
+  const [isArchived, setIsArchived] = useState(false);
 
-  const [availableParents, setAvailableParents] = useState([]); //
-  const [fetchParentsError, setFetchParentsError] = useState(null); //
+  const [availableParents, setAvailableParents] = useState([]);
+  const [isParentsLoading, setIsParentsLoading] = useState(false);
+  const [fetchParentsError, setFetchParentsError] = useState(null);
 
-  const [submitError, setSubmitError] = useState(null); //
-  const [isLoading, setIsLoading] = useState(false); //
+  const [submitError, setSubmitError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // isLoading для процесса submit
 
-  const isEditMode = Boolean(articleToEdit); //
-  const { token } = useAuth(); // <--- ПОЛУЧАЕМ ТОКЕН
+  const isEditMode = Boolean(articleToEdit);
 
-  useEffect(() => { //
+  useEffect(() => {
     if (isEditMode && articleToEdit) {
-      setName(articleToEdit.name); //
-      setArticleType(articleToEdit.article_type); //
-      setParentId(articleToEdit.parent_id === null ? '' : String(articleToEdit.parent_id)); //
-      setIsArchived(articleToEdit.is_archived); //
+      setName(articleToEdit.name);
+      setArticleType(articleToEdit.article_type);
+      setParentId(articleToEdit.parent_id === null ? '' : String(articleToEdit.parent_id));
+      setIsArchived(articleToEdit.is_archived);
     } else {
-      setName(''); //
-      setArticleType('expense'); //
-      setParentId(''); //
-      setIsArchived(false); //
+      setName('');
+      setArticleType('expense');
+      setParentId('');
+      setIsArchived(false);
     }
-  }, [articleToEdit, isEditMode]); //
+  }, [articleToEdit, isEditMode]);
 
-
-  const fetchParentArticles = useCallback(async () => { //
-    if (!token) { // <--- ПРОВЕРКА ТОКЕНА
-        setFetchParentsError("Для загрузки статей требуется авторизация.");
-        return;
-    }
+  const fetchParentArticles = useCallback(async () => {
+    setIsParentsLoading(true);
+    setFetchParentsError(null);
     try {
-      setFetchParentsError(null); //
-      const headers = { 'Authorization': `Bearer ${token}` }; // <--- ДОБАВЛЕНЫ HEADERS С ТОКЕНОМ
-      const response = await fetch(`${API_BASE_URL}/articles/`, { headers }); //
-      if (!response.ok) { //
-        throw new Error(`Ошибка загрузки родительских статей: ${response.status}`); //
-      }
-      const data = await response.json(); //
-      const flattenArticles = (articles, level = 0, currentArticleId = null) => { //
+      const data = await apiService.get('/articles/');
+      const articlesData = Array.isArray(data) ? data : [];
+
+      const flattenArticles = (articles, level = 0, currentArticleId = null) => {
         let flatList = [];
         articles.forEach(article => {
-          if (currentArticleId === article.id) return; //
-
-          flatList.push({ //
+          if (currentArticleId === article.id) return;
+          flatList.push({
             ...article,
             displayName: `${'—'.repeat(level)} ${article.name}`
           });
-          if (article.children && article.children.length > 0) { //
-            flatList = flatList.concat(flattenArticles(article.children, level + 1, currentArticleId)); //
+          if (article.children && article.children.length > 0) {
+            flatList = flatList.concat(flattenArticles(article.children, level + 1, currentArticleId));
           }
         });
         return flatList;
       };
-      setAvailableParents(flattenArticles(data, 0, articleToEdit ? articleToEdit.id : null)); //
-    } catch (err) { //
-      setFetchParentsError(err.message); //
-      console.error("Ошибка при загрузке родительских статей:", err); //
+      setAvailableParents(flattenArticles(articlesData, 0, articleToEdit ? articleToEdit.id : null));
+    } catch (err) {
+      console.error("ArticleForm: Ошибка при загрузке родительских статей:", err);
+      if (err instanceof ApiError) {
+        setFetchParentsError(err.message || "Не удалось загрузить родительские статьи.");
+      } else {
+        setFetchParentsError("Произошла неизвестная ошибка при загрузке.");
+      }
+    } finally {
+        setIsParentsLoading(false);
     }
-  }, [articleToEdit, token]); // <--- ДОБАВЛЕН token В ЗАВИСИМОСТИ
+  }, [articleToEdit]);
 
-  useEffect(() => { //
-    fetchParentArticles(); //
-  }, [fetchParentArticles]); //
+  useEffect(() => {
+    fetchParentArticles();
+  }, [fetchParentArticles]);
 
-  const handleSubmit = async (e) => { //
-    e.preventDefault(); //
-    if (!token) { // <--- ПРОВЕРКА ТОКЕНА
-      setSubmitError("Ошибка авторизации: токен не найден.");
-      return;
-    }
-    setIsLoading(true); //
-    setSubmitError(null); //
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setSubmitError(null);
 
-    const payload = { //
+    const payload = {
       name: name,
       article_type: articleType,
       is_archived: isArchived,
       parent_id: parentId ? parseInt(parentId, 10) : null,
     };
 
-    const url = isEditMode
-      ? `${API_BASE_URL}/articles/${articleToEdit.id}` //
-      : `${API_BASE_URL}/articles/`; //
-    const method = isEditMode ? 'PUT' : 'POST'; //
-
     try {
-      const headers = { // <--- ДОБАВЛЕНЫ HEADERS С ТОКЕНОМ
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      };
-      const response = await fetch(url, { //
-        method: method,
-        headers: headers, // <--- ПЕРЕДАЕМ HEADERS
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) { //
-        const errorData = await response.json().catch(() => ({ detail: `Не удалось ${isEditMode ? 'обновить' : 'создать'} статью` }));
-        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`); //
+      if (isEditMode) {
+        await apiService.put(`/articles/${articleToEdit.id}`, payload);
+      } else {
+        await apiService.post('/articles/', payload);
       }
 
-      if (onArticleCreated) { //
-        onArticleCreated();
+      if (onArticleCreated) {
+        onArticleCreated(); // Этот колбэк вызовет закрытие модалки и обновление списка на странице
       }
-      if (!isEditMode) { //
-        setName('');
-        setArticleType('expense');
-        setParentId('');
-        setIsArchived(false);
+      // Сброс полей для режима создания не нужен здесь, т.к. форма будет перемонтирована при закрытии/открытии модалки
+      // if (!isEditMode) { ... } 
+      // fetchParentArticles(); // Перезагрузка родительских статей может быть не нужна сразу после submit,
+      // т.к. onArticleCreated обычно приводит к перезагрузке всего списка статей на основной странице.
+      // Если иерархия сильно меняется, можно раскомментировать.
+    } catch (err) {
+      console.error(`ArticleForm: Ошибка при ${isEditMode ? 'обновлении' : 'создании'} статьи:`, err);
+      if (err instanceof ApiError) {
+        setSubmitError(err.message || `Не удалось ${isEditMode ? 'обновить' : 'создать'} статью.`);
+      } else {
+        setSubmitError("Произошла неизвестная ошибка.");
       }
-      fetchParentArticles(); //
-
-    } catch (err) { //
-      setSubmitError(err.message); //
     } finally {
-      setIsLoading(false); //
+      setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-8 p-6 bg-white shadow-lg rounded-lg"> {/* */}
-      <div className="flex justify-between items-center mb-6"> {/* */}
-        <h2 className="text-2xl font-semibold text-gray-700"> {/* */}
-          {isEditMode ? `Редактировать: ${articleToEdit?.name}` : 'Добавить новую статью ДДС'}
-        </h2>
-        {isEditMode && onCancelEdit && (
-          <Button variant="link" size="sm" onClick={onCancelEdit}> {/* */}
-            Отмена
-          </Button>
-        )}
-      </div>
+    // Убраны mb-4, p-6, bg-white, shadow-lg, rounded-lg - это теперь стили Modal.jsx
+    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
+      {submitError && <Alert type="error" message={submitError} className="mb-4" />}
+      {fetchParentsError && <Alert type="warning" title="Ошибка загрузки родительских статей" message={fetchParentsError} className="mb-4" />}
+      
+      {/* Показываем лоадер только если нет других ошибок и идет загрузка родителей */}
+      {isParentsLoading && !fetchParentsError && <Loader message="Загрузка родительских статей..." />}
 
-      {submitError && <Alert type="error" message={submitError} className="mb-4" />} {/* */}
-      {fetchParentsError && <Alert type="warning" title="Ошибка загрузки родительских статей" message={fetchParentsError} className="mb-4" />} {/* */}
+      {/* Основные поля формы */}
+      {!isParentsLoading && ( // Не показываем поля, пока грузятся родители, чтобы избежать проблем с выбором
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor={`${formId}-name`} className="block text-sm font-medium text-gray-700 mb-1">
+                Название статьи
+              </label>
+              <input
+                type="text" id={`${formId}-name`} value={name} onChange={(e) => setName(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+                disabled={isLoading} // Блокируем во время отправки формы
+              />
+            </div>
+            <div>
+              <label htmlFor={`${formId}-articleType`} className="block text-sm font-medium text-gray-700 mb-1">Тип статьи</label>
+              <select id={`${formId}-articleType`} value={articleType} onChange={(e) => setArticleType(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                disabled={isLoading}
+              >
+                <option value="expense">Расход</option>
+                <option value="income">Доход</option>
+              </select>
+            </div>
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4"> {/* */}
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1"> {/* */}
-            Название статьи
-          </label>
-          <input
-            type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} //
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" //
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="articleType" className="block text-sm font-medium text-gray-700 mb-1">Тип статьи</label> {/* */}
-          <select id="articleType" value={articleType} onChange={(e) => setArticleType(e.target.value)}
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" //
-          >
-            <option value="expense">Расход</option> {/* */}
-            <option value="income">Доход</option> {/* */}
-          </select>
-        </div>
-      </div>
+          <div> {/* Убрал mb-4 отсюда, space-y-4 у формы теперь управляет этим */}
+            <label htmlFor={`${formId}-parentId`} className="block text-sm font-medium text-gray-700 mb-1">
+              Родительский раздел/статья
+            </label>
+            <select
+                id={`${formId}-parentId`}
+                value={parentId}
+                onChange={(e) => setParentId(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                disabled={isLoading || availableParents.length === 0 && !fetchParentsError} // Блокируем, если нет родителей (и нет ошибки их загрузки)
+            >
+              <option value="">{(!fetchParentsError && availableParents.length === 0) ? "Нет доступных родителей" : "-- Без родителя --"}</option>
+              {availableParents.map(parent => (
+                <option key={parent.id} value={parent.id} disabled={isEditMode && parent.id === articleToEdit.id}>
+                  {parent.displayName}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <div className="mb-4"> {/* */}
-        <label htmlFor="parentId" className="block text-sm font-medium text-gray-700 mb-1"> {/* */}
-          Родительский раздел/статья
-        </label>
-        <select id="parentId" value={parentId} onChange={(e) => setParentId(e.target.value)}
-          className="mt-1 block w-full px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" //
-        >
-          <option value="">-- Без родителя --</option> {/* */}
-          {availableParents.map(parent => ( //
-            <option key={parent.id} value={parent.id} disabled={isEditMode && parent.id === articleToEdit.id}> {/* */}
-              {parent.displayName}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-6"> {/* */}
-        <label htmlFor="isArchived" className="flex items-center"> {/* */}
-          <input
-            type="checkbox" id="isArchived" checked={isArchived} onChange={(e) => setIsArchived(e.target.checked)} //
-            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" //
-          />
-          <span className="ml-2 text-sm text-gray-700">В архиве</span> {/* */}
-        </label>
-      </div>
-
-      <div>
-        <Button
-          type="submit" //
-          variant="primary" // Оригинальный цвет был bg-blue-600, primary (indigo) близок
-          size="md"
-          disabled={isLoading} //
-          fullWidth
-        >
-          {isLoading ? (isEditMode ? 'Сохранение...' : 'Создание...') : (isEditMode ? 'Сохранить изменения' : 'Создать статью')} {/* */}
-        </Button>
-      </div>
+          <div> {/* Убрал mb-6, используется space-y-4 */}
+            <label htmlFor={`${formId}-isArchived`} className="flex items-center">
+              <input
+                type="checkbox" id={`${formId}-isArchived`} checked={isArchived} onChange={(e) => setIsArchived(e.target.checked)}
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                disabled={isLoading}
+              />
+              <span className="ml-2 text-sm text-gray-700">В архиве</span>
+            </label>
+          </div>
+        </>
+      )}
+      {/* Кнопки "Отмена" и "Создать/Сохранить" удалены отсюда. Они будут в футере Modal.jsx, передаваться из DdsArticlesPage.jsx */}
     </form>
   );
 }
 
-export default ArticleForm; //
+export default ArticleForm;
