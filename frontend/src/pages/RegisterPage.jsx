@@ -5,6 +5,9 @@ import { LockClosedIcon, EnvelopeIcon, UserCircleIcon } from '@heroicons/react/2
 import Button from '../components/Button';
 import Alert from '../components/Alert';
 import { apiService, ApiError } from '../services/apiService';
+import Input from '../components/forms/Input'; // Используем наш Input
+import Label from '../components/forms/Label'; // Используем наш Label
+
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
@@ -33,14 +36,11 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      // ================== ГЛАВНОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ==================
-      // Убран префикс /api. Теперь путь правильный: /users/
       await apiService.post('/users', {
           email,
           username,
           password
       });
-      // =============================================================
 
       setSuccessMessage('Регистрация прошла успешно! Сейчас вы будете перенаправлены на страницу входа.');
       
@@ -60,7 +60,6 @@ const RegisterPage = () => {
     }
   };
 
-  const commonInputClasses = "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-10";
   const commonInputDivClasses = "relative mt-2 rounded-md shadow-sm";
   const commonIconClasses = "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3";
 
@@ -74,21 +73,21 @@ const RegisterPage = () => {
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
         <div>
-          <label htmlFor="email-reg" className="block text-sm font-medium leading-6 text-gray-900">
+          <Label htmlFor="email-reg">
             Email
-          </label>
+          </Label>
           <div className={commonInputDivClasses}>
             <div className={commonIconClasses}><EnvelopeIcon className="h-5 w-5 text-gray-400" /></div>
-            <input id="email-reg" name="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={commonInputClasses} placeholder="you@example.com"/>
+            <Input id="email-reg" name="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /* className="pl-10" УДАЛЯЕМ */ />
           </div>
         </div>
         <div>
-          <label htmlFor="username-reg" className="block text-sm font-medium leading-6 text-gray-900">
+          <Label htmlFor="username-reg">
             Имя пользователя
-          </label>
+          </Label>
           <div className={commonInputDivClasses}>
             <div className={commonIconClasses}><UserCircleIcon className="h-5 w-5 text-gray-400" /></div>
-            <input 
+            <Input 
               id="username-reg" 
               name="username" 
               type="text" 
@@ -96,29 +95,29 @@ const RegisterPage = () => {
               required 
               value={username} 
               onChange={(e) => setUsername(e.target.value)} 
-              className={commonInputClasses} 
               placeholder="yourusername"
+              /* className="pl-10" УДАЛЯЕМ */
             />
           </div>
         </div>
         
         <div>
-          <label htmlFor="password-reg" className="block text-sm font-medium leading-6 text-gray-900">
+          <Label htmlFor="password-reg">
             Пароль
-          </label>
+          </Label>
           <div className={commonInputDivClasses}>
             <div className={commonIconClasses}><LockClosedIcon className="h-5 w-5 text-gray-400" /></div>
-            <input id="password-reg" name="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={commonInputClasses} placeholder="••••••••"/>
+            <Input id="password-reg" name="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" /* className="pl-10" УДАЛЯЕМ */ />
           </div>
         </div>
 
         <div>
-          <label htmlFor="confirmPassword-reg" className="block text-sm font-medium leading-6 text-gray-900">
+          <Label htmlFor="confirmPassword-reg">
             Подтвердите пароль
-          </label>
+          </Label>
           <div className={commonInputDivClasses}>
             <div className={commonIconClasses}><LockClosedIcon className="h-5 w-5 text-gray-400" /></div>
-            <input id="confirmPassword-reg" name="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className={commonInputClasses} placeholder="••••••••"/>
+            <Input id="confirmPassword-reg" name="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" /* className="pl-10" УДАЛЯЕМ */ />
           </div>
         </div>
 

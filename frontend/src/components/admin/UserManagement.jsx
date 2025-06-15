@@ -7,16 +7,15 @@ import {
   PencilSquareIcon,
   UserMinusIcon,
   PlusIcon,
-  // ExclamationTriangleIcon, // Будет использоваться внутри Alert
-  UsersIcon // Для EmptyState
+  UsersIcon
 } from '@heroicons/react/24/outline';
 import ConfirmationModal from '../ConfirmationModal';
 import Modal from '../Modal';
 import UserForm from './UserForm';
 import Button from '../Button';
-import Loader from '../Loader'; // <--- Импорт Loader
-import Alert from '../Alert';   // <--- Импорт Alert
-import EmptyState from '../EmptyState'; // <--- Импорт EmptyState
+import Loader from '../Loader';
+import Alert from '../Alert';
+import EmptyState from '../EmptyState';
 import { apiService, ApiError } from '../../services/apiService';
 
 const roleMapping = {
@@ -28,7 +27,7 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user: currentUser, logout } = useAuth(); // Добавим logout из useAuth
+  const { user: currentUser, logout } = useAuth();
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmModalProps, setConfirmModalProps] = useState({
@@ -39,8 +38,10 @@ const UserManagement = () => {
   const [isUserFormModalOpen, setIsUserFormModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
 
+  // Уникальный ID для формы пользователя
+  const USER_FORM_ID = "userForm";
+
   const fetchUsers = useCallback(async () => {
-    // Токен получается внутри apiService, но isAuthenticated проверяем здесь
     if (!currentUser || currentUser.role_id !== 1) {
         setError("Доступ запрещен. Эта секция только для администраторов.");
         setIsLoading(false);
@@ -50,24 +51,23 @@ const UserManagement = () => {
     setError(null);
     try {
       const data = await apiService.get('/users/?limit=100');
-      setUsers(data.results || data); // Адаптируемся, если API возвращает {results: []} или просто []
+      setUsers(data.results || data);
     } catch (err) {
       console.error("UserManagement: Ошибка загрузки пользователей:", err);
       if (err instanceof ApiError) {
         if (err.status === 401 || err.status === 403) {
             setError(err.message || "Доступ запрещен или сессия истекла.");
-            // logout(); // Можно раскомментировать для автоматического выхода
         } else {
             setError(err.message || "Не удалось загрузить пользователей.");
         }
       } else {
         setError("Произошла неизвестная ошибка при загрузке пользователей.");
       }
-      setUsers([]); // Очищаем пользователей в случае ошибки
+      setUsers([]);
     } finally {
       setIsLoading(false);
     }
-  }, [currentUser, logout]); // logout добавлен в зависимости на случай его вызова
+  }, [currentUser]);
 
   useEffect(() => {
     fetchUsers();
@@ -84,21 +84,18 @@ const UserManagement = () => {
 
     try {
         await apiService.put(`/users/${userToToggle.id}`, payload);
-        // Оптимистичное обновление или перезагрузка списка
         setUsers(prevUsers => prevUsers.map(u => u.id === userToToggle.id ? {...u, is_active: newActiveState} : u));
-        // fetchUsers(); // Или полная перезагрузка, если оптимистичное обновление сложно
     } catch (err) {
         console.error("UserManagement: Ошибка обновления статуса:", err);
         setError( (err instanceof ApiError ? err.message : null) || "Не удалось обновить статус пользователя.");
-        // Здесь можно откатить оптимистичное обновление, если оно было
     }
   };
 
   const handleDeleteUserRequest = async (userIdToDelete) => {
     setError(null);
     try {
-        await apiService.del(`/users/${userIdToDelete}`);
-        fetchUsers(); // Перезагружаем список после удаления
+        await apiService.delete(`/users/${userIdToDelete}`); // Здесь может быть деактивация, а не удаление
+        fetchUsers();
     } catch (err) {
         console.error("UserManagement: Ошибка деактивации/удаления пользователя:", err);
         setError( (err instanceof ApiError ? err.message : null) || "Не удалось удалить пользователя.");
@@ -127,7 +124,16 @@ const UserManagement = () => {
   const handleCloseUserFormModal = () => { setIsUserFormModalOpen(false); setEditingUser(null); };
   const handleUserFormSuccess = () => { fetchUsers(); handleCloseUserFormModal(); };
 
-  if (isLoading && users.length === 0) { // Показываем лоадер только при первой загрузке и если еще нет данных
+  // Футер для модального окна UserForm
+  // Обратите внимание: UserForm сам содержит кнопки, поэтому нужно решить:
+  // 1. Либо удалить кнопки из UserForm и управлять ими здесь.
+  // 2. Либо не передавать footer в Modal для UserForm.
+  // Поскольку я уже изменил UserForm, чтобы он *содержал* кнопки,
+  // я не буду передавать `footer` в `Modal` для `UserForm`.
+  // Если ты хочешь, чтобы кнопки были ВНЕ UserForm, дай знать.
+  // На данный момент UserForm останется исключением в этом плане.
+
+  if (isLoading && users.length === 0) {
     return (
         <div className="flex flex-col items-center justify-center py-10">
             <Loader message="Загрузка списка пользователей..." />
@@ -135,7 +141,6 @@ const UserManagement = () => {
     );
   }
 
-  // Если произошла ошибка и нет пользователей для отображения (например, при первой загрузке)
   if (error && !isLoading && users.length === 0) {
     return (
         <div className="my-4">
@@ -159,7 +164,6 @@ const UserManagement = () => {
         </Button>
       </div>
 
-      {/* Отображение ошибки операции, если пользователи уже загружены */}
       {error && users.length > 0 && <Alert type="error" message={error} className="mb-4" />}
 
       {!isLoading && !error && users.length === 0 && (
@@ -177,7 +181,6 @@ const UserManagement = () => {
 
       {users.length > 0 && (
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-          {/* ИСПРАВЛЕНИЕ ГИДРАТАЦИИ: Убраны лишние пробелы между тегами таблицы */}
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -252,11 +255,12 @@ const UserManagement = () => {
         isOpen={isUserFormModalOpen}
         onClose={handleCloseUserFormModal}
         title={editingUser ? `Редактирование: ${editingUser.username}` : "Создание нового пользователя"}
+        // ВАЖНО: UserForm сам содержит кнопки, поэтому footer здесь не передаем
       >
         <UserForm
           userToEdit={editingUser}
           onSuccess={handleUserFormSuccess}
-          onCancel={handleCloseUserFormModal}
+          onCancel={handleCloseUserFormModal} // onCancel передаем для внутренней кнопки "Отмена"
           key={editingUser ? `edit-user-${editingUser.id}` : 'create-user'}
         />
       </Modal>

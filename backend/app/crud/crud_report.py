@@ -79,3 +79,35 @@ def get_account_balances(db: Session, on_date: date, workspace_id: int) -> List[
             currency=account.currency
         ))
     return result
+
+def get_total_income(db: Session, workspace_id: int) -> Decimal:
+    total = db.query(func.sum(models.Transaction.amount)).filter(
+        models.Transaction.workspace_id == workspace_id,
+        models.Transaction.transaction_type == 'income'
+    ).scalar()
+    return total or Decimal('0.00')
+
+def get_total_expense(db: Session, workspace_id: int) -> Decimal:
+    total = db.query(func.sum(models.Transaction.amount)).filter(
+        models.Transaction.workspace_id == workspace_id,
+        models.Transaction.transaction_type == 'expense'
+    ).scalar()
+    return total or Decimal('0.00')
+
+def get_total_balance(db: Session, workspace_id: int) -> Decimal:
+    total = db.query(func.sum(models.Account.balance)).filter(
+        models.Account.workspace_id == workspace_id
+    ).scalar()
+    return total or Decimal('0.00')
+
+def get_transactions_count(db: Session, workspace_id: int) -> int:
+    return db.query(models.Transaction).filter(models.Transaction.workspace_id == workspace_id).count()
+
+def get_monthly_cashflow_trend(db: Session, workspace_id: int) -> Dict[str, List]:
+    # Эта функция вернет данные для графика
+    # Для простоты, вернем заглушку, но вы можете реализовать реальную логику
+    return {
+        "labels": ["Янв", "Фев", "Мар", "Апр", "Май", "Июн"],
+        "income": [100, 120, 110, 130, 150, 140],
+        "expense": [80, 90, 85, 100, 110, 105]
+    }

@@ -26,37 +26,38 @@ const DdsReportPage = () => {
   const [startDate, setStartDate] = useState(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState(endOfMonth(new Date()));
   const [reportData, setReportData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); // Локальный isLoading для данных отчета
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const [availableAccounts, setAvailableAccounts] = useState([]);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
 
-  const { isAuthenticated, isLoading: isAuthLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading, logout, activeWorkspace } = useAuth(); // Добавили activeWorkspace
   const navigate = useNavigate();
 
   const commonLabelClasses = "block text-sm font-medium text-gray-700 mb-1";
   const commonInputClasses = "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10";
 
   const fetchAccountsForFilter = useCallback(async () => {
-    if (isAuthLoading || !isAuthenticated) {
+    if (isAuthLoading || !isAuthenticated || !activeWorkspace) { // Проверяем activeWorkspace
       setAvailableAccounts([]);
       return;
     }
     try {
-      const data = await apiService.get('/accounts/?limit=500&is_active=true');
+      const params = new URLSearchParams({ workspace_id: activeWorkspace.id }); // Добавляем workspace_id
+      const data = await apiService.get(`/accounts/?limit=500&is_active=true&${params.toString()}`); // Объединяем параметры
       setAvailableAccounts(data || []);
     } catch (err) {
       console.error("DdsReportPage: Ошибка загрузки счетов:", err.message);
       setAvailableAccounts([]);
     }
-  }, [isAuthLoading, isAuthenticated]);
+  }, [isAuthLoading, isAuthenticated, activeWorkspace]); // Добавляем activeWorkspace в зависимости
 
   useEffect(() => {
-    if (isAuthenticated && !isAuthLoading) {
+    if (isAuthenticated && !isAuthLoading && activeWorkspace) { // Проверяем activeWorkspace
       fetchAccountsForFilter();
     }
-  }, [fetchAccountsForFilter, isAuthenticated, isAuthLoading]);
+  }, [fetchAccountsForFilter, isAuthenticated, isAuthLoading, activeWorkspace]); // Добавляем activeWorkspace
 
   const handleGenerateReport = useCallback(async () => {
     if (!startDate || !endDate) {
@@ -75,6 +76,12 @@ const DdsReportPage = () => {
       navigate('/login');
       return;
     }
+    if (!activeWorkspace) { // Новая проверка
+      setError("Рабочее пространство не выбрано. Выберите рабочее пространство, чтобы сформировать отчет.");
+      setReportData(null);
+      return;
+    }
+
 
     setIsLoading(true);
     setError(null);
@@ -84,6 +91,7 @@ const DdsReportPage = () => {
     if (isValid(startDate)) params.append('start_date', format(startDate, 'yyyy-MM-dd'));
     if (isValid(endDate)) params.append('end_date', format(endDate, 'yyyy-MM-dd'));
     selectedAccounts.forEach(account => params.append('account_ids', account.id.toString()));
+    params.append('workspace_id', activeWorkspace.id); // Добавляем workspace_id
 
     try {
       const data = await apiService.get(`/reports/dds/?${params.toString()}`);
@@ -103,7 +111,7 @@ const DdsReportPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [startDate, endDate, selectedAccounts, isAuthenticated, isAuthLoading, navigate, logout]);
+  }, [startDate, endDate, selectedAccounts, isAuthenticated, isAuthLoading, navigate, logout, activeWorkspace]); // Добавляем activeWorkspace
 
   const handleDateChange = (dates) => {
     const [start, end] = dates;
@@ -112,11 +120,10 @@ const DdsReportPage = () => {
   };
 
   useEffect(() => {
-    // Автозагрузка при монтировании или изменении ключевых зависимостей
-    if (isAuthenticated && !isAuthLoading && startDate && endDate) {
+    if (isAuthenticated && !isAuthLoading && startDate && endDate && activeWorkspace) { // Проверяем activeWorkspace
        handleGenerateReport();
     }
-  }, [isAuthenticated, isAuthLoading, startDate, endDate, selectedAccounts, handleGenerateReport]); // Добавил selectedAccounts, так как отчет зависит и от них
+  }, [isAuthenticated, isAuthLoading, startDate, endDate, selectedAccounts, handleGenerateReport, activeWorkspace]); // Добавляем activeWorkspace
 
   const formatCurrency = (amount, currency = 'RUB') => {
     const value = parseFloat(amount);
@@ -130,6 +137,19 @@ const DdsReportPage = () => {
       </div>
     );
   }
+
+  // Если рабочее пространство не выбрано, показываем соответствующее состояние
+  if (!activeWorkspace && !isAuthLoading) {
+    return (
+      <EmptyState
+          icon={DocumentChartBarIcon} // Используем иконку для отчетов
+          title="Рабочее пространство не выбрано"
+          message="Пожалуйста, выберите или создайте рабочее пространство для формирования отчетов."
+          className="mt-0"
+      />
+    );
+  }
+
 
   return (
     <div className="space-y-6">
@@ -152,13 +172,14 @@ const DdsReportPage = () => {
               className={commonInputClasses + " w-full"}
               wrapperClassName="w-full"
               id="dateRangeDds"
+              disabled={!activeWorkspace} // Отключаем, если нет активного пространства
             />
           </div>
           <div className="flex-grow min-w-[240px] sm:flex-1">
             <label htmlFor="accountsFilterDds" className={commonLabelClasses}>Счета/Кассы <span className="text-xs text-gray-500">(по умолч. все)</span></label>
-            <Listbox value={selectedAccounts} onChange={setSelectedAccounts} multiple name="accountsFilterDds">
+            <Listbox value={selectedAccounts} onChange={setSelectedAccounts} multiple name="accountsFilterDds" disabled={!activeWorkspace}> {/* Отключаем, если нет активного пространства */}
               <div className="relative mt-1">
-                <Listbox.Button id="accountsFilterDds" className={`${commonInputClasses} text-left pr-10 relative`}>
+                <Listbox.Button id="accountsFilterDds" className={`${commonInputClasses} text-left pr-10 relative ${!activeWorkspace ? 'bg-gray-100 cursor-not-allowed' : ''}`}>
                   <span className="block truncate">
                     {selectedAccounts.length === 0
                       ? "Все активные счета"
@@ -213,7 +234,7 @@ const DdsReportPage = () => {
               variant="primary"
               size="md"
               onClick={handleGenerateReport}
-              disabled={isLoading || !startDate || !endDate || !isAuthenticated}
+              disabled={isLoading || !startDate || !endDate || !isAuthenticated || !activeWorkspace} // Добавляем activeWorkspace
               iconLeft={<FunnelIcon className="h-5 w-5" />}
               className="w-full sm:w-auto"
               title="Сформировать отчет"
@@ -235,7 +256,7 @@ const DdsReportPage = () => {
       {!isLoading && !isAuthLoading && reportData && (
         <div className="bg-white shadow-xl rounded-2xl p-4 sm:p-6">
           <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-6 pb-3 border-b border-gray-200 text-center">
-            Отчет ДДС c {reportData.start_date ? format(parseISO(reportData.start_date), 'dd MMMM yyyy г.', { locale: ru }) : '?'} по {reportData.end_date ? format(parseISO(reportData.end_date), 'dd MMMM yyyy г.', { locale: ru }) : '?'}
+            Отчет ДДС c {reportData.start_date ? format(parseISO(reportData.start_date), 'dd MMMM Geißler г.', { locale: ru }) : '?'} по {reportData.end_date ? format(parseISO(reportData.end_date), 'dd MMMM Geißler г.', { locale: ru }) : '?'}
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 lg:gap-x-8 gap-y-6">
@@ -245,7 +266,7 @@ const DdsReportPage = () => {
               {reportData.income_items && reportData.income_items.length > 0 ? (
                 <ul className="space-y-1">
                   {reportData.income_items.map(item => {
-                    const drillDownUrl = `/transactions?start_date=${reportData.start_date}&end_date=${reportData.end_date}&dds_article_ids=${item.article_id}`;
+                    const drillDownUrl = `/transactions?start_date=${reportData.start_date}&end_date=${reportData.end_date}&dds_article_ids=${item.article_id}&workspace_id=${activeWorkspace.id}`; // Добавляем workspace_id
                     return (
                       <li key={`inc-${item.article_id}`} className="py-1.5 flex justify-between text-sm group hover:bg-gray-50 px-1 rounded-md">
                         <Link to={drillDownUrl} className="text-gray-700 hover:text-indigo-600 hover:underline truncate" title={item.article_name}>
@@ -271,7 +292,7 @@ const DdsReportPage = () => {
               {reportData.expense_items && reportData.expense_items.length > 0 ? (
                 <ul className="space-y-1">
                   {reportData.expense_items.map(item => {
-                    const drillDownUrl = `/transactions?start_date=${reportData.start_date}&end_date=${reportData.end_date}&dds_article_ids=${item.article_id}`;
+                    const drillDownUrl = `/transactions?start_date=${reportData.start_date}&end_date=${reportData.end_date}&dds_article_ids=${item.article_id}&workspace_id=${activeWorkspace.id}`; // Добавляем workspace_id
                     return (
                       <li key={`exp-${item.article_id}`} className="py-1.5 flex justify-between text-sm group hover:bg-gray-50 px-1 rounded-md">
                         <Link to={drillDownUrl} className="text-gray-700 hover:text-indigo-600 hover:underline truncate" title={item.article_name}>
@@ -306,7 +327,7 @@ const DdsReportPage = () => {
             icon={DocumentChartBarIcon}
             title="Отчет не сформирован"
             message='Выберите параметры и нажмите "Сформировать отчет".'
-            className="mt-0" // Убираем верхний отступ, если он уже есть от space-y-6
+            className="mt-0"
         />
        )}
     </div>

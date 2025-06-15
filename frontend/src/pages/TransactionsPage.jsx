@@ -14,18 +14,19 @@ import PageTitle from '../components/PageTitle';
 import Alert from '../components/Alert';
 import EmptyState from '../components/EmptyState';
 import Pagination from '../components/Pagination';
-import { apiService, ApiError } from '../services/apiService'; // Используем apiService
+import { apiService, ApiError } from '../services/apiService';
 
 import {
     PlusIcon,
     ListBulletIcon,
     FunnelIcon,
     ArrowPathIcon,
-    ArrowUpTrayIcon,
-    ArrowDownTrayIcon as AddExpenseIcon,
+    CheckCircleIcon,
+    ArrowUpTrayIcon, // Для Добавить доход
+    ArrowDownTrayIcon as AddExpenseIcon, // Для Добавить расход
     PencilSquareIcon,
     TrashIcon,
-    ArrowDownTrayIcon as UploadIcon
+    ArrowDownTrayIcon as UploadIcon // Для Загрузить выписку
 } from '@heroicons/react/24/solid';
 
 import DatePicker from 'react-datepicker';
@@ -37,9 +38,10 @@ const ITEMS_PER_PAGE = 20;
 
 const TransactionsPage = () => {
   const location = useLocation();
+  const { activeWorkspace } = useAuth(); // Получаем активное рабочее пространство
 
   const [transactions, setTransactions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Для загрузки списка транзакций
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,25 +65,24 @@ const TransactionsPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: isAuthLoading, logout } = useAuth();
 
-  const commonLabelClasses = "block text-sm font-medium text-gray-700 mb-1";
-  const commonInputClasses = "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10";
+  const TRANSACTION_FORM_ID = "transactionForm"; // Уникальный ID для формы транзакции
+  const UPLOAD_MODAL_FORM_ID = "statementUploadForm"; // Уникальный ID для модалки загрузки выписки (для связи кнопок)
+
 
   const totalPages = Math.ceil(totalTransactions / ITEMS_PER_PAGE);
 
   const fetchAccountsForFilter = useCallback(async () => {
-    if (isAuthLoading || !isAuthenticated) {
+    if (isAuthLoading || !isAuthenticated || !activeWorkspace) {
       setAvailableAccounts([]);
       return;
     }
     try {
-      const data = await apiService.get('/accounts/?limit=500&is_active=true');
+      const data = await apiService.get(`/accounts/?workspace_id=${activeWorkspace.id}&limit=500&is_active=true`);
       setAvailableAccounts(data || []);
     } catch (err) {
       console.error("TransactionsPage: Ошибка загрузки счетов для фильтра:", err);
-      setAvailableAccounts([]);
-      // Не устанавливаем глобальный setError здесь, чтобы не мешать другим ошибкам
     }
-  }, [isAuthLoading, isAuthenticated]);
+  }, [isAuthLoading, isAuthenticated, activeWorkspace]);
 
   const updateUrlWithParams = useCallback((page = currentPage, currentFilters) => {
     const params = new URLSearchParams();
@@ -97,6 +98,10 @@ const TransactionsPage = () => {
 
 
   const fetchTransactions = useCallback(async (pageToFetch, currentFiltersToUse) => {
+    if (!activeWorkspace) {
+        setIsLoading(false);
+        return;
+    }
     if (isAuthLoading || !isAuthenticated) {
       setIsLoading(false);
       if (!isAuthLoading && !isAuthenticated && location.pathname !== '/login') navigate('/login');
@@ -113,6 +118,7 @@ const TransactionsPage = () => {
     currentFiltersToUse.ddsArticleIds?.forEach(id => params.append('dds_article_ids', id));
     params.append('skip', ((pageToFetch - 1) * ITEMS_PER_PAGE).toString());
     params.append('limit', ITEMS_PER_PAGE.toString());
+    params.append('workspace_id', activeWorkspace.id); // Добавляем workspace_id
 
     try {
       const data = await apiService.get(`/transactions/?${params.toString()}`);
@@ -124,8 +130,7 @@ const TransactionsPage = () => {
       if (err instanceof ApiError) {
         if (err.status === 401) {
             setError('Сессия истекла. Пожалуйста, войдите снова.');
-            logout(); // Выход при 401
-            // navigate('/login') // logout уже должен делать редирект
+            logout();
         } else {
             setError(err.message || 'Не удалось загрузить транзакции');
         }
@@ -137,7 +142,7 @@ const TransactionsPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated, isAuthLoading, navigate, location.pathname, logout]);
+  }, [isAuthenticated, isAuthLoading, navigate, location.pathname, logout, activeWorkspace]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -154,17 +159,15 @@ const TransactionsPage = () => {
     setFilterStartDate(currentFiltersFromUrl.startDate);
     setFilterEndDate(currentFiltersFromUrl.endDate);
     setFilterAccountId(currentFiltersFromUrl.accountId);
-    setFilterDdsArticleIds(currentFiltersFromUrl.ddsArticleIds);
+    setFilterDdsArticleIds(currentFiltersFromUrl.ddsArticleIds.map(Number)); // Преобразуем в числа, если нужно
     setFilterMinAmount(currentFiltersFromUrl.minAmount);
     setFilterMaxAmount(currentFiltersFromUrl.maxAmount);
-    // setCurrentPage(pageFromUrl); // Устанавливается в fetchTransactions
 
-    if (!isAuthLoading && isAuthenticated) {
+    if (!isAuthLoading && isAuthenticated && activeWorkspace) {
         fetchTransactions(pageFromUrl, currentFiltersFromUrl);
         fetchAccountsForFilter();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search, isAuthLoading, isAuthenticated]); // Убрали fetchTransactions и fetchAccountsForFilter из зависимостей здесь
+  }, [location.search, isAuthLoading, isAuthenticated, activeWorkspace, fetchAccountsForFilter, fetchTransactions]);
 
   const handlePageChange = (newPage) => {
     const currentFilters = { startDate: filterStartDate, endDate: filterEndDate, accountId: filterAccountId, ddsArticleIds: filterDdsArticleIds, minAmount: filterMinAmount, maxAmount: filterMaxAmount };
@@ -212,12 +215,12 @@ const TransactionsPage = () => {
     if (!transactionToDelete) { return; }
     setError(null);
     try {
-      await apiService.del(`/transactions/${transactionToDelete.id}`);
+      const params = new URLSearchParams({ workspace_id: activeWorkspace.id });
+      await apiService.delete(`/transactions/${transactionToDelete.id}?${params.toString()}`);
       const newTotal = totalTransactions - 1;
       const newTotalPages = Math.ceil(newTotal / ITEMS_PER_PAGE);
       const newPage = (transactions.length === 1 && currentPage > 1 && currentPage > newTotalPages) ? currentPage - 1 : currentPage;
       
-      // Обновляем URL перед загрузкой данных, если страница изменилась
       if (newPage !== currentPage) {
           updateUrlWithParams(newPage, getCurrentFilters());
       } else {
@@ -245,11 +248,69 @@ const TransactionsPage = () => {
     );
   }
 
+  // Футер для TransactionForm в Modal
+  const transactionModalFooter = (
+    <div className="flex justify-end space-x-3">
+      <Button variant="secondary" size="md" onClick={handleCloseFormModal} disabled={isLoading}>
+        Отмена
+      </Button>
+      <Button
+        type="submit"
+        variant="primary"
+        size="md"
+        form={TRANSACTION_FORM_ID} // Связываем кнопку с формой
+        disabled={isLoading}
+      >
+        {isLoading ? 'Сохранение...' : (formModalState.editingTransaction ? 'Сохранить изменения' : (formModalState.type === 'income' ? "Добавить доход" : "Добавить расход"))}
+      </Button>
+    </div>
+  );
+
+  // Футер для StatementUploadModal (шаг 1)
+  const statementUploadModalFooterStep1 = (
+    <div className="flex justify-end space-x-3">
+      <Button variant="secondary" size="md" onClick={() => setIsUploadModalOpen(false)} disabled={isLoading}>
+        Отмена
+      </Button>
+      <Button
+        type="submit"
+        variant="primary"
+        size="md"
+        form={`${UPLOAD_MODAL_FORM_ID}-step1`} // Связываем кнопку с формой по ID для шага 1
+        disabled={isLoading}
+        iconLeft={!isLoading ? <ArrowUpTrayIcon className="h-5 w-5" /> : null}
+      >
+        {isLoading ? 'Обработка...' : 'Загрузить и обработать'}
+      </Button>
+    </div>
+  );
+
+  // Футер для StatementUploadModal (шаг 2)
+  const statementUploadModalFooterStep2 = (
+    <div className="flex justify-end space-x-3">
+      <Button variant="secondary" size="md" onClick={() => setIsUploadModalOpen(false)} disabled={isLoading}>
+        Отмена
+      </Button>
+      <Button
+        type="submit"
+        variant="success"
+        size="md"
+        form={`${UPLOAD_MODAL_FORM_ID}-step2`} // Связываем кнопку с формой по ID для шага 2
+        disabled={isLoading}
+        iconLeft={!isLoading ? <CheckCircleIcon className="h-5 w-5" /> : null}
+      >
+        {isLoading ? 'Сохранение...' : 'Сохранить классифицированные'}
+      </Button>
+    </div>
+  );
+
+const commonLabelClasses = "block text-sm font-medium text-gray-700 mb-1";
+const commonInputClasses = "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10";
   const pageActions = (
     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3 w-full sm:w-auto">
-      <Button variant="success" onClick={() => handleOpenCreateModal('income')} disabled={!isAuthenticated} iconLeft={<ArrowUpTrayIcon className="h-5 w-5" />} fullWidth className="sm:w-auto" size="md" > Добавить доход </Button>
-      <Button variant="danger" onClick={() => handleOpenCreateModal('expense')} disabled={!isAuthenticated} iconLeft={<AddExpenseIcon className="h-5 w-5" />} fullWidth className="sm:w-auto" size="md" > Добавить расход </Button>
-      <Button variant="primary" onClick={() => setIsUploadModalOpen(true)} disabled={!isAuthenticated} iconLeft={<UploadIcon className="h-5 w-5" />} fullWidth className="sm:w-auto bg-sky-600 hover:bg-sky-500 focus:ring-sky-500" size="md" > Загрузить выписку </Button>
+      <Button variant="success" onClick={() => handleOpenCreateModal('income')} disabled={!isAuthenticated || !activeWorkspace} iconLeft={<ArrowUpTrayIcon className="h-5 w-5" />} fullWidth className="sm:w-auto" size="md" > Добавить доход </Button>
+      <Button variant="danger" onClick={() => handleOpenCreateModal('expense')} disabled={!isAuthenticated || !activeWorkspace} iconLeft={<AddExpenseIcon className="h-5 w-5" />} fullWidth className="sm:w-auto" size="md" > Добавить расход </Button>
+      <Button variant="primary" onClick={() => setIsUploadModalOpen(true)} disabled={!isAuthenticated || !activeWorkspace} iconLeft={<UploadIcon className="h-5 w-5" />} fullWidth className="sm:w-auto bg-sky-600 hover:bg-sky-500 focus:ring-sky-500" size="md" > Загрузить выписку </Button>
     </div>
   );
 
@@ -263,7 +324,14 @@ const TransactionsPage = () => {
         </div>
       )}
 
-      {!isAuthLoading && isAuthenticated && (
+      {!activeWorkspace && !isLoading && isAuthenticated && (
+        <EmptyState
+            title="Рабочее пространство не выбрано"
+            message="Пожалуйста, выберите рабочее пространство в шапке сайта, чтобы увидеть транзакции."
+          />
+      )}
+
+      {isAuthenticated && activeWorkspace && (
       <>
         <div className="p-4 bg-white shadow-lg rounded-xl mb-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Фильтры</h3>
@@ -304,16 +372,46 @@ const TransactionsPage = () => {
                 <Button variant="link" size="sm" onClick={handleResetFiltersAndPage} className="ml-2 !p-0">Сбросить все фильтры</Button>
             </div>
           )}
-          {/* Показываем ошибку от фильтров/операций, если транзакции уже есть на странице */}
           {error && !isLoading && transactions.length > 0 && (
             <Alert type="error" message={error} className="mt-4" />
           )}
         </div>
 
-        <Modal isOpen={formModalState.isOpen} onClose={handleCloseFormModal} title={formModalState.editingTransaction ? `Редактирование ID: ${formModalState.editingTransaction.id}` : (formModalState.type === 'income' ? "Добавить доход" : "Добавить расход")} >
-          <TransactionForm onTransactionProcessed={handleTransactionProcessedSuccess} transactionToEdit={formModalState.editingTransaction} operationType={formModalState.type} onCancelEdit={handleCloseFormModal} key={formModalState.isOpen ? `form-${formModalState.type}-${formModalState.editingTransaction?.id || 'create'}` : 'form-closed'} />
+        {/* Модальное окно для TransactionForm */}
+        <Modal 
+          isOpen={formModalState.isOpen} 
+          onClose={handleCloseFormModal} 
+          title={formModalState.editingTransaction ? `Редактирование ID: ${formModalState.editingTransaction.id}` : (formModalState.type === 'income' ? "Добавить доход" : "Добавить расход")}
+          formId={TRANSACTION_FORM_ID} // Передаем formId в Modal
+          footer={transactionModalFooter} // Передаем футер с кнопками
+        >
+          <TransactionForm 
+            onTransactionProcessed={handleTransactionProcessedSuccess} 
+            transactionToEdit={formModalState.editingTransaction} 
+            operationType={formModalState.type} 
+            formId={TRANSACTION_FORM_ID} // Передаем formId в TransactionForm
+            key={formModalState.isOpen ? `form-${formModalState.type}-${formModalState.editingTransaction?.id || 'create'}` : 'form-closed'}
+            // onCancelEdit больше не нужен
+          />
         </Modal>
-        <StatementUploadModal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} onUploadSuccess={handleUploadSuccess} />
+
+        {/* Модальное окно для StatementUploadModal */}
+        <Modal 
+          isOpen={isUploadModalOpen} 
+          onClose={() => setIsUploadModalOpen(false)} 
+          title={"Загрузка выписки"} // StatementUploadModal сам управляет заголовком, но Modal тоже может иметь свой
+          maxWidth="max-w-3xl"
+          formId={UPLOAD_MODAL_FORM_ID} // Передаем formId в Modal
+          footer={isUploadModalOpen && (isUploadModalOpen.step === 1 ? statementUploadModalFooterStep1 : statementUploadModalFooterStep2)} // Футер меняется в зависимости от шага
+        >
+          <StatementUploadModal 
+            isOpen={isUploadModalOpen} // StatementUploadModal внутри себя использует isOpen для логики
+            onClose={() => setIsUploadModalOpen(false)} 
+            onUploadSuccess={handleUploadSuccess} 
+            formId={UPLOAD_MODAL_FORM_ID} // Передаем formId в StatementUploadModal
+          />
+        </Modal>
+
         <ConfirmationModal isOpen={isConfirmDeleteModalOpen} onClose={handleCloseDeleteConfirmModal} title="Подтверждение удаления" message={`Вы уверены, что хотите удалить транзакцию: "${transactionToDelete?.description?.substring(0,30) || `ID: ${transactionToDelete?.id}`}"? Это действие отменит влияние операции на баланс счета.`} onConfirm={handleConfirmDeleteTransaction} confirmText="Удалить" cancelText="Отмена" confirmButtonVariant="danger" />
 
         <div className="mt-8">

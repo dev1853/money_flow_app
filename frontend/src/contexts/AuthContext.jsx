@@ -1,118 +1,100 @@
 // frontend/src/contexts/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiService, ApiError } from '../services/apiService';
+import { apiService } from '../services/apiService';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem('accessToken'));
+  const [token, setToken] = useState(() => localStorage.getItem('accessToken'));
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  const fetchCurrentUser = useCallback(async (currentToken) => {
-    if (!currentToken) {
-      setUser(null);
-      setIsLoading(false);
-      return;
-    }
-    
-    try {
-      // ================== ИЗМЕНЕНИЕ ЗДЕСЬ ==================
-      // Убран /api из начала
-      const userData = await apiService.get('/users/me/'); 
-      // ======================================================
-      setUser(userData);
-    } catch (error) {
-      console.error("Ошибка при получении данных пользователя:", error);
-      // Очищаем токен, если он недействителен
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('tokenType');
-      setToken(null);
-      setUser(null);
-      if (error instanceof ApiError && error.status === 401) {
-        if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-          navigate('/login');
-        }
-      }
-    } finally {
-        setIsLoading(false);
-    }
+  const [workspaces, setWorkspaces] = useState([]);
+  const [activeWorkspace, setActiveWorkspace] = useState(null);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('activeWorkspaceId');
+    setToken(null);
+    setUser(null);
+    setWorkspaces([]);
+    setActiveWorkspace(null);
+    apiService.clearToken();
+    navigate('/login');
   }, [navigate]);
+  
+  const fetchWorkspaces = useCallback(async () => {
+    if (!token) return;
+    try {
+      const data = await apiService.get('/workspaces');
+      setWorkspaces(data);
+      if (data.length > 0) {
+        const savedId = localStorage.getItem('activeWorkspaceId');
+        const active = data.find(w => w.id === parseInt(savedId, 10)) || data[0];
+        setActiveWorkspace(active);
+        if (!savedId || !data.some(w => w.id === parseInt(savedId, 10))) {
+          localStorage.setItem('activeWorkspaceId', active.id);
+        }
+      } else {
+        setActiveWorkspace(null);
+      }
+    } catch (error) {
+      console.error("Ошибка при загрузке рабочих пространств:", error);
+    }
+  }, [token]);
+
+  const initializeUser = useCallback(async () => {
+    if (token) {
+      apiService.setToken(token);
+      try {
+        const userData = await apiService.get('/users/me/');
+        setUser(userData);
+        await fetchWorkspaces();
+      } catch (error) {
+        console.error("Не удалось инициализировать пользователя, выход.", error);
+        logout();
+      }
+    }
+    setIsLoading(false);
+  }, [token, logout, fetchWorkspaces]);
 
   useEffect(() => {
-    const currentToken = localStorage.getItem('accessToken');
-    if (currentToken) {
-        apiService.setToken(currentToken);
-        fetchCurrentUser(currentToken);
-    } else {
-        setIsLoading(false);
-    }
-  }, [fetchCurrentUser]);
+    initializeUser();
+  }, [initializeUser]);
 
   const login = async (email, password) => {
     setIsLoading(true);
     try {
-      // ================== ИЗМЕНЕНИЕ ЗДЕСЬ ==================
-      // Убран /api из начала
       const data = await apiService.post('/auth/login', new URLSearchParams({
-          username: email,
-          password: password,
+        username: email,
+        password: password,
       }), {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       });
-      // ======================================================
-
-      const { access_token, token_type } = data;
+      const { access_token } = data;
       localStorage.setItem('accessToken', access_token);
-      localStorage.setItem('tokenType', token_type);
       setToken(access_token);
-      apiService.setToken(access_token);
-      await fetchCurrentUser(access_token);
+      await initializeUser(); // Переиспользуем инициализацию
       navigate('/dashboard');
-
     } catch (error) {
-      console.error('Login error:', error);
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('tokenType');
-      setToken(null);
-      setUser(null);
       setIsLoading(false);
-      throw error instanceof ApiError ? new Error(error.message || 'Не удалось войти.') : error;
-    } 
+      throw error;
+    }
   };
-
-  const logout = useCallback(() => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('tokenType');
-    setToken(null);
-    setUser(null);
-    apiService.clearToken(); // <-- ДОБАВЬТЕ ЭТУ СТРОКУ
-    navigate('/login');
-  }, [navigate]);
+  
+  const changeWorkspace = (workspace) => {
+    setActiveWorkspace(workspace);
+    localStorage.setItem('activeWorkspaceId', workspace.id);
+  }
 
   const value = {
-    token,
-    user,
-    isAuthenticated: !!token,
-    isLoading,
-    login,
-    logout,
-    fetchCurrentUser
+    token, user, isAuthenticated: !!token, isLoading, login, logout,
+    workspaces, activeWorkspace, changeWorkspace, fetchWorkspaces
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === null) {
-    throw new Error('useAuth должен использоваться внутри AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);

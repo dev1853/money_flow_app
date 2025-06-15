@@ -1,16 +1,17 @@
 // frontend/src/components/ArticleNode.jsx
 import React, { useState } from 'react';
 import {
-  PencilIcon, //
-  ArchiveBoxArrowDownIcon, //
-  TrashIcon, //
-  InboxArrowDownIcon, //
-  FolderIcon, //
-  DocumentTextIcon, //
-  ChevronRightIcon, //
-  ChevronDownIcon //
-} from '@heroicons/react/24/outline'; //
-import Button from './Button'; // Импортируем наш компонент Button
+  PencilIcon,
+  ArchiveBoxArrowDownIcon,
+  TrashIcon,
+  InboxArrowDownIcon,
+  FolderIcon,
+  DocumentTextIcon,
+  ChevronRightIcon,
+  ChevronDownIcon,
+  PlusCircleIcon
+} from '@heroicons/react/24/outline';
+import Button from './Button';
 
 const ArticleNode = ({ article, level = 0, onEdit, onArchive, onDelete }) => {
   const hasChildren = article.children && article.children.length > 0; //
@@ -29,17 +30,29 @@ const ArticleNode = ({ article, level = 0, onEdit, onArchive, onDelete }) => {
     }
     if (hasChildren) setIsOpen(!isOpen);
   };
+  
+    // --- ИСПРАВЛЕНИЕ НАЧИНАЕТСЯ ЗДЕСЬ ---
 
+  // 1. Определяем, является ли статья доходом
+  const isIncome = article.type === 'income';
 
-  let NodeIconComponent = hasChildren ? FolderIcon : DocumentTextIcon; //
-  const paddingLeft = level * 16; //
+  // 2. Определяем цвет для иконки в зависимости от типа и статуса архивации
+  const iconColor = article.is_archived
+    ? 'text-gray-400' // Серый для архивных
+    : isIncome
+    ? 'text-green-600' // Зеленый для доходов
+    : 'text-red-600';  // Красный для расходов
+
+  // --- КОНЕЦ ИСПРАВЛЕНИЯ ---
+
+  let NodeIconComponent = hasChildren ? FolderIcon : DocumentTextIcon;
+  const paddingLeft = level * 16;
 
   return (
     <div className="py-0.5 first:pt-0 last:pb-0" style={{ paddingLeft: `${paddingLeft}px` }}> {/* */}
       <div
         className={`flex items-center p-2 pr-1 rounded group hover:bg-gray-100 transition-colors duration-150 ${article.is_archived ? 'bg-gray-100 opacity-60' : 'bg-white shadow-sm'}`} //
         onClick={handleToggleOpen}
-        // role и tabIndex для доступности раскрывающихся элементов
         role={hasChildren ? "button" : undefined} // listitem не совсем подходит, если нет дочерних, но div не имеет роли по умолчанию
         aria-expanded={hasChildren ? isOpen : undefined}
         tabIndex={hasChildren ? 0 : undefined} //
@@ -62,10 +75,10 @@ const ArticleNode = ({ article, level = 0, onEdit, onArchive, onDelete }) => {
             {article.name} {/* */}
           </span>
           <span
-            className={`ml-1 sm:ml-2 text-xs font-medium px-1.5 py-0.5 rounded-full ${ //
-              article.is_archived ? 'bg-gray-200 text-gray-500' //
-              : article.article_type === 'income' ? 'bg-green-100 text-green-700' //
-              : 'bg-orange-100 text-orange-700' //
+            className={`ml-2 text-xs font-medium px-1.5 py-0.5 rounded-full ${
+              article.type === 'income' 
+              ? 'bg-green-100 text-green-800' 
+              : 'bg-red-100 text-red-800'
             }`}
           >
             {article.article_type === 'income' ? 'Доход' : 'Расход'} {/* */}

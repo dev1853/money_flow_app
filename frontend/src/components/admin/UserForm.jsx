@@ -1,46 +1,43 @@
 // frontend/src/components/admin/UserForm.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../contexts/AuthContext'; // - может понадобиться для isAuthenticated или других данных пользователя
 import Button from '../Button';
-import { API_BASE_URL } from '../../apiConfig'; // Больше не нужен для прямых вызовов fetch, но оставим, если где-то еще используется. Лучше удалить, если apiService покрывает все.
-import { apiService, ApiError } from '../../services/apiService'; 
-import Loader from '../Loader';// <--- НАШ НОВЫЙ СЕРВИС
+import { apiService, ApiError } from '../../services/apiService';
+import Loader from '../Loader';
+import Input from '../forms/Input';
+import Label from '../forms/Label';
+import Select from '../forms/Select';
+
 
 const UserForm = ({ userToEdit, onSuccess, onCancel }) => {
-  const isEditMode = Boolean(userToEdit); //
-  // const { token } = useAuth(); // Токен теперь получается внутри apiService из localStorage
+  const isEditMode = Boolean(userToEdit);
 
-  const [username, setUsername] = useState(''); //
-  const [email, setEmail] = useState(''); //
-  const [fullName, setFullName] = useState(''); //
-  const [password, setPassword] = useState(''); //
-  const [confirmPassword, setConfirmPassword] = useState(''); //
-  const [roleId, setRoleId] = useState(''); //
-  const [isActive, setIsActive] = useState(true); //
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [roleId, setRoleId] = useState('');
+  const [isActive, setIsActive] = useState(true);
 
-  const [availableRoles, setAvailableRoles] = useState([]); //
-  const [isLoading, setIsLoading] = useState(false); // Это isLoading для submit формы, не для fetchRoles
-  const [isRolesLoading, setIsRolesLoading] = useState(false); // Отдельный лоадер для ролей
-  const [error, setError] = useState(null); // Ошибка для submit формы
-  const [fetchRolesError, setFetchRolesError] = useState(null); //
+  const [availableRoles, setAvailableRoles] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRolesLoading, setIsRolesLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [fetchRolesError, setFetchRolesError] = useState(null);
 
-  const commonLabelClasses = "block text-sm font-medium text-gray-700 mb-1"; //
-  const commonInputClasses = "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10"; //
-
-  const fetchRoles = useCallback(async () => { //
+  const fetchRoles = useCallback(async () => {
     setIsRolesLoading(true);
     setFetchRolesError(null);
     try {
-      // apiService сам добавит токен из localStorage
-      const data = await apiService.get('/roles/?limit=100'); //
-      setAvailableRoles(data); //
-      if (!isEditMode && data.length > 0) { //
-        const employeeRole = data.find(r => r.name === 'employee'); //
-        if (employeeRole) setRoleId(employeeRole.id.toString()); //
-        else if (data.length > 0) setRoleId(data[0].id.toString()); //
+      const data = await apiService.get('/roles/?limit=100');
+      setAvailableRoles(data);
+      if (!isEditMode && data.length > 0) {
+        const employeeRole = data.find(r => r.name === 'employee');
+        if (employeeRole) setRoleId(employeeRole.id.toString());
+        else if (data.length > 0) setRoleId(data[0].id.toString());
       }
-    } catch (err) { //
-      console.error("UserForm: Ошибка загрузки ролей:", err); //
+    } catch (err) {
+      console.error("UserForm: Ошибка загрузки ролей:", err);
       if (err instanceof ApiError) {
         setFetchRolesError(err.message || "Не удалось загрузить роли.");
       } else {
@@ -49,37 +46,76 @@ const UserForm = ({ userToEdit, onSuccess, onCancel }) => {
     } finally {
       setIsRolesLoading(false);
     }
-  }, [isEditMode]); // Токен убран из зависимостей
+  }, [isEditMode]);
 
-  useEffect(() => { //
+  useEffect(() => {
     fetchRoles();
-  }, [fetchRoles]); //
+  }, [fetchRoles]);
 
-  useEffect(() => { /* ... логика заполнения полей формы ... без изменений ... */ }, [isEditMode, userToEdit, availableRoles, roleId]); //
+  useEffect(() => {
+    if (isEditMode && userToEdit) {
+      setUsername(userToEdit.username || '');
+      setEmail(userToEdit.email || '');
+      setFullName(userToEdit.full_name || '');
+      setPassword('');
+      setConfirmPassword('');
+      setIsActive(userToEdit.is_active);
+      if (availableRoles.length > 0 && userToEdit.role_id) {
+        setRoleId(userToEdit.role_id.toString());
+      }
+    } else {
+      setUsername('');
+      setEmail('');
+      setFullName('');
+      setPassword('');
+      setConfirmPassword('');
+      setIsActive(true);
+      if (availableRoles.length > 0) {
+        const employeeRole = availableRoles.find(r => r.name === 'employee');
+        if (employeeRole) setRoleId(employeeRole.id.toString());
+        else setRoleId(availableRoles[0].id.toString());
+      } else {
+        setRoleId('');
+      }
+    }
+  }, [isEditMode, userToEdit, availableRoles]);
 
-  const handleSubmit = async (e) => { //
-    e.preventDefault(); //
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError(null);
-    setIsLoading(true); //
+    setIsLoading(true);
 
-    if (!isEditMode && password !== confirmPassword) { /* ... проверки ... */ return; } //
-    if (!roleId) { /* ... проверки ... */ return; } //
+    if (!isEditMode && password !== confirmPassword) {
+      setError("Пароли не совпадают.");
+      setIsLoading(false);
+      return;
+    }
+    if (!isEditMode && password.length < 6) {
+        setError("Пароль должен содержать не менее 6 символов.");
+        setIsLoading(false);
+        return;
+    }
+    if (!roleId) {
+      setError("Пожалуйста, выберите роль.");
+      setIsLoading(false);
+      return;
+    }
 
-    let payload; //
+    let payload;
     let endpoint;
     let methodType;
 
-    if (isEditMode) { //
-      payload = { //
+    if (isEditMode) {
+      payload = {
         email: email,
         full_name: fullName || null,
         is_active: isActive,
         role_id: parseInt(roleId, 10),
       };
-      endpoint = `/users/${userToEdit.id}`; //
-      methodType = 'put'; // Используем метод apiService.put
-    } else { //
-      payload = { //
+      endpoint = `/users/${userToEdit.id}`;
+      methodType = 'put';
+    } else {
+      payload = {
         username: username,
         email: email,
         full_name: fullName || null,
@@ -87,8 +123,8 @@ const UserForm = ({ userToEdit, onSuccess, onCancel }) => {
         role_id: parseInt(roleId, 10),
         is_active: isActive,
       };
-      endpoint = '/users/'; //
-      methodType = 'post'; // Используем метод apiService.post
+      endpoint = '/users/';
+      methodType = 'post';
     }
 
     try {
@@ -97,99 +133,103 @@ const UserForm = ({ userToEdit, onSuccess, onCancel }) => {
       } else {
         await apiService.post(endpoint, payload);
       }
-      onSuccess(); //
-    } catch (err) { //
-      console.error(`UserForm: Ошибка при ${isEditMode ? 'обновлении' : 'создании'} пользователя:`, err); //
+      onSuccess();
+    } catch (err) {
+      console.error(`UserForm: Ошибка при ${isEditMode ? 'обновлении' : 'создании'} пользователя:`, err);
       if (err instanceof ApiError) {
         setError(err.message || `Ошибка ${isEditMode ? 'обновления' : 'создания'} пользователя.`);
       } else {
         setError(`Произошла неизвестная ошибка.`);
       }
     } finally {
-      setIsLoading(false); //
+      setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4"> {/* */}
-      {/* Отображаем ошибку submit формы */}
+    <form onSubmit={handleSubmit} className="space-y-4">
       {error && <Alert type="error" message={error} className="mb-2" />}
-      {/* Отображаем ошибку загрузки ролей */}
-      {fetchRolesError && <Alert type="warning" title="Ошибка загрузки ролей" message={fetchRolesError} className="mb-2" />} {/* */}
+      {fetchRolesError && <Alert type="warning" title="Ошибка загрузки ролей" message={fetchRolesError} className="mb-2" />}
       
       {isRolesLoading && <Loader message="Загрузка доступных ролей..." />}
 
-      {/* Поля формы (username, email, etc.) остаются без изменений в JSX, кроме disabled состояния для селекта ролей */}
-      <div>
-        <label htmlFor="username-userform" className={commonLabelClasses}>Имя пользователя (логин)</label> {/* */}
-        <input type="text" id="username-userform" value={username} onChange={(e) => setUsername(e.target.value)}
-               required disabled={isEditMode}
-               className={`${commonInputClasses} ${isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''}`} /> {/* */}
-      </div>
-
-      <div>
-        <label htmlFor="email-userform" className={commonLabelClasses}>Email</label> {/* */}
-        <input type="email" id="email-userform" value={email} onChange={(e) => setEmail(e.target.value)}
-               required className={commonInputClasses} /> {/* */}
-      </div>
-
-      <div>
-        <label htmlFor="fullName-userform" className={commonLabelClasses}>Полное имя</label> {/* */}
-        <input type="text" id="fullName-userform" value={fullName} onChange={(e) => setFullName(e.target.value)}
-               className={commonInputClasses} /> {/* */}
-      </div>
-
-      {!isEditMode && ( //
+      {!isRolesLoading && (
         <>
           <div>
-            <label htmlFor="password-userform" className={commonLabelClasses}>Пароль</label> {/* */}
-            <input type="password" id="password-userform" value={password} onChange={(e) => setPassword(e.target.value)}
-                   required={!isEditMode} className={commonInputClasses} /> {/* */}
+            <Label htmlFor="username-userform">Имя пользователя (логин)</Label>
+            <Input
+              type="text"
+              id="username-userform"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              disabled={isEditMode}
+              className={isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''} // Оставляем специфичные классы
+            />
           </div>
+
           <div>
-            <label htmlFor="confirmPassword-userform" className={commonLabelClasses}>Подтвердите пароль</label> {/* */}
-            <input type="password" id="confirmPassword-userform" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                   required={!isEditMode} className={commonInputClasses} /> {/* */}
+            <Label htmlFor="email-userform">Email</Label>
+            <Input type="email" id="email-userform" value={email} onChange={(e) => setEmail(e.target.value)} required /> {/* Убраны дублирующиеся классы */}
+          </div>
+
+          <div>
+            <Label htmlFor="fullName-userform">Полное имя</Label>
+            <Input type="text" id="fullName-userform" value={fullName} onChange={(e) => setFullName(e.target.value)} /> {/* Убраны дублирующиеся классы */}
+          </div>
+
+          {!isEditMode && (
+            <>
+              <div>
+                <Label htmlFor="password-userform">Пароль</Label>
+                <Input type="password" id="password-userform" value={password} onChange={(e) => setPassword(e.target.value)} required={!isEditMode} /> {/* Убраны дублирующиеся классы */}
+              </div>
+              <div>
+                <Label htmlFor="confirmPassword-userform">Подтвердите пароль</Label>
+                <Input type="password" id="confirmPassword-userform" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required={!isEditMode} /> {/* Убраны дублирующиеся классы */}
+              </div>
+            </>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+            <div>
+                <Label htmlFor="roleId-userform">Роль</Label>
+                <Select
+                    id="roleId-userform"
+                    value={roleId}
+                    onChange={(e) => setRoleId(e.target.value)}
+                    required
+                    disabled={availableRoles.length === 0}
+                    // Убраны дублирующиеся классы
+                >
+                    <option value="" disabled>{availableRoles.length === 0 ? "Роли не найдены" : "-- Выберите роль --"}</option>
+                    {availableRoles.map(role => (
+                        <option key={role.id} value={role.id}>{role.name}</option>
+                    ))}
+                </Select>
+            </div>
+            <div className="pt-5">
+                <div className="flex items-center">
+                    {/* Для checkbox оставляем input */}
+                    <input id="isActive-userform" name="isActive" type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"/>
+                    <Label htmlFor="isActive-userform" className="ml-2">Активен</Label>
+                </div>
+            </div>
+          </div>
+
+          <div className="pt-3 flex justify-end space-x-3">
+            <Button variant="secondary" size="md" onClick={onCancel} disabled={isLoading}>
+              Отмена
+            </Button>
+            <Button type="submit" variant="primary" size="md" disabled={isLoading}>
+              {isLoading ? 'Сохранение...' : (isEditMode ? 'Сохранить изменения' : 'Создать пользователя')}
+            </Button>
           </div>
         </>
       )}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center"> {/* */}
-        <div>
-            <label htmlFor="roleId-userform" className={commonLabelClasses}>Роль</label> {/* */}
-            <select 
-                id="roleId-userform" 
-                value={roleId} 
-                onChange={(e) => setRoleId(e.target.value)} 
-                required 
-                className={commonInputClasses}
-                disabled={isRolesLoading || availableRoles.length === 0} // Блокируем, если роли грузятся или не загружены
-            >
-                <option value="" disabled>{isRolesLoading ? "Загрузка ролей..." : (availableRoles.length === 0 ? "Роли не найдены" : "-- Выберите роль --")}</option> {/* */}
-                {availableRoles.map(role => ( //
-                <option key={role.id} value={role.id}>{role.name}</option> //
-                ))}
-            </select>
-        </div>
-        <div className="pt-5"> {/* */}
-            <div className="flex items-center"> {/* */}
-                <input id="isActive-userform" name="isActive" type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)}
-                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"/> {/* */}
-                <label htmlFor="isActive-userform" className="ml-2 block text-sm text-gray-900">Активен</label> {/* */}
-            </div>
-        </div>
-      </div>
-
-      <div className="pt-3 flex justify-end space-x-3"> {/* */}
-        <Button variant="secondary" size="md" onClick={onCancel} disabled={isLoading}> {/* */}
-          Отмена
-        </Button>
-        <Button type="submit" variant="primary" size="md" disabled={isLoading || isRolesLoading}> {/* Также блокируем, если роли грузятся */} {/* */}
-          {isLoading ? 'Сохранение...' : (isEditMode ? 'Сохранить изменения' : 'Создать пользователя')} {/* */}
-        </Button>
-      </div>
     </form>
   );
 };
 
-export default UserForm; //
+export default UserForm;

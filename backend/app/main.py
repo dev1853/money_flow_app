@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine
-from .routers import auth, users, workspaces, accounts, dds_articles, transactions, statement, reports
+from .routers import auth, users, workspaces, accounts, dds_articles, transactions, statement, reports, dashboard
 
 # Раскомментируйте, если нужно создавать таблицы при старте (не для Alembic)
 # from . import models
@@ -33,6 +33,7 @@ app.include_router(dds_articles.router)
 app.include_router(transactions.router)
 app.include_router(statement.router)
 app.include_router(reports.router)
+app.include_router(dashboard.router)
 
 @app.get("/api/healthcheck", tags=["System"])
 def health_check():

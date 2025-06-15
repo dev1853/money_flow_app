@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import { format, isValid, parseISO } from 'date-fns'; // Убедимся, что parseISO здесь
+import { format, isValid, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Listbox, Transition } from '@headlessui/react';
 
@@ -32,31 +32,32 @@ const AccountBalancesReportPage = () => {
   const [availableAccounts, setAvailableAccounts] = useState([]);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
 
-  const { isAuthenticated, isLoading: isAuthLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading, logout, activeWorkspace } = useAuth(); // Добавили activeWorkspace
   const navigate = useNavigate();
 
   const commonLabelClasses = "block text-sm font-medium text-gray-700 mb-1";
   const commonInputClasses = "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10";
 
   const fetchAccountsForFilter = useCallback(async () => {
-    if (isAuthLoading || !isAuthenticated) {
+    if (isAuthLoading || !isAuthenticated || !activeWorkspace) { // Проверяем activeWorkspace
       setAvailableAccounts([]);
       return;
     }
     try {
-      const data = await apiService.get('/accounts/?limit=500&is_active=true');
+      const params = new URLSearchParams({ workspace_id: activeWorkspace.id }); // Добавляем workspace_id
+      const data = await apiService.get(`/accounts/?limit=500&is_active=true&${params.toString()}`); // Объединяем параметры
       setAvailableAccounts(data || []);
     } catch (err) {
       console.error("AccountBalancesReportPage: Ошибка загрузки счетов:", err.message);
       setAvailableAccounts([]);
     }
-  }, [isAuthLoading, isAuthenticated]);
+  }, [isAuthLoading, isAuthenticated, activeWorkspace]); // Добавляем activeWorkspace в зависимости
 
   useEffect(() => {
-    if (isAuthenticated && !isAuthLoading) {
+    if (isAuthenticated && !isAuthLoading && activeWorkspace) { // Проверяем activeWorkspace
       fetchAccountsForFilter();
     }
-  }, [fetchAccountsForFilter, isAuthenticated, isAuthLoading]);
+  }, [fetchAccountsForFilter, isAuthenticated, isAuthLoading, activeWorkspace]); // Добавляем activeWorkspace
 
   const handleGenerateReport = useCallback(async () => {
     if (!reportDate || !isValid(reportDate)) {
@@ -70,6 +71,11 @@ const AccountBalancesReportPage = () => {
       navigate('/login');
       return;
     }
+    if (!activeWorkspace) { // Новая проверка
+      setError("Рабочее пространство не выбрано. Выберите рабочее пространство, чтобы сформировать отчет.");
+      setReportData(null);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -78,6 +84,7 @@ const AccountBalancesReportPage = () => {
     const params = new URLSearchParams();
     params.append('as_of_date', format(reportDate, 'yyyy-MM-dd'));
     selectedAccounts.forEach(account => params.append('account_ids', account.id.toString()));
+    params.append('workspace_id', activeWorkspace.id); // Добавляем workspace_id
 
     try {
       const data = await apiService.get(`/reports/account-balances/?${params.toString()}`);
@@ -97,15 +104,15 @@ const AccountBalancesReportPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [reportDate, selectedAccounts, isAuthenticated, isAuthLoading, navigate, logout]);
+  }, [reportDate, selectedAccounts, isAuthenticated, isAuthLoading, navigate, logout, activeWorkspace]); // Добавляем activeWorkspace
 
   const handleDateChange = (date) => { setReportDate(date); };
 
   useEffect(() => {
-    if (isAuthenticated && !isAuthLoading && reportDate && isValid(reportDate)) {
+    if (isAuthenticated && !isAuthLoading && reportDate && isValid(reportDate) && activeWorkspace) { // Проверяем activeWorkspace
        handleGenerateReport();
     }
-  }, [isAuthenticated, isAuthLoading, reportDate, selectedAccounts, handleGenerateReport]);
+  }, [isAuthenticated, isAuthLoading, reportDate, selectedAccounts, handleGenerateReport, activeWorkspace]); // Добавляем activeWorkspace
 
   const formatCurrency = (amount, currency = 'RUB') => {
     const value = parseFloat(amount);
@@ -117,6 +124,18 @@ const AccountBalancesReportPage = () => {
       <div className="flex flex-col justify-center items-center min-h-[calc(100vh-8rem)]">
         <Loader message="Загрузка данных страницы..." />
       </div>
+    );
+  }
+
+  // Если рабочее пространство не выбрано, показываем соответствующее состояние
+  if (!activeWorkspace && !isAuthLoading) {
+    return (
+      <EmptyState
+          icon={DocumentMagnifyingGlassIcon} // Используем иконку для отчетов
+          title="Рабочее пространство не выбрано"
+          message="Пожалуйста, выберите или создайте рабочее пространство для формирования отчетов."
+          className="mt-0"
+      />
     );
   }
 
@@ -138,13 +157,14 @@ const AccountBalancesReportPage = () => {
               isClearable={true}
               placeholderText="Выберите дату"
               id="reportDateBalances"
+              disabled={!activeWorkspace} // Отключаем, если нет активного пространства
             />
           </div>
           <div className="flex-grow min-w-[260px] sm:flex-1">
             <label htmlFor="accountsFilterBalances" className={commonLabelClasses}>Счета/Кассы <span className="text-xs text-gray-500">(по умолч. все)</span></label>
-            <Listbox value={selectedAccounts} onChange={setSelectedAccounts} multiple name="accountsFilterBalances">
+            <Listbox value={selectedAccounts} onChange={setSelectedAccounts} multiple name="accountsFilterBalances" disabled={!activeWorkspace}> {/* Отключаем, если нет активного пространства */}
               <div className="relative mt-1">
-                <Listbox.Button id="accountsFilterBalances" className={`${commonInputClasses} text-left pr-10 relative`}>
+                <Listbox.Button id="accountsFilterBalances" className={`${commonInputClasses} text-left pr-10 relative ${!activeWorkspace ? 'bg-gray-100 cursor-not-allowed' : ''}`}>
                   <span className="block truncate">
                     {selectedAccounts.length === 0 ? "Все активные счета" : selectedAccounts.length === availableAccounts.length && availableAccounts.length > 0 ? "Все активные счета (выбраны)" : selectedAccounts.length > 2  ? `${selectedAccounts.length} счетов выбрано` : selectedAccounts.map(acc => acc.name).join(', ') || "Все активные счета"}
                   </span>
@@ -167,7 +187,7 @@ const AccountBalancesReportPage = () => {
               variant="primary"
               size="md"
               onClick={handleGenerateReport}
-              disabled={isLoading || !reportDate || !isAuthenticated}
+              disabled={isLoading || !reportDate || !isAuthenticated || !activeWorkspace} // Добавляем activeWorkspace
               iconLeft={<FunnelIcon className="h-5 w-5" />}
               className="w-full sm:w-auto"
               title="Сформировать отчет"
@@ -189,8 +209,7 @@ const AccountBalancesReportPage = () => {
       {!isLoading && !isAuthLoading && reportData && (
         <div className="bg-white shadow-xl rounded-2xl p-6">
           <h3 className="text-2xl font-semibold text-gray-900 mb-6 pb-3 border-b border-gray-200 text-center">
-            {/* ИСПРАВЛЕНИЕ ФОРМАТА ДАТЫ */}
-            Остатки денежных средств на {reportData.report_date ? format(parseISO(reportData.report_date), "dd MMMM yyyy 'г.'", { locale: ru }) : '?'}
+            Остатки денежных средств на {reportData.report_date ? format(parseISO(reportData.report_date), "dd MMMM Geißler 'г.'", { locale: ru }) : '?'}
           </h3>
           
           {reportData.balances && reportData.balances.length > 0 ? (

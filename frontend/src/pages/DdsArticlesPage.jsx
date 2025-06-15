@@ -1,277 +1,230 @@
 // frontend/src/pages/DdsArticlesPage.jsx
-import { useState, useEffect, useCallback, Fragment } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Modal from '../components/Modal';
-import ArticleForm from '../components/ArticleForm';
-import ArticleNode from '../components/ArticleNode';
-import ConfirmationModal from '../components/ConfirmationModal';
-import { useAuth } from '../contexts/AuthContext';
 
-// Наши UI компоненты и сервис
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { apiService } from '../services/apiService';
+
+// UI Компоненты
 import PageTitle from '../components/PageTitle';
 import Button from '../components/Button';
 import Loader from '../components/Loader';
 import Alert from '../components/Alert';
 import EmptyState from '../components/EmptyState';
-import { apiService, ApiError } from '../services/apiService';
+import Modal from '../components/Modal';
+import ArticleForm from '../components/ArticleForm';
+import ArticleNode from '../components/ArticleNode';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 import { PlusIcon, DocumentDuplicateIcon } from '@heroicons/react/24/solid';
 
 const DdsArticlesPage = () => {
-  const [articles, setArticles] = useState([]); //
-  const [error, setError] = useState(null); //
-  const [isLoading, setIsLoading] = useState(true); //
+  const [articles, setArticles] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [flatArticles, setFlatArticles] = useState([]); // Для списка родительских статей
 
-  const [editingArticle, setEditingArticle] = useState(null); //
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false); //
-
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false); //
-  const [confirmModalProps, setConfirmModalProps] = useState({ //
+  // Состояния для модальных окон
+  const [editingArticle, setEditingArticle] = useState(null);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [confirmModalProps, setConfirmModalProps] = useState({
     message: '',
     onConfirm: () => {},
-    title: "Подтверждение",
-    confirmText: "Да",
-    confirmButtonVariant: "primary"
   });
+  // Состояние для isSubmitting из формы
+  const [isArticleFormSubmitting, setIsArticleFormSubmitting] = useState(false);
 
-  const { isAuthenticated, isLoading: isAuthLoading, logout } = useAuth(); //
-  const navigate = useNavigate(); //
+  const { activeWorkspace } = useAuth();
 
-  const ARTICLE_FORM_ID = "article-form-in-modal";
+  // Определяем уникальный ID для формы статьи
+  const ARTICLE_FORM_ID = "articleForm";
 
-  const fetchArticles = useCallback(async () => { //
-    if (isAuthLoading) { setIsLoading(true); return; }
-    if (!isAuthenticated) {
-      setError('Для доступа к этой странице необходимо войти в систему.');
+  const fetchArticles = useCallback(async () => {
+    if (!activeWorkspace) {
+      setArticles([]);
       setIsLoading(false);
-      navigate('/login');
       return;
     }
 
-    setIsLoading(true); //
-    setError(null); //
+    setIsLoading(true);
+    setError(null);
     try {
-      const data = await apiService.get('/articles/');
-      setArticles(data || []); //
-    } catch (e) { //
-      console.error("DdsArticlesPage: Ошибка при загрузке статей:", e); //
-      if (e instanceof ApiError) {
-        if (e.status === 401) {
-            setError('Сессия истекла. Пожалуйста, войдите снова.');
-            logout();
-        } else {
-            setError(e.message || "Не удалось загрузить статьи.");
-        }
-      } else {
-        setError("Произошла неизвестная ошибка при загрузке статей.");
-      }
-      setArticles([]);
+      const params = new URLSearchParams({ workspace_id: activeWorkspace.id });
+      const data = await apiService.get(`/dds_articles?${params.toString()}`);
+      setArticles(data);
+      // FlattenArticles for parent selection
+      const flatten = (articles, level = 0) => {
+          let result = [];
+          articles.forEach(art => {
+              // Включаем детей в flatArticles, чтобы их можно было фильтровать из списка родителей
+              result.push({ ...art, level }); // Передаем все свойства статьи
+              if (art.children && art.children.length > 0) {
+                  result = result.concat(flatten(art.children, level + 1));
+              }
+          });
+          return result;
+      };
+      setFlatArticles(flatten(data));
+    } catch (err) {
+      console.error("DdsArticlesPage: Ошибка при загрузке статей:", err);
+      setError("Не удалось загрузить статьи. " + err.message);
     } finally {
-      setIsLoading(false); //
+      setIsLoading(false);
     }
-  }, [isAuthenticated, isAuthLoading, navigate, logout]); //
+  }, [activeWorkspace]);
 
-  useEffect(() => { //
-    if (!isAuthLoading) {
-        fetchArticles();
-    }
-  }, [fetchArticles, isAuthLoading]); //
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
 
-  const handleOpenCreateModal = () => { //
-    setEditingArticle(null);
-    setError(null); // Сбрасываем ошибку перед открытием модалки
+  const handleOpenCreateModal = (parentId = null) => {
+    setEditingArticle({ parent_id: parentId });
     setIsFormModalOpen(true);
+    setIsArticleFormSubmitting(false); // Сброс состояния отправки
   };
 
-  const handleOpenEditModal = (article) => { //
+  const handleOpenEditModal = (article) => {
     setEditingArticle(article);
-    setError(null); // Сбрасываем ошибку перед открытием модалки
     setIsFormModalOpen(true);
+    setIsArticleFormSubmitting(false); // Сброс состояния отправки
   };
-
-  const handleCloseFormModal = () => { //
+  
+  const handleCloseFormModal = () => {
     setIsFormModalOpen(false);
     setEditingArticle(null);
-    setError(null); // Также сбрасываем ошибку при закрытии
+    setIsArticleFormSubmitting(false);
   };
 
-  const handleFormSubmitSuccess = () => { //
+  const handleFormSuccess = () => {
+    handleCloseFormModal();
     fetchArticles();
-    handleCloseFormModal(); // Используем единую функцию для закрытия и сброса
   };
 
-  const handleArchiveArticle = async (articleToToggle) => { //
-    const newArchivedState = !articleToToggle.is_archived;
-    const actionText = newArchivedState ? 'архивировать' : 'разархивировать';
-    setError(null);
-
-    setConfirmModalProps({ //
-      title: "Подтверждение", //
-      message: `Вы уверены, что хотите ${actionText} статью "${articleToToggle.name}"?`, //
-      confirmText: newArchivedState ? "Архивировать" : "Разархивировать", //
-      confirmButtonVariant: "primary", //
-      onConfirm: async () => {
-        setIsLoading(true);
-        try {
-          const payload = { //
-            name: articleToToggle.name,
-            article_type: articleToToggle.article_type,
-            parent_id: articleToToggle.parent_id,
-            is_archived: newArchivedState
-          };
-          await apiService.put(`/articles/${articleToToggle.id}`, payload);
-          fetchArticles();
-        } catch (err) { //
-          console.error("DdsArticlesPage: Ошибка архивации", err);
-          setError(err instanceof ApiError ? err.message : `Не удалось ${actionText} статью`);
-        } finally {
-            setIsLoading(false);
-        }
-      }
-    });
-    setIsConfirmModalOpen(true); //
+  // Эта функция будет вызвана из ArticleForm для обновления состояния отправки
+  const handleSetArticleFormSubmitting = (isSubmitting) => {
+    setIsArticleFormSubmitting(isSubmitting);
   };
-
-  const handleDeleteArticle = async (articleToDelete) => { //
-    setError(null);
-    setConfirmModalProps({ //
-      title: "Подтверждение удаления", //
-      message: `ВЫ УВЕРЕНЫ, что хотите ПОЛНОСТЬЮ УДАЛИТЬ статью "${articleToDelete.name}"?\n\nЭто действие необратимо.`, //
-      confirmText: "Удалить", //
-      confirmButtonVariant: "danger", //
-      onConfirm: async () => {
-        setIsLoading(true);
-        try {
-          await apiService.del(`/articles/${articleToDelete.id}`);
-          fetchArticles();
-        } catch (err) { //
-          console.error("DdsArticlesPage: Ошибка удаления", err);
-          setError(err instanceof ApiError ? err.message : 'Не удалось удалить статью');
-        } finally {
-            setIsLoading(false);
-        }
-      }
-    });
-    setIsConfirmModalOpen(true); //
-  };
-
-  if (isAuthLoading) { //
-    return (
-      <div className="flex flex-col justify-center items-center min-h-[calc(100vh-8rem)]"> {/* */}
-        <Loader message="Проверка аутентификации..." />
-      </div>
-    );
-  }
   
-  const articleFormFooter = (
+  const handleDeleteArticle = (article) => {
+    setConfirmModalProps({
+        title: "Подтвердите удаление",
+        message: `Вы уверены, что хотите удалить статью "${article.name}"? Это действие необратимо.`,
+        confirmText: "Удалить",
+        confirmButtonVariant: "danger",
+        onConfirm: async () => {
+            try {
+                const params = new URLSearchParams({ workspace_id: activeWorkspace.id });
+                await apiService.delete(`/dds_articles/${article.id}?${params.toString()}`);
+                fetchArticles();
+            } catch (err) {
+                setError(err.message);
+            }
+            setIsConfirmModalOpen(false);
+        }
+    });
+    setIsConfirmModalOpen(true);
+  };
+
+  // Футер для модального окна ArticleForm
+  const modalFooter = (
     <div className="flex justify-end space-x-3">
-      <Button variant="secondary" size="md" onClick={handleCloseFormModal}>
+      <Button variant="secondary" size="md" onClick={handleCloseFormModal} disabled={isArticleFormSubmitting}>
         Отмена
       </Button>
       <Button
         type="submit"
-        form={ARTICLE_FORM_ID}
         variant="primary"
         size="md"
-        // isLoading из ArticleForm теперь внутренний, и эта кнопка не знает о нем напрямую.
-        // Если isLoading относится к отправке формы в ArticleForm, ArticleForm сам заблокирует поля.
-        // Если isLoading здесь относится к isLoading страницы (например, во время других операций), то можно его использовать:
-        // disabled={isLoading} 
+        form={ARTICLE_FORM_ID} // Связываем кнопку с формой по ID
+        disabled={isArticleFormSubmitting} // Управляем состоянием кнопки извне формы
       >
-        {editingArticle ? 'Сохранить изменения' : 'Создать статью'}
+        {isArticleFormSubmitting ? 'Сохранение...' : 'Сохранить'}
       </Button>
     </div>
   );
 
+
+  if (isLoading) {
+    return <Loader message="Загрузка статей..." />;
+  }
+
   return (
     <>
-      <PageTitle
-        title="Статьи ДДС"
-        titleClassName="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight" //
-        actions={
-          <Button
+      <div className="flex justify-between items-center mb-6">
+        <PageTitle title="Статьи ДДС" />
+        <Button 
+            onClick={() => handleOpenCreateModal()} 
             variant="primary"
-            size="md"
-            onClick={handleOpenCreateModal} //
-            disabled={!isAuthenticated || isAuthLoading} // Добавили isAuthLoading для надежности
-            iconLeft={<PlusIcon className="h-5 w-5" />} //
-            className="w-full sm:w-auto" //
-          >
-            <span className="truncate">Добавить статью</span> {/* */}
-          </Button>
-        }
-      />
-
-      {isFormModalOpen && (
-        <Modal
-          isOpen={isFormModalOpen} //
-          onClose={handleCloseFormModal} //
-          title={editingArticle ? `Редактировать: ${editingArticle.name}` : "Добавить новую статью ДДС"} //
-          footer={articleFormFooter}
-          maxWidth="max-w-2xl"
+            disabled={!activeWorkspace}
         >
-          <ArticleForm
-            formId={ARTICLE_FORM_ID}
-            onArticleCreated={handleFormSubmitSuccess} //
-            articleToEdit={editingArticle} //
-            key={editingArticle ? `edit-article-${editingArticle.id}` : 'create-article'} //
-          />
-        </Modal>
+          <PlusIcon className="h-5 w-5 mr-2" />
+          Добавить статью
+        </Button>
+      </div>
+
+      {error && <Alert type="error" message={error} className="my-4" />}
+
+      {!activeWorkspace && !isLoading && (
+        <EmptyState
+          icon={<DocumentDuplicateIcon />}
+          title="Рабочее пространство не выбрано"
+          message="Пожалуйста, выберите или создайте рабочее пространство для работы со статьями."
+        />
       )}
 
+      {activeWorkspace && articles.length === 0 && !error && (
+        <EmptyState
+          icon={<DocumentDuplicateIcon />}
+          title="Статей пока нет"
+          message="Начните с добавления корневой статьи, например, 'Доходы' или 'Расходы'."
+          actionButton={
+            <Button variant="primary" onClick={() => handleOpenCreateModal()} iconLeft={<PlusIcon className="h-5 w-5"/>}>
+              Добавить первую статью
+            </Button>
+          }
+        />
+      )}
+
+      {activeWorkspace && articles.length > 0 && (
+        <div className="space-y-1 bg-white p-4 shadow-md rounded-lg">
+          {articles.map((rootArticle) => (
+            <ArticleNode
+              key={rootArticle.id}
+              article={rootArticle}
+              level={0}
+              onEdit={handleOpenEditModal}
+              onDelete={handleDeleteArticle}
+              onAddSubArticle={handleOpenCreateModal} // Если есть такая кнопка в ArticleNode
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Модальное окно для формы */}
+      <Modal 
+        isOpen={isFormModalOpen} 
+        onClose={handleCloseFormModal} 
+        title={editingArticle && editingArticle.id ? 'Редактировать статью' : 'Новая статья'}
+        formId={ARTICLE_FORM_ID} // Передаем formId в Modal
+        footer={modalFooter} // Передаем футер с кнопками
+      >
+        <ArticleForm 
+          article={editingArticle}
+          parentArticles={flatArticles}
+          onSuccess={handleFormSuccess}
+          formId={ARTICLE_FORM_ID} // Передаем formId в ArticleForm
+          // onCancel больше не нужен, т.к. кнопки снаружи
+        />
+      </Modal>
+
+      {/* Модальное окно для подтверждений */}
       <ConfirmationModal
-        isOpen={isConfirmModalOpen} //
-        onClose={() => { setIsConfirmModalOpen(false); setError(null); }} // Сбрасываем ошибку при закрытии
-        {...confirmModalProps} //
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        {...confirmModalProps}
       />
-
-      <div className="mt-6">
-        {/* Лоадер для первоначальной загрузки списка */}
-        {isLoading && articles.length === 0 && !isAuthLoading && (
-            <Loader message="Загрузка статей..." containerClassName="text-center py-10" />
-        )}
-
-        {/* Ошибка при первоначальной загрузке списка */}
-        {!isLoading && error && articles.length === 0 && (
-          <Alert type="error" title="Ошибка загрузки данных" message={error} className="my-4" />
-        )}
-        
-        {/* Ошибка операции, если список уже был загружен */}
-        {!isLoading && error && articles.length > 0 && (
-            <Alert type="error" title="Ошибка операции" message={error} className="my-4" />
-        )}
-
-
-        {!isLoading && !error && articles.length === 0 && ( //
-          <EmptyState
-            icon={<DocumentDuplicateIcon />} //
-            title="Статей пока нет" //
-            message="Начните с добавления новой статьи." //
-            actionButton={
-                <Button variant="primary" onClick={handleOpenCreateModal} iconLeft={<PlusIcon className="h-5 w-5"/>}>
-                    Добавить первую статью
-                </Button>
-            }
-          />
-        )}
-
-        {!isLoading && !error && articles.length > 0 && ( //
-          <div className="space-y-0.5 bg-white p-4 shadow-md rounded-lg"> {/* */}
-            {articles.map((rootArticle) => ( //
-              <ArticleNode
-                key={rootArticle.id} //
-                article={rootArticle} //
-                level={0} //
-                onEdit={handleOpenEditModal} //
-                onArchive={handleArchiveArticle} //
-                onDelete={handleDeleteArticle} //
-              />
-            ))}
-          </div>
-        )}
-      </div>
     </>
   );
 };
 
-export default DdsArticlesPage; //
+export default DdsArticlesPage;

@@ -72,3 +72,27 @@ def _update_account_balance_for_transaction(
     
     db.commit()
     return True
+
+def create_default_accounts(db: Session, workspace_id: int, user_id: int):
+    """
+    Создает стандартные счета ('Наличные', 'Банковская карта') для нового рабочего пространства.
+    """
+    from .. import schemas # Локальный импорт
+
+    default_accounts = [
+        {"name": "Наличные", "currency": "RUB", "initial_balance": Decimal("0.00")},
+        {"name": "Банковская карта", "currency": "RUB", "initial_balance": Decimal("0.00")}
+    ]
+
+    for acc_data in default_accounts:
+        # Убедимся, что balance тоже передается, так как он есть в AccountCreate
+        acc_data['balance'] = acc_data['initial_balance']
+        account_schema = schemas.AccountCreate(**acc_data)
+        
+        # Используем существующую функцию create_account из этого же файла
+        create_account(
+            db=db,
+            account=account_schema,
+            workspace_id=workspace_id,
+            user_id=user_id
+        )
