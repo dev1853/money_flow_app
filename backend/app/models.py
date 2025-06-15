@@ -1,159 +1,100 @@
-# app/models.py
+# backend/app/models.py
 from sqlalchemy import (
-    Column, Integer, String, Boolean, ForeignKey, Numeric, Date, DateTime, func, JSON
+    Column, Integer, String, Boolean, ForeignKey, Numeric, Date, DateTime, func
 )
 from sqlalchemy.orm import relationship
 from .database import Base
-from sqlalchemy.dialects.postgresql import JSONB
 
-# --- Новая модель Workspace ---
-class Workspace(Base):
-    __tablename__ = "workspaces"
+class User(Base):
+    __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False, default='Мое рабочее пространство')
+    username = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    full_name = Column(String, index=True, nullable=True)
+    hashed_password = Column(String, nullable=False)
+    role_id = Column(Integer, ForeignKey("roles.id"), nullable=False, default=2)
+    is_active = Column(Boolean, default=True)
 
-    users = relationship("User", back_populates="workspace")
-    dds_articles = relationship("DdsArticle", back_populates="workspace")
-    accounts = relationship("Account", back_populates="workspace")
-    transactions = relationship("Transaction", back_populates="workspace")
-    # Если у тебя есть модели для Counterparty и Project, добавь их сюда
-    # counterparties = relationship("Counterparty", back_populates="workspace")
-    # projects = relationship("Project", back_populates="workspace")
-
-    def __repr__(self):
-        return f"<Workspace(id={self.id}, name='{self.name}')>"
-
-
-class DdsArticle(Base):
-    __tablename__ = "dds_articles"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    article_type = Column(String, nullable=False) # "income" или "expense"
-    is_archived = Column(Boolean, default=False, nullable=False)
-    
-    parent_id = Column(Integer, ForeignKey("dds_articles.id"), nullable=True)
-    
-    # Добавляем внешний ключ к Workspace
-    workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=False)
-    workspace = relationship("Workspace", back_populates="dds_articles")
-
-    children = relationship(
-        "DdsArticle", 
-        back_populates="parent", 
-        cascade="all, delete-orphan",
-        order_by="DdsArticle.name"
-    )
-    parent = relationship(
-        "DdsArticle", 
-        remote_side=[id], 
-        back_populates="children"
-    )
-    transactions = relationship("Transaction", back_populates="dds_article")
-
-
-class Account(Base):
-    __tablename__ = "accounts"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    account_type = Column(String, nullable=False)
-    currency = Column(String(3), nullable=False, default='RUB')
-    initial_balance = Column(Numeric(15, 2), nullable=False, default=0.00)
-    current_balance = Column(Numeric(15, 2), nullable=False) 
-    is_active = Column(Boolean, default=True, nullable=False)
-
-    # Добавляем внешний ключ к Workspace
-    workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=False)
-    workspace = relationship("Workspace", back_populates="accounts")
-
-    transactions = relationship("Transaction", back_populates="account")
+    role = relationship("Role", back_populates="users")
+    workspaces = relationship("Workspace", back_populates="owner", cascade="all, delete-orphan")
+    transactions = relationship("Transaction", back_populates="created_by")
 
 class Role(Base):
     __tablename__ = "roles"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     description = Column(String, nullable=True)
-    permissions = Column(JSONB, nullable=True, default={})
-
+    
     users = relationship("User", back_populates="role")
 
-class User(Base):
-    __tablename__ = "users"
+class Workspace(Base):
+    __tablename__ = "workspaces"
     id = Column(Integer, primary_key=True, index=True)
-    role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
-    
-    # Добавляем внешний ключ к Workspace
-    workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=True) # nullable=True временно для миграций
-    workspace = relationship("Workspace", back_populates="users")
+    name = Column(String, index=True, nullable=False)
+    description = Column(String, nullable=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    username = Column(String, nullable=False, unique=True, index=True)
-    email = Column(String, nullable=False, unique=True, index=True)
-    password_hash = Column(String, nullable=False)
-    full_name = Column(String, nullable=True)
-    is_active = Column(Boolean, default=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    owner = relationship("User", back_populates="workspaces")
+    accounts = relationship("Account", back_populates="workspace", cascade="all, delete-orphan")
+    dds_articles = relationship("DDSArticle", back_populates="workspace", cascade="all, delete-orphan")
+    transactions = relationship("Transaction", back_populates="workspace", cascade="all, delete-orphan")
+
+class Account(Base):
+    __tablename__ = "accounts"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    currency = Column(String(3), nullable=False)
+    initial_balance = Column(Numeric(15, 2), nullable=False, default=0)
+    balance = Column(Numeric(15, 2), nullable=False, default=0)
     
-    role = relationship("Role", back_populates="users")
-    transactions = relationship("Transaction", back_populates="created_by")
+    workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    workspace = relationship("Workspace", back_populates="accounts")
+    transactions = relationship("Transaction", foreign_keys="[Transaction.account_id]", back_populates="account", cascade="all, delete-orphan")
+    related_transactions = relationship("Transaction", foreign_keys="[Transaction.related_account_id]", back_populates="related_account", cascade="all, delete-orphan")
+
+class DDSArticle(Base):
+    __tablename__ = "dds_articles"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    type = Column(String, nullable=False)  # 'income' или 'expense'
+    parent_id = Column(Integer, ForeignKey("dds_articles.id"), nullable=True)
+    
+    workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    workspace = relationship("Workspace", back_populates="dds_articles")
+    parent = relationship("DDSArticle", remote_side=[id], back_populates="children")
+    children = relationship("DDSArticle", back_populates="parent", cascade="all, delete-orphan")
+    transactions = relationship("Transaction", back_populates="dds_article")
 
 class Transaction(Base):
-    __tablename__ = "transactions" # Должна быть только одна такая строка для имени таблицы
-    id = Column(Integer, primary_key=True, index=True)
-    transaction_date = Column(Date, nullable=False, index=True)
-    amount = Column(Numeric(15, 2), nullable=False)
-    description = Column(String, nullable=True)
-    contractor = Column(String, nullable=True)
-    employee = Column(String, nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    
-    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
-    dds_article_id = Column(Integer, ForeignKey("dds_articles.id"), nullable=False, index=True)
-    created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-
-    # Добавляем внешний ключ к Workspace
-    workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=False)
-    workspace = relationship("Workspace", back_populates="transactions") # Убедись, что это отдельная строка
-
-    account = relationship("Account", back_populates="transactions")
-    dds_article = relationship("DdsArticle", back_populates="transactions")
-    created_by = relationship("User", back_populates="transactions") # Эта строка должна быть отдельной
     __tablename__ = "transactions"
     id = Column(Integer, primary_key=True, index=True)
     transaction_date = Column(Date, nullable=False, index=True)
     amount = Column(Numeric(15, 2), nullable=False)
+    currency = Column(String(3), nullable=False)
     description = Column(String, nullable=True)
-    contractor = Column(String, nullable=True)
-    employee = Column(String, nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    transaction_type = Column(String, nullable=False) # 'income', 'expense', 'transfer'
     
+    workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=False)
     account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
     dds_article_id = Column(Integer, ForeignKey("dds_articles.id"), nullable=False, index=True)
     created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    
+    related_account_id = Column(Integer, ForeignKey("accounts.id"), nullable=True)
+    related_transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=True, unique=True)
 
-    # Добавляем внешний ключ к Workspace
-    workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
     workspace = relationship("Workspace", back_populates="transactions")
-
-    account = relationship("Account", back_populates="transactions")
-    dds_article = relationship("DdsArticle", back_populates="transactions")
-    created_by = relationship("User", back_populates="transactions")    
-    __tablename__ = "transactions"
-    id = Column(Integer, primary_key=True, index=True)
-    transaction_date = Column(Date, nullable=False, index=True) # Добавил index=True
-    amount = Column(Numeric(15, 2), nullable=False)
-    description = Column(String, nullable=True) # nullable=True
-    contractor = Column(String, nullable=True)  # nullable=True
-    employee = Column(String, nullable=True)    # nullable=True
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    
-    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True) # Добавил index=True
-    dds_article_id = Column(Integer, ForeignKey("dds_articles.id"), nullable=False, index=True) # Добавил index=True
-    created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True) # Сделал nullable, если пользователь может быть удален
-
-    account = relationship("Account", back_populates="transactions")
-    dds_article = relationship("DdsArticle", back_populates="transactions")
+    account = relationship("Account", foreign_keys=[account_id], back_populates="transactions")
+    related_account = relationship("Account", foreign_keys=[related_account_id], back_populates="related_transactions")
+    dds_article = relationship("DDSArticle", back_populates="transactions")
     created_by = relationship("User", back_populates="transactions")
+    
+    # Связь "один к одному" для переводов
+    related_transaction = relationship("Transaction", remote_side=[id], uselist=False, post_update=True)

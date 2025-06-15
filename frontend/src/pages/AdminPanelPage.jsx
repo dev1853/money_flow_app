@@ -31,4 +31,4 @@ const AdminPanelPage = () => {
   );
 };
 
-export default AdminPanelPage; //
+export default AdminPanelPage;

@@ -3,7 +3,7 @@ import { Routes, Route, Outlet, Navigate, useLocation, Link  } from 'react-route
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import { useAuth } from './contexts/AuthContext';
-import Loader from './components/Loader'; // <--- ИЗМЕНЕНИЕ: ДОБАВЛЕН ЭТОТ ИМПОРТ
+import Loader from './components/Loader'; 
 
 // Импортируем наши страницы
 import DdsArticlesPage from './pages/DdsArticlesPage';

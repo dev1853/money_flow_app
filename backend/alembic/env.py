@@ -10,6 +10,14 @@ from alembic import context
 import os
 import sys
 
+naming_convention = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s"
+}
+
 # Определяем абсолютный путь к директории 'backend' (на один уровень выше 'alembic')
 # и добавляем его в sys.path, чтобы Python мог найти 'app'
 current_dir = os.path.dirname(__file__)
@@ -72,7 +80,11 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata # И здесь тоже
+            connection=connection,
+            target_metadata=target_metadata,
+            # ДОБАВЛЯЕМ ДВЕ СТРОКИ НИЖЕ
+            naming_convention=naming_convention,
+            render_as_batch=True 
         )
 
         with context.begin_transaction():
