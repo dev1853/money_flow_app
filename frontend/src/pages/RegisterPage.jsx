@@ -78,7 +78,7 @@ const RegisterPage = () => {
           </Label>
           <div className={commonInputDivClasses}>
             <div className={commonIconClasses}><EnvelopeIcon className="h-5 w-5 text-gray-400" /></div>
-            <Input id="email-reg" name="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /* className="pl-10" УДАЛЯЕМ */ />
+            <Input id="email-reg" name="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="pl-10" />
           </div>
         </div>
         <div>
@@ -96,7 +96,7 @@ const RegisterPage = () => {
               value={username} 
               onChange={(e) => setUsername(e.target.value)} 
               placeholder="yourusername"
-              /* className="pl-10" УДАЛЯЕМ */
+              className="pl-10"
             />
           </div>
         </div>
@@ -107,7 +107,7 @@ const RegisterPage = () => {
           </Label>
           <div className={commonInputDivClasses}>
             <div className={commonIconClasses}><LockClosedIcon className="h-5 w-5 text-gray-400" /></div>
-            <Input id="password-reg" name="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" /* className="pl-10" УДАЛЯЕМ */ />
+            <Input id="password-reg" name="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pl-10" />
           </div>
         </div>
 
@@ -117,7 +117,7 @@ const RegisterPage = () => {
           </Label>
           <div className={commonInputDivClasses}>
             <div className={commonIconClasses}><LockClosedIcon className="h-5 w-5 text-gray-400" /></div>
-            <Input id="confirmPassword-reg" name="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" /* className="pl-10" УДАЛЯЕМ */ />
+            <Input id="confirmPassword-reg" name="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="pl-10"/>
           </div>
         </div>
 

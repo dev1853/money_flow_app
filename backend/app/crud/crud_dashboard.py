@@ -1,4 +1,5 @@
-# backend/app/crud/crud_dashboard.py
+# backend/app/crud_dashboard.py
+
 from __future__ import annotations
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -6,30 +7,25 @@ from decimal import Decimal
 from typing import Dict, List
 from datetime import date, timedelta
 
-from .. import models
+from .. import models, schemas # Схемы импортируются здесь
 
 def get_kpis(db: Session, workspace_id: int) -> Dict[str, any]:
-    """
-    Возвращает ключевые показатели (KPIs) для дашборда.
-    """
-    
     total_balance = db.query(func.sum(models.Account.balance)).filter(
         models.Account.workspace_id == workspace_id
     ).scalar() or Decimal('0.00')
 
-    # Считаем доходы/расходы за текущий календарный месяц
     today = date.today()
     start_of_month = today.replace(day=1)
 
     total_income = db.query(func.sum(models.Transaction.amount)).filter(
         models.Transaction.workspace_id == workspace_id,
-        models.Transaction.transaction_type == 'income',
+        models.Transaction.transaction_type == schemas.TransactionType.income.value, # Используем .value
         models.Transaction.transaction_date >= start_of_month
     ).scalar() or Decimal('0.00')
 
     total_expense = db.query(func.sum(models.Transaction.amount)).filter(
         models.Transaction.workspace_id == workspace_id,
-        models.Transaction.transaction_type == 'expense',
+        models.Transaction.transaction_type == schemas.TransactionType.expense.value, # Используем .value
         models.Transaction.transaction_date >= start_of_month
     ).scalar() or Decimal('0.00')
 
@@ -45,16 +41,12 @@ def get_kpis(db: Session, workspace_id: int) -> Dict[str, any]:
     }
 
 def get_cashflow_trend(db: Session, workspace_id: int) -> Dict[str, List[any]]:
-    """
-    Возвращает данные для графика тренда денежного потока за последние 6 месяцев.
-    """
     today = date.today()
     labels = []
     income_data = []
     expense_data = []
 
     for i in range(6):
-        # Расчет для каждого из последних 6 месяцев
         target_month_date = today - timedelta(days=i * 30)
         start_of_month = target_month_date.replace(day=1)
         end_of_month = (start_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
@@ -63,13 +55,13 @@ def get_cashflow_trend(db: Session, workspace_id: int) -> Dict[str, List[any]]:
 
         income = db.query(func.sum(models.Transaction.amount)).filter(
             models.Transaction.workspace_id == workspace_id,
-            models.Transaction.transaction_type == 'income',
+            models.Transaction.transaction_type == schemas.TransactionType.income.value, # Используем .value
             models.Transaction.transaction_date.between(start_of_month, end_of_month)
         ).scalar() or 0
         
         expense = db.query(func.sum(models.Transaction.amount)).filter(
             models.Transaction.workspace_id == workspace_id,
-            models.Transaction.transaction_type == 'expense',
+            models.Transaction.transaction_type == schemas.TransactionType.expense.value, # Используем .value
             models.Transaction.transaction_date.between(start_of_month, end_of_month)
         ).scalar() or 0
         

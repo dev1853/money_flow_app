@@ -6,13 +6,13 @@ import { useAuth } from '../contexts/AuthContext';
 import Alert from './Alert';
 import { apiService, ApiError } from '../services/apiService';
 import Loader from './Loader';
-import Input from './forms/Input';
-import Label from './forms/Label';
-import Select from './forms/Select';
-import Textarea from './forms/Textarea';
+import Input from './forms/Input'; // Добавлено
+import Label from './forms/Label'; // Добавлено
+import Select from './forms/Select'; // Добавлено
+import Textarea from './forms/Textarea'; // Добавлено
 
 function TransactionForm({
-  formId,
+  formId, // Добавлено
   onTransactionProcessed,
   transactionToEdit,
   operationType
@@ -41,8 +41,10 @@ function TransactionForm({
   const { isAuthenticated, activeWorkspace } = useAuth();
 
   const fetchFormData = useCallback(async () => {
+    console.log("TransactionForm: fetchFormData: isAuthenticated =", isAuthenticated, "activeWorkspace =", activeWorkspace);
     if (!isAuthenticated || !activeWorkspace) {
       setFetchError("Рабочее пространство не выбрано или аутентификация не пройдена. Невозможно загрузить справочники.");
+      setIsFormDataLoading(false);
       return;
     }
     setIsFormDataLoading(true);
@@ -52,6 +54,7 @@ function TransactionForm({
     try {
       const accountsData = await apiService.get(`/accounts/?workspace_id=${activeWorkspace.id}&limit=500&is_active=true`);
       setAvailableAccounts(accountsData);
+      console.log("TransactionForm: Загружено счетов:", accountsData.length);
     } catch (err) { errors.push(`Счета: ${err.message}`); }
 
     try {
@@ -70,12 +73,14 @@ function TransactionForm({
         return flatList;
       };
       setAvailableArticlesAll(flattenArticles(articlesData));
+      console.log("TransactionForm: Загружено статей (всего):", articlesData.length, "развернуто:", flattenArticles(articlesData).length);
     } catch (err) { errors.push(`Статьи ДДС: ${err.message}`); }
 
     try {
       const usersDataRaw = await apiService.get('/users/?limit=500');
       const usersList = usersDataRaw.results || usersDataRaw || [];
       setAvailableUsers(usersList.filter(user => user.is_active));
+      console.log("TransactionForm: Загружено пользователей:", usersList.length, "активных:", usersList.filter(user => user.is_active).length);
     } catch (err) { errors.push(`Пользователи: ${err.message}`); }
 
     if (errors.length > 0) {
@@ -118,14 +123,16 @@ function TransactionForm({
         return false;
     }
     
-    return (article.article_type === operationType || isCurrentTransactionArticle) && !isDisabledParent;
+    return (article.type === operationType || isCurrentTransactionArticle) && !isDisabledParent;
 });
+
+  console.log("TransactionForm: operationType =", operationType, "filteredDdsArticles.length =", filteredDdsArticles.length, "filteredDdsArticles =", filteredDdsArticles);
 
 
   useEffect(() => {
     if (ddsArticleId) {
       const selectedArticle = availableArticlesAll.find(art => art.id.toString() === ddsArticleId);
-      if (selectedArticle && selectedArticle.article_type !== operationType) {
+      if (selectedArticle && selectedArticle.type !== operationType) {
         setDdsArticleId('');
       }
     }
@@ -144,7 +151,7 @@ function TransactionForm({
   }, [accountId, availableAccounts]);
 
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setSubmitError(null);
@@ -164,6 +171,15 @@ function TransactionForm({
     let payload;
     let endpoint;
     let methodType;
+    let requestUrl;
+
+    const selectedAccount = availableAccounts.find(acc => acc.id.toString() === accountId);
+    const transactionCurrency = selectedAccount ? selectedAccount.currency : null;
+    if (!transactionCurrency) {
+        setSubmitError("Не удалось определить валюту счета.");
+        setIsLoading(false);
+        return;
+    }
 
     if (isEditMode) {
       if (!transactionToEdit || !transactionToEdit.id) {
@@ -180,10 +196,10 @@ function TransactionForm({
         dds_article_id: parseInt(ddsArticleId, 10),
         description: description || null,
         contractor: contractor || null,
-        workspace_id: activeWorkspace.id,
       };
       endpoint = `/transactions/${transactionToEdit.id}/`;
       methodType = 'put';
+      requestUrl = `${endpoint}?workspace_id=${activeWorkspace.id}`;
     } else {
       const amountValue = parseFloat(amount);
       if (isNaN(amountValue) || amountValue <= 0) {
@@ -205,22 +221,23 @@ function TransactionForm({
       payload = {
         transaction_date: transactionDate,
         amount: amountValue,
+        currency: transactionCurrency,
         description: description || null,
         contractor: contractor || null,
-        employee: selectedAccountType === 'cash_box' && employeeForReport ? employeeForReport : null,
+        transaction_type: operationType,
         account_id: parseInt(accountId, 10),
         dds_article_id: parseInt(ddsArticleId, 10),
-        workspace_id: activeWorkspace.id,
       };
       endpoint = '/transactions/';
       methodType = 'post';
+      requestUrl = `${endpoint}?workspace_id=${activeWorkspace.id}`;
     }
 
     try {
       if (methodType === 'put') {
-        await apiService.put(endpoint, payload);
+        await apiService.put(requestUrl, payload);
       } else {
-        await apiService.post(endpoint, payload);
+        await apiService.post(requestUrl, payload);
       }
 
       if (onTransactionProcessed) onTransactionProcessed();
@@ -237,18 +254,29 @@ function TransactionForm({
     } catch (err) {
       console.error("TransactionForm: Ошибка при отправке:", err);
       if (err instanceof ApiError) {
-        setSubmitError(err.message || `Не удалось ${isEditMode ? 'обновить' : 'создать'} операцию.`);
+        try {
+            const errorDetails = await err.response.json();
+            if (errorDetails && errorDetails.detail && Array.isArray(errorDetails.detail)) {
+                const messages = errorDetails.detail.map(d => `${d.loc.join('.')} - ${d.msg}`).join('; ');
+                setSubmitError(`Ошибка валидации: ${messages}`);
+            } else {
+                setSubmitError(err.message || `Не удалось ${isEditMode ? 'обновить' : 'создать'} операцию.`);
+            }
+        } catch {
+            setSubmitError(err.message || `Не удалось ${isEditMode ? 'обновить' : 'создать'} операцию.`);
+        }
       } else {
         setSubmitError("Произошла неизвестная ошибка.");
       }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated, activeWorkspace, isEditMode, transactionToEdit, ddsArticleId, description, contractor, amount, accountId, selectedAccountType, employeeForReport, onTransactionProcessed, transactionDate, availableAccounts, operationType]);
+
 
   let currentOperationTypeForPlaceholder = operationType;
   if (isEditMode && transactionToEdit && transactionToEdit.dds_article) {
-    currentOperationTypeForPlaceholder = transactionToEdit.dds_article.article_type;
+    currentOperationTypeForPlaceholder = transactionToEdit.dds_article.type;
   }
 
   return (
@@ -297,7 +325,7 @@ function TransactionForm({
                 onChange={(e) => !isEditMode && setAccountId(e.target.value)}
                 required
                 disabled={isEditMode || availableAccounts.length === 0}
-                className={isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''} // Передаем классы через className проп
+                className={isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''}
               >
                 <option value="" disabled={!isEditMode}>
                   {availableAccounts.length === 0 ? "Нет счетов" : "-- Выберите счет --"}
@@ -313,11 +341,9 @@ function TransactionForm({
                 onChange={(e) => setDdsArticleId(e.target.value)}
                 required
                 disabled={filteredDdsArticles.length === 0}
-                // Убраны дублирующиеся классы, останется только то, что передано в className проп,
-                // если что-то нужно добавить поверх базовых стилей Select
               >
                 <option value="" disabled>
-                  {filteredDdsArticles.length === 0 ? "Нет статей" : `-- Выберите статью (${currentOperationTypeForPlaceholder === 'income' ? 'дохода' : 'расхода'}) --`}
+                  {isFormDataLoading ? "Загрузка..." : (filteredDdsArticles.length === 0 ? "Нет статей" : `-- Выберите статью (${currentOperationTypeForPlaceholder === 'income' ? 'дохода' : 'расхода'}) --`)}
                 </option>
                 {filteredDdsArticles.map(art => (
                     <option key={art.id} value={art.id} disabled={art.children && art.children.length > 0 && art.id.toString() !== ddsArticleId}>
@@ -335,7 +361,7 @@ function TransactionForm({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows="2"
-              className="py-2" // Оставляем только те классы, которые специфичны для этого Textarea (например, py-2, если h-10 было в старом Input, но у Textarea нет h-10)
+              className="py-0"
             />
           </div>
 
@@ -347,7 +373,7 @@ function TransactionForm({
                 value={employeeForReport}
                 onChange={(e) => !isEditMode && setEmployeeForReport(e.target.value)}
                 disabled={isEditMode || availableUsers.length === 0}
-                className={isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''} // Передаем классы через className проп
+                className={isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''}
               >
                 <option value="">{availableUsers.length === 0 ? "Нет пользователей" : "-- Не указан --"}</option>
                 {availableUsers.map(user => <option key={user.id} value={user.full_name || user.username}>{user.full_name || user.username}</option>)}
@@ -362,7 +388,6 @@ function TransactionForm({
               id={`${formId}-contractor`}
               value={contractor}
               onChange={(e) => setContractor(e.target.value)}
-              // Убраны дублирующиеся классы
             />
           </div>
         </>

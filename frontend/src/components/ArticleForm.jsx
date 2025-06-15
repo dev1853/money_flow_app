@@ -1,6 +1,6 @@
 // frontend/src/components/ArticleForm.jsx
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react'; // Удаляем useCallback
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
 import Alert from './Alert';
@@ -46,7 +46,7 @@ const ArticleForm = ({ article, parentArticles = [], onSuccess, formId }) => {
     return parentArticles.filter(p => p.id !== article.id);
   }, [parentArticles, article]);
 
-  const handleChange = (e) => {
+  const handleChange = (e) => { // Больше не нужно оборачивать в useCallback
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -54,7 +54,7 @@ const ArticleForm = ({ article, parentArticles = [], onSuccess, formId }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => { // Больше не нужно оборачивать в useCallback
     e.preventDefault();
     if (!activeWorkspace) {
         setError("Рабочее пространство не выбрано.");
@@ -87,22 +87,22 @@ const ArticleForm = ({ article, parentArticles = [], onSuccess, formId }) => {
     <form id={formId} onSubmit={handleSubmit} className="space-y-4">
       <div>
         <Label htmlFor={`${formId}-articleName`}>Название</Label>
-        <Input type="text" name="name" id={`${formId}-articleName`} value={formData.name} onChange={handleChange} required /> {/* Убраны дублирующиеся классы */}
+        <Input type="text" name="name" id={`${formId}-articleName`} value={formData.name} onChange={handleChange} required />
       </div>
       <div>
         <Label htmlFor={`${formId}-articleDescription`}>Описание</Label>
-        <Textarea name="description" id={`${formId}-articleDescription`} value={formData.description} onChange={handleChange} rows={3} /> {/* Убраны дублирующиеся классы */}
+        <Textarea name="description" id={`${formId}-articleDescription`} value={formData.description} onChange={handleChange} rows={3} />
       </div>
       <div>
         <Label htmlFor={`${formId}-articleType`}>Тип</Label>
-        <Select id={`${formId}-articleType`} name="type" value={formData.type} onChange={handleChange}> {/* Убраны дублирующиеся классы */}
+        <Select id={`${formId}-articleType`} name="type" value={formData.type} onChange={handleChange}>
           <option value="expense">Расход</option>
           <option value="income">Доход</option>
         </Select>
       </div>
       <div>
         <Label htmlFor={`${formId}-parentArticle`}>Родительская статья</Label>
-        <Select id={`${formId}-parentArticle`} name="parent_id" value={formData.parent_id || 'null'} onChange={handleChange}> {/* Убраны дублирующиеся классы */}
+        <Select id={`${formId}-parentArticle`} name="parent_id" value={formData.parent_id || 'null'} onChange={handleChange}>
           <option value="null">-- Корневая статья --</option>
           {filteredParentArticles.map(p => (
             <option key={p.id} value={p.id}>

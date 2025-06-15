@@ -46,7 +46,8 @@ class Account(Base):
     currency = Column(String(3), nullable=False)
     initial_balance = Column(Numeric(15, 2), nullable=False, default=0)
     balance = Column(Numeric(15, 2), nullable=False, default=0)
-    
+    is_active = Column(Boolean, default=True) # <-- УБЕДИСЬ, ЧТО ЭТО ПОЛЕ ЗДЕСЬ
+
     workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=False)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 

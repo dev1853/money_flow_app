@@ -63,7 +63,7 @@ function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Ваш логин"
-                // className="pl-10" // УДАЛЯЕМ этот класс, он теперь в Input.jsx
+                className="pl-10"
               />
             </div>
           </div>
@@ -85,7 +85,7 @@ function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                // className="pl-10" // УДАЛЯЕМ этот класс, он теперь в Input.jsx
+                className="pl-10"
               />
             </div>
           </div>

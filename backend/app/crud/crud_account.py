@@ -1,9 +1,11 @@
+# backend/app/crud_account.py
+
 from __future__ import annotations
 from sqlalchemy.orm import Session
 from decimal import Decimal
 import logging
 
-from .. import models
+from .. import models, schemas # Схемы импортируются здесь
 
 # Настройка логирования
 logger = logging.getLogger(__name__)
@@ -11,23 +13,38 @@ logger = logging.getLogger(__name__)
 def get_account(db: Session, account_id: int):
     return db.query(models.Account).filter_by(id=account_id).first()
 
-def create_account(db: Session, account: 'schemas.AccountCreate', workspace_id: int, user_id: int):
-    from .. import schemas
-    db_account = models.Account(**account.dict(), workspace_id=workspace_id, owner_id=user_id)
+def create_account(db: Session, account: schemas.AccountCreate, workspace_id: int, user_id: int):
+    db_account = models.Account(
+        **account.model_dump(exclude_unset=True), # Используем .model_dump()
+        # **account.dict(), # Для Pydantic v1
+        workspace_id=workspace_id,
+        owner_id=user_id
+    )
+    # Pydantic-схема AccountCreate уже имеет balance = initial_balance по умолчанию
+    # Поэтому отдельно не устанавливаем db_account.balance = account.initial_balance
     db.add(db_account)
     db.commit()
     db.refresh(db_account)
     return db_account
 
-def get_accounts(db: Session, workspace_id: int):
-    return db.query(models.Account).filter_by(workspace_id=workspace_id).order_by(models.Account.name).all()
+def get_accounts(db: Session, owner_id: int, workspace_id: Optional[int] = None, is_active: Optional[bool] = None, skip: int = 0, limit: int = 100):
+    accounts_query = db.query(models.Account).filter(models.Account.owner_id == owner_id)
+    if workspace_id is not None:
+        accounts_query = accounts_query.filter(models.Account.workspace_id == workspace_id)
+    if is_active is not None:
+        accounts_query = accounts_query.filter(models.Account.is_active == is_active)
+    return accounts_query.offset(skip).limit(limit).all()
 
-def update_account(db: Session, account_id: int, account_update: 'schemas.AccountUpdate'):
-    from .. import schemas
+
+def update_account(db: Session, account_id: int, account_update: schemas.AccountUpdate):
     db_account = get_account(db, account_id=account_id)
     if not db_account:
         return None
-    update_data = account_update.dict(exclude_unset=True)
+    update_data = account_update.model_dump(exclude_unset=True) # Используем .model_dump()
+    # update_data = account_update.dict(exclude_unset=True) # Для Pydantic v1
+    # Поле 'balance' не должно обновляться напрямую через update_account
+    update_data.pop('balance', None)
+
     for key, value in update_data.items():
         setattr(db_account, key, value)
     db.commit()
@@ -49,11 +66,6 @@ def _update_account_balance_for_transaction(
     article_type: str, 
     operation: str = "apply"
 ) -> bool:
-    """
-    Обновляет баланс счета.
-    operation: "apply" (применить транзакцию) или "revert" (откатить транзакцию)
-    Возвращает True в случае успеха, False, если счет не найден.
-    """
     account_to_update = db.query(models.Account).filter(
         models.Account.id == account_id,
         models.Account.workspace_id == workspace_id
@@ -77,8 +89,6 @@ def create_default_accounts(db: Session, workspace_id: int, user_id: int):
     """
     Создает стандартные счета ('Наличные', 'Банковская карта') для нового рабочего пространства.
     """
-    from .. import schemas # Локальный импорт
-
     default_accounts = [
         {"name": "Наличные", "currency": "RUB", "initial_balance": Decimal("0.00")},
         {"name": "Банковская карта", "currency": "RUB", "initial_balance": Decimal("0.00")}
@@ -96,3 +106,4 @@ def create_default_accounts(db: Session, workspace_id: int, user_id: int):
             workspace_id=workspace_id,
             user_id=user_id
         )
+    db.commit() # Коммит всех дефолтных счетов

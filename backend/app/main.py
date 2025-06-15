@@ -1,40 +1,52 @@
-# backend/app/main.py (ФИНАЛЬНАЯ ВЕРСИЯ)
+# backend/app/main.py
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database import engine
-from .routers import auth, users, workspaces, accounts, dds_articles, transactions, statement, reports, dashboard
 
-# Раскомментируйте, если нужно создавать таблицы при старте (не для Alembic)
-# from . import models
-
+# ...
+from .routers import (
+    auth, # <-- Убедись, что 'auth' импортируется здесь
+    users,
+    workspaces,
+    accounts,
+    dds_articles,
+    transactions,
+    statement,
+    reports,
+    dashboard
+)
 
 app = FastAPI(
-    title="Money Flow API",
-    description="API для сервиса управления личными финансами.",
+    title="Money Flow App API",
+    description="API for Money Flow App, a personal finance management tool",
     version="1.0.0",
 )
 
-origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+origins = [
+    "http://localhost",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173", 
+]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"], 
     allow_headers=["*"],
 )
 
-# Подключаем все роутеры
-app.include_router(auth.router)
-app.include_router(users.router)
-app.include_router(workspaces.router)
-app.include_router(accounts.router)
-app.include_router(dds_articles.router)
-app.include_router(transactions.router)
-app.include_router(statement.router)
-app.include_router(reports.router)
-app.include_router(dashboard.router)
+# Включение роутеров:
+app.include_router(auth.router, prefix="/api") # <-- ЭТА СТРОКА ДОЛЖНА БЫТЬ ПРАВИЛЬНОЙ!
+app.include_router(users.router, prefix="/api")
+app.include_router(workspaces.router, prefix="/api")
+app.include_router(accounts.router, prefix="/api")
+app.include_router(dds_articles.router, prefix="/api")
+app.include_router(transactions.router, prefix="/api")
+app.include_router(statement.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
+app.include_router(dashboard.router, prefix="/api")
 
-@app.get("/api/healthcheck", tags=["System"])
-def health_check():
-    return {"status": "ok"}
+@app.get("/")
+async def root():
+    return {"message": "Welcome to Money Flow App API"}

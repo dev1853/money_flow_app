@@ -19,7 +19,7 @@ class RoleBase(BaseModel):
     permissions: Optional[Dict[str, Any]] = None
 
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 class RoleCreate(RoleBase):
     pass
@@ -29,7 +29,7 @@ class RoleUpdate(BaseModel):
     description: Optional[str] = None
     permissions: Optional[Dict[str, Any]] = None
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 class Role(RoleBase):
     id: int
@@ -40,7 +40,7 @@ class UserBase(BaseModel):
     email: str
     full_name: Optional[str] = None
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 class UserCreate(UserBase):
     password: str
@@ -58,9 +58,9 @@ class UserUpdate(BaseModel):
     email: Optional[str] = None
     full_name: Optional[str] = None
     role_id: Optional[int] = None
-    is_active: Optional[bool] = None
+    is_active: Optional[bool] = None # <-- УБЕДИСЬ, ЧТО ЭТО ПОЛЕ ЗДЕСЬ
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 # --- СХЕМЫ ДЛЯ СТАТЕЙ ДДС (DDS Articles) ---
 class DDSArticleBase(BaseModel):
@@ -69,7 +69,7 @@ class DDSArticleBase(BaseModel):
     type: str # 'income' или 'expense'
     parent_id: Optional[int] = None
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 class DDSArticleCreate(DDSArticleBase):
     pass
@@ -80,37 +80,42 @@ class DDSArticleUpdate(BaseModel):
     type: Optional[str] = None
     parent_id: Optional[int] = None
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 class DDSArticle(DDSArticleBase):
     id: int
     workspace_id: int
     owner_id: int
     children: List['DDSArticle'] = []
+    # Если у статьи есть is_archived, добавь его сюда:
+    # is_archived: bool = False # Пример
 
 # --- СХЕМЫ ДЛЯ СЧЕТОВ (Accounts) ---
 class AccountBase(BaseModel):
     name: str
     currency: str
     initial_balance: Decimal = Field(default=0.0, max_digits=15, decimal_places=2)
-    balance: Decimal = Field(default=0.0, max_digits=15, decimal_places=2)
+    balance: Decimal = Field(default=0.0, max_digits=15, decimal_places=2) # Balance для отображения, не для создания напрямую
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 class AccountCreate(AccountBase):
+    is_active: bool = True # <-- УБЕДИСЬ, ЧТО ЭТО ПОЛЕ ЗДЕСЬ И С ДЕФОЛТОМ
     pass
 
 class AccountUpdate(BaseModel):
     name: Optional[str] = None
     currency: Optional[str] = None
     initial_balance: Optional[Decimal] = None
+    is_active: Optional[bool] = None # <-- УБЕДИСЬ, ЧТО ЭТО ПОЛЕ ЗДЕСЬ
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 class Account(AccountBase):
     id: int
     workspace_id: int
     owner_id: int
+    is_active: bool # <-- УБЕДИСЬ, ЧТО ЭТО ПОЛЕ ЗДЕСЬ
     transactions: List['Transaction'] = []
 
 # --- СХЕМЫ ДЛЯ ТРАНЗАКЦИЙ (Transactions) ---
@@ -123,12 +128,14 @@ class TransactionBase(BaseModel):
     account_id: int
     dds_article_id: int
     related_account_id: Optional[int] = None
-    related_transaction_id: Optional[int] = None
+    related_transaction_id: Optional[int] = None # Это поле не должно быть в Create/Update
 
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 class TransactionCreate(TransactionBase):
+    # При создании related_transaction_id не передается
+    related_transaction_id: Optional[int] = None # Явно указываем, что его можно передать, но в основном он генерируется
     pass
 
 class TransactionUpdate(BaseModel):
@@ -140,8 +147,9 @@ class TransactionUpdate(BaseModel):
     account_id: Optional[int] = None
     dds_article_id: Optional[int] = None
     related_account_id: Optional[int] = None
+    # related_transaction_id: Optional[int] = None # Не должен обновляться напрямую
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 class Transaction(TransactionBase):
     id: int
@@ -152,6 +160,8 @@ class Transaction(TransactionBase):
     account: 'Account'
     dds_article: DDSArticle
     related_account: Optional['Account'] = None
+    # Дополнительно:
+    # created_by: User # если эту связь загружаешь
 
 # --- СХЕМЫ ДЛЯ РАБОЧИХ ПРОСТРАНСТВ (Workspaces) ---
 class WorkspaceBase(BaseModel):
@@ -167,7 +177,7 @@ class Workspace(WorkspaceBase):
     accounts: List[Account] = []
     dds_articles: List[DDSArticle] = []
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 # --- СХЕМЫ ДЛЯ ПАГИНАЦИИ ---
 class TransactionPage(BaseModel):
@@ -176,7 +186,7 @@ class TransactionPage(BaseModel):
     size: int
     total: int
     class Config:
-        orm_mode = True
+        orm_mode = True # Для Pydantic v1, для v2: from_attributes = True
 
 # --- СХЕМЫ ДЛЯ ЗАГРУЗКИ ВЫПИСОК И ПАКЕТНОЙ КАТЕГОРИЗАЦИИ ---
 class RawTransactionData(BaseModel):
@@ -235,10 +245,19 @@ class AccountBalance(BaseModel):
 
 # =========================================================
 # --- ОБНОВЛЕНИЕ ПРЯМЫХ ССЫЛОК (Forward References) ---
-# ИСПРАВЛЕНО: Используем правильный метод для Pydantic v1
 # Этот блок должен идти в самом конце файла, после определения всех классов.
 #=========================================================
+# Используем .model_rebuild() для Pydantic v2
+# или .update_forward_refs() для Pydantic v1
+# DDSArticle.model_rebuild() # Если используете Pydantic v2
+# Account.model_rebuild() # Если используете Pydantic v2
+# Transaction.model_rebuild() # Если используете Pydantic v2
+# DDSReportItem.model_rebuild() # Если используете Pydantic v2
+# Workspace.model_rebuild() # Если используете Pydantic v2
+
+# Для Pydantic v1:
 Account.update_forward_refs(Transaction=Transaction)
 DDSArticle.update_forward_refs(DDSArticle=DDSArticle)
-Transaction.update_forward_refs(Account=Account)
+Transaction.update_forward_refs(Account=Account, DDSArticle=DDSArticle, User=User) # Добавил DDSArticle, User
 DDSReportItem.update_forward_refs(DDSReportItem=DDSReportItem)
+Workspace.update_forward_refs(Account=Account, DDSArticle=DDSArticle) # Добавил DDSArticle
