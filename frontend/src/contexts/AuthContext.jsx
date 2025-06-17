@@ -1,4 +1,5 @@
 // frontend/src/contexts/AuthContext.jsx
+
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiService';
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   const fetchWorkspaces = useCallback(async () => {
     if (!token) return;
     try {
-      const data = await apiService.get('/workspaces');
+      const data = await apiService.get('/workspaces/'); // Добавлен слэш в конце
       setWorkspaces(data);
       if (data.length > 0) {
         const savedId = localStorage.getItem('activeWorkspaceId');
@@ -37,11 +38,9 @@ export const AuthProvider = ({ children }) => {
         if (!savedId || !data.some(w => w.id === parseInt(savedId, 10))) {
           localStorage.setItem('activeWorkspaceId', active.id);
         }
-      } else {
-        setActiveWorkspace(null);
       }
     } catch (error) {
-      console.error("Ошибка при загрузке рабочих пространств:", error);
+      console.error("Не удалось загрузить рабочие пространства", error);
     }
   }, [token]);
 
@@ -49,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       apiService.setToken(token);
       try {
-        const userData = await apiService.get('/users/me/');
+        const userData = await apiService.get('/users/me/'); // Добавлен слэш в конце
         setUser(userData);
         await fetchWorkspaces();
       } catch (error) {
@@ -67,19 +66,18 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     setIsLoading(true);
     try {
-      const data = await apiService.post('/auth/login', new URLSearchParams({
-        username: username,
-        password: password,
-      }), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      // ИЗМЕНЕНИЕ ЗДЕСЬ: Используем специальный метод apiService.login
+      const data = await apiService.login({ username, password });
+      
       const { access_token } = data;
       localStorage.setItem('accessToken', access_token);
       setToken(access_token);
+      // После установки токена, initializeUser сам подтянет все данные
       await initializeUser(); 
       navigate('/dashboard');
     } catch (error) {
       setIsLoading(false);
+      // Пробрасываем ошибку выше, чтобы компонент LoginPage мог ее поймать
       throw error;
     }
   };
@@ -94,7 +92,9 @@ export const AuthProvider = ({ children }) => {
     workspaces, activeWorkspace, changeWorkspace, fetchWorkspaces
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{!isLoading && children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

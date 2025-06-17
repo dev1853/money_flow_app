@@ -25,7 +25,7 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    token: str = Depends(oauth2_scheme), 
     db: Session = Depends(get_db)
 ) -> models.User:
     """
@@ -38,23 +38,19 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        # Проверяем наличие SECRET_KEY и ALGORITHM
-        if not security.SECRET_KEY or not security.ALGORITHM:
-            raise ValueError("SECRET_KEY or ALGORITHM is not set in security module.")
-
         payload = jwt.decode(token, security.SECRET_KEY, algorithms=[security.ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        # В "sub" токена мы записываем email, а не username
+        email: str = payload.get("sub") 
+        if email is None:
             raise credentials_exception
-        token_data = schemas.TokenData(username=username)
+        token_data = schemas.TokenData(username=email) # username здесь фактически email
     except JWTError:
         raise credentials_exception
-    except ValueError as e:
-        # Это исключение будет поймано, если SECRET_KEY/ALGORITHM не заданы
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-
-    user = crud.get_user_by_username(db, username=token_data.username)
+    
+    # ИСПРАВЛЕНИЕ: Используем правильный метод из нашей новой CRUD-архитектуры
+    # и ищем пользователя по email, который был в токене.
+    user = crud.user.get_by_email(db, email=token_data.username)
+    
     if user is None:
         raise credentials_exception
     return user
