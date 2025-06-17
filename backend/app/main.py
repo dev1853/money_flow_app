@@ -38,15 +38,16 @@ app.add_middleware(
 )
 
 # Включение роутеров:
-app.include_router(auth.router, prefix="/api") # <-- ЭТА СТРОКА ДОЛЖНА БЫТЬ ПРАВИЛЬНОЙ!
-app.include_router(users.router, prefix="/api")
-app.include_router(workspaces.router, prefix="/api")
-app.include_router(accounts.router, prefix="/api")
-app.include_router(dds_articles.router, prefix="/api")
-app.include_router(transactions.router, prefix="/api")
-app.include_router(statement.router, prefix="/api")
-app.include_router(reports.router, prefix="/api")
-app.include_router(dashboard.router, prefix="/api")
+
+app.include_router(auth.router, prefix="/api", tags=["auth"])
+app.include_router(users.router, prefix="/api", tags=["users"])
+app.include_router(workspaces.router, prefix="/api", tags=["workspaces"])
+app.include_router(accounts.router, prefix="/api", tags=["accounts"])
+app.include_router(dds_articles.router, prefix="/api", tags=["dds_articles"])
+app.include_router(transactions.router, prefix="/api", tags=["transactions"])
+app.include_router(statement.router, prefix="/api", tags=["statement"])
+app.include_router(reports.router, prefix="/api", tags=["reports"])
+app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
 
 @app.get("/")
 async def root():

@@ -14,6 +14,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    role_id: int = 2
 
 class UserUpdate(UserBase):
     pass
