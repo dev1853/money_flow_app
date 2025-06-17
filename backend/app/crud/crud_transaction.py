@@ -4,18 +4,22 @@ from __future__ import annotations
 import csv
 import io
 import logging
+import json
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func, and_, case
 from typing import List, Optional, Dict, Tuple
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
-
+from .base import CRUDBase
 from .. import models, schemas
 from .crud_account import _update_account_balance_for_transaction, get_account
 from .crud_dds_article import DDS_KEYWORD_RULES, get_dds_article
 from fastapi import HTTPException, status # Добавлен импорт для HTTPException
 
 logger = logging.getLogger(__name__)
+
+class CRUDTransaction(CRUDBase[models.Transaction, schemas.TransactionCreate, schemas.TransactionUpdate]):
+    pass
 
 def get_transaction(db: Session, transaction_id: int):
     return db.query(models.Transaction).filter_by(id=transaction_id).first()
@@ -95,102 +99,95 @@ def get_transactions_with_filters(
     )
     return transactions, total_count
 
-def create_transaction(db: Session, transaction: schemas.TransactionCreate, created_by_user_id: int, workspace_id: int):
-    # Проверка существования статьи ДДС
-    article = get_dds_article(db, transaction.dds_article_id)
-    if not article:
-        raise ValueError(f"Статья ДДС с id {transaction.dds_article_id} не найдена.")
+def create_default_transactions(db: Session, workspace_id: int, user_id: int, accounts_map: Dict[str, int]):
+    """
+    Создает тестовые транзакции по умолчанию для нового пользователя.
+    accounts_map - это словарь { 'название счета': id_счета }
+    """
+    # Путь к файлу JSON (предполагается, что default_transactions.json лежит в backend/app/)
+    # Если ты поместил его рядом с main.py (т.е. в backend/app/), то путь такой:
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'default_transactions.json')
+    # Если default_transactions.json находится в backend/, то путь будет '..', '..', 'default_transactions.json'
 
-    # Проверка наличия счета
-    main_account = get_account(db, transaction.account_id)
-    if not main_account:
-        raise ValueError(f"Счет с id {transaction.account_id} не найден.")
-    if main_account.workspace_id != workspace_id:
-        raise ValueError(f"Счет с id {transaction.account_id} не принадлежит текущему рабочему пространству.")
+    # Можно добавить лог, чтобы убедиться, что путь корректен
+    print(f"Attempting to load default transactions from: {file_path}") # ВРЕМЕННОЕ ЛОГИРОВАНИЕ
 
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            default_transactions_data = json.load(f)
+        print(f"Successfully loaded {len(default_transactions_data)} default transactions from JSON.") # ВРЕМЕННОЕ ЛОГИРОВАНИЕ
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error: Could not load default transactions from {file_path}. Error: {e}. No default transactions created.")
+        return
 
-    # Проверка баланса перед расходом или переводом
-    if transaction.transaction_type == schemas.TransactionType.expense or \
-       (transaction.transaction_type == schemas.TransactionType.transfer): # Убрал проверку transaction.account_id здесь
-        if main_account.balance < transaction.amount:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Недостаточно средств на счете для совершения операции.")
+    for transaction_data in default_transactions_data:
+        try:
+            account_name = transaction_data.get("account_name")
+            account_id = accounts_map.get(account_name)
 
-    # Создаем основную транзакцию
+            if not account_id:
+                print(f"Warning: Account '{account_name}' not found in map for default transaction. Skipping transaction: {transaction_data}")
+                continue
+
+            # Поиск DDS статьи по имени
+            dds_article = db.query(models.DDSArticle).filter(
+                models.DDSArticle.name == transaction_data["dds_article_name"],
+                models.DDSArticle.workspace_id == workspace_id
+            ).first()
+
+            if not dds_article:
+                print(f"Warning: DDS Article '{transaction_data['dds_article_name']}' not found for default transaction in workspace {workspace_id}. Skipping transaction: {transaction_data}")
+                continue
+
+            # Преобразование Decimal (убедись, что импортирован Decimal из decimal)
+            amount_decimal = Decimal(str(transaction_data["amount"]))
+
+            transaction_schema = schemas.TransactionCreate(
+                transaction_date=date.fromisoformat(transaction_data["date"]),
+                amount=amount_decimal,
+                currency=transaction_data.get("currency", "RUB"), # Используем "RUB" по умолчанию
+                description=transaction_data.get("description"),
+                transaction_type=schemas.TransactionType(transaction_data["type"]),
+                account_id=account_id,
+                dds_article_id=dds_article.id,
+            )
+            # Вызываем функцию create_transaction (должна быть ниже в этом же файле)
+            created_transaction = create_transaction(
+                db=db,
+                transaction=transaction_schema,
+                created_by_user_id=user_id,
+                workspace_id=workspace_id
+            )
+            print(f"Successfully created default transaction: {created_transaction.id} for account {account_name}") # ВРЕМЕННОЕ ЛОГИРОВАНИЕ
+        except Exception as e:
+            print(f"Error creating default transaction for data {transaction_data}: {e}")
+            # Логирование полной трассировки стека здесь может быть полезным для отладки
+            import traceback
+            traceback.print_exc() # ВРЕМЕННОЕ ЛОГИРОВАНИЕ
+
+def create_transaction(
+    db: Session,
+    transaction: schemas.TransactionCreate,
+    created_by_user_id: int, # <--- ЭТОТ ПАРАМЕТР ДОЛЖЕН БЫТЬ ЗДЕСЬ!
+    workspace_id: int
+):
     db_transaction = models.Transaction(
-        **transaction.model_dump(exclude={"created_by_user_id", "workspace_id"}), # Убедились, что исключены
-        created_by_user_id=created_by_user_id,
+        transaction_date=transaction.transaction_date,
+        amount=transaction.amount,
+        currency=transaction.currency,
+        description=transaction.description,
+        transaction_type=transaction.transaction_type,
+        account_id=transaction.account_id,
+        dds_article_id=transaction.dds_article_id,
+        created_by_user_id=created_by_user_id, # <--- И ИСПОЛЬЗОВАТЬСЯ ЗДЕСЬ!
         workspace_id=workspace_id
     )
     db.add(db_transaction)
-
-    # Применяем изменение баланса для основной транзакции
-    _update_account_balance_for_transaction(db, transaction.account_id, workspace_id, transaction.amount, article.type, "apply")
-
-    # Обработка переводов (создание зеркальной транзакции)
-    if transaction.transaction_type == schemas.TransactionType.transfer:
-        if not transaction.related_account_id:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Для перевода необходим связанный счет.")
-
-        related_account = get_account(db, transaction.related_account_id)
-        if not related_account:
-            raise ValueError(f"Связанный счет с id {transaction.related_account_id} не найден.")
-        if related_account.workspace_id != workspace_id:
-            raise ValueError(f"Связанный счет с id {transaction.related_account_id} не принадлежит текущему рабочему пространству.")
-
-        # Проверка, не является ли связанный счет тем же самым
-        if transaction.account_id == transaction.related_account_id:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Невозможно перевести средства на тот же счет.")
-
-        # Проверка на дублирование перевода (если уже есть зеркальная транзакция)
-        existing_related = db.query(models.Transaction).filter(
-            models.Transaction.account_id == transaction.related_account_id,
-            models.Transaction.related_transaction_id == db_transaction.id, # Связь с текущей транзакцией
-            models.Transaction.transaction_type == schemas.TransactionType.transfer.value,
-            models.Transaction.amount == transaction.amount,
-            models.Transaction.workspace_id == workspace_id,
-            models.Transaction.created_by_user_id == created_by_user_id, # Проверяем пользователя
-            models.Transaction.transaction_date == transaction.transaction_date
-        ).first()
-
-        if existing_related:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Попытка создать дубликат связанной транзакции перевода.")
-
-        # Находим статью для зеркальной транзакции (обычно это просто противоположный тип)
-        related_article_type = "income" if article.type == "expense" else "expense"
-        related_article = db.query(models.DDSArticle).filter(
-            models.DDSArticle.workspace_id == workspace_id,
-            models.DDSArticle.type == related_article_type,
-            models.DDSArticle.parent_id.isnot(None) # Предполагаем, что корневые статьи не используются напрямую
-        ).first()
-
-        if not related_article:
-            raise ValueError("Не найдена подходящая статья для зеркальной транзакции перевода. Убедитесь, что у вас есть статьи доходов/расходов.")
-
-        related_transaction_schema = schemas.TransactionCreate(
-            transaction_date=transaction.transaction_date,
-            amount=transaction.amount,
-            currency=transaction.currency,
-            description=f"Перевод со счета {main_account.name}", # Используем имя основного счета
-            transaction_type=schemas.TransactionType.transfer,
-            account_id=transaction.related_account_id,
-            dds_article_id=related_article.id,
-            related_account_id=transaction.account_id
-        )
-        related_db_transaction = models.Transaction(
-            **related_transaction_schema.model_dump(),
-            created_by_user_id=created_by_user_id,
-            workspace_id=workspace_id
-        )
-        db.add(related_db_transaction)
-
-        _update_account_balance_for_transaction(db, transaction.related_account_id, workspace_id, transaction.amount, related_article.type, "apply")
-
-        db.flush() # Фиксируем изменения для получения ID
-        db_transaction.related_transaction_id = related_db_transaction.id
-        related_db_transaction.related_transaction_id = db_transaction.id
-
     db.commit()
     db.refresh(db_transaction)
+
+    _update_account_balance_for_transaction(db, db_transaction)
+
     return db_transaction
 
 def update_transaction(db: Session, transaction_id: int, transaction_update: schemas.TransactionUpdate, workspace_id: int):
@@ -326,3 +323,5 @@ def process_tinkoff_statement(db: Session, csv_data_str: str, account_id: int, d
     }
     logger.info(f"Завершение обработки выписки: {final_result}")
     return final_result
+
+transaction = CRUDTransaction(models.Transaction)

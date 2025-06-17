@@ -38,7 +38,7 @@ const ITEMS_PER_PAGE = 20;
 
 const TransactionsPage = () => {
   const location = useLocation();
-  const { activeWorkspace } = useAuth(); // Получаем активное рабочее пространство
+  const { activeWorkspace, user, isLoading: authLoading } = useAuth(); // Получаем активное рабочее пространство
 
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -98,7 +98,7 @@ const TransactionsPage = () => {
 
 
   const fetchTransactions = useCallback(async (pageToFetch, currentFiltersToUse) => {
-    if (!activeWorkspace) {
+    if (!activeWorkspace || !user)  {
         setIsLoading(false);
         return;
     }

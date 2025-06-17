@@ -65,7 +65,7 @@ function AccountForm({
      name: name,
      account_type: accountType,
      currency: currency,
-     initial_balance: balanceValue,
+     initial_balance: parseFloat(initialBalance),
      is_active: isActive,
     };
 

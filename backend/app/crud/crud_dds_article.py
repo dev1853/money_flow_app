@@ -3,10 +3,14 @@
 from __future__ import annotations
 import os
 import json
+from .base import CRUDBase
 from sqlalchemy.orm import Session
 from typing import List, Dict, Optional
 
 from .. import models, schemas # Схемы импортируются здесь
+
+class CRUDDDSArticle(CRUDBase[models.DDSArticle, schemas.DDSArticleCreate, schemas.DDSArticleUpdate]):
+    pass
 
 # --- Загрузка правил сопоставления ключевых слов для статей ДДС ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -22,12 +26,17 @@ except (FileNotFoundError, json.JSONDecodeError) as e:
 def get_dds_article(db: Session, article_id: int):
     return db.query(models.DDSArticle).filter_by(id=article_id).first()
 
-def create_dds_article(db: Session, article: schemas.DDSArticleCreate, workspace_id: int, user_id: int):
+def create_dds_article(
+    db: Session,
+    article: schemas.DDSArticleCreate,
+    owner_id: int,
+    workspace_id: int,
+    parent_id: int | None = None
+):
     db_article = models.DDSArticle(
-        **article.model_dump(), # Используем .model_dump()
-        # **article.dict(), # Для Pydantic v1
+        **article.dict(), 
+        owner_id=owner_id,
         workspace_id=workspace_id,
-        owner_id=user_id
     )
     db.add(db_article)
     db.commit()
@@ -102,12 +111,15 @@ def create_default_dds_articles(db: Session, workspace_id: int, user_id: int):
             db_article = create_dds_article(
                 db=db,
                 article=article_schema,
+                owner_id=user_id,
                 workspace_id=workspace_id,
-                user_id=user_id
+                parent_id=parent_id
             )
             
             if children:
                 create_articles_recursively(children, parent_id=db_article.id)
 
     create_articles_recursively(default_articles)
-    db.commit() # Коммит всех дефолтных статей
+    db.commit()
+
+dds_article = CRUDDDSArticle(models.DDSArticle)

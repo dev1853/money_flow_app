@@ -2,10 +2,8 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-# ...
 from .routers import (
-    auth, # <-- Убедись, что 'auth' импортируется здесь
+    auth,
     users,
     workspaces,
     accounts,
@@ -24,16 +22,19 @@ app = FastAPI(
 
 origins = [
     "http://localhost",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173", 
+    "http://localhost:5173", # Если ты все еще используешь этот порт
+    "http://127.0.0.1:5173", # Если ты все еще используешь этот порт
+    "http://localhost:3000",   # <--- УБЕДИСЬ, ЧТО ЭТО ЗДЕСЬ ЕСТЬ
+    "http://127.0.0.1:3000",   # <--- УБЕДИСЬ, ЧТО ЭТО ЗДЕСЬ ЕСТЬ
+    # Если ты разворачиваешь приложение на других доменах, добавь их тоже
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"], 
-    allow_headers=["*"],
+    allow_methods=["*"], # Это позволяет всем методам, включая POST и OPTIONS
+    allow_headers=["*"], # Это позволяет всем заголовкам
 )
 
 # Включение роутеров:
@@ -50,3 +51,13 @@ app.include_router(dashboard.router, prefix="/api")
 @app.get("/")
 async def root():
     return {"message": "Welcome to Money Flow App API"}
+
+# --- БЛОК ДЛЯ ОТЛАДКИ МАРШРУТОВ ---
+from fastapi.routing import APIRoute
+
+print("\n--- ЗАРЕГИСТРИРОВАННЫЕ МАРШРУТЫ ---")
+for route in app.routes:
+    if isinstance(route, APIRoute):
+        print(f"Путь: {route.path}, Имя: {route.name}, Методы: {route.methods}")
+print("-------------------------------------\n")
+# --- КОНЕЦ БЛОКА ОТЛАДКИ ---

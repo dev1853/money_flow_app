@@ -1,9 +1,7 @@
-# backend/app/crud/__init__.py
-
-from .crud_user import *
-from .crud_workspace import *
-from .crud_account import *
-from .crud_dds_article import *
-from .crud_transaction import *
-from .crud_report import *
-from .crud_dashboard import *
+from .crud_user import user
+from .crud_workspace import workspace
+from .crud_account import account
+from .crud_transaction import transaction
+from .crud_dds_article import dds_article
+from .crud_report import report
+from .crud_dashboard import dashboard

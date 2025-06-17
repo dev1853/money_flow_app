@@ -64,11 +64,11 @@ export const AuthProvider = ({ children }) => {
     initializeUser();
   }, [initializeUser]);
 
-  const login = async (email, password) => {
+  const login = async (username, password) => {
     setIsLoading(true);
     try {
       const data = await apiService.post('/auth/login', new URLSearchParams({
-        username: email,
+        username: username,
         password: password,
       }), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
       const { access_token } = data;
       localStorage.setItem('accessToken', access_token);
       setToken(access_token);
-      await initializeUser(); // Переиспользуем инициализацию
+      await initializeUser(); 
       navigate('/dashboard');
     } catch (error) {
       setIsLoading(false);

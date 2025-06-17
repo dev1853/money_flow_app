@@ -1,0 +1,38 @@
+[
+  {
+    "date": "2024-01-05",
+    "amount": 1000.00,
+    "currency": "RUB",
+    "description": "Начальный баланс",
+    "type": "income",
+    "account_name": "Наличные",
+    "dds_article_name": "Начальный баланс"
+  },
+  {
+    "date": "2024-01-10",
+    "amount": 150.00,
+    "currency": "RUB",
+    "description": "Покупка продуктов",
+    "type": "expense",
+    "account_name": "Банковская карта",
+    "dds_article_name": "Продукты питания"
+  },
+  {
+    "date": "2024-01-15",
+    "amount": 500.00,
+    "currency": "RUB",
+    "description": "Зарплата",
+    "type": "income",
+    "account_name": "Банковская карта",
+    "dds_article_name": "Заработная плата"
+  },
+  {
+    "date": "2024-01-20",
+    "amount": 75.50,
+    "currency": "RUB",
+    "description": "Кофе в кафе",
+    "type": "expense",
+    "account_name": "Наличные",
+    "dds_article_name": "Развлечения"
+  }
+]

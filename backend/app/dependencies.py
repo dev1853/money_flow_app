@@ -72,3 +72,17 @@ async def get_current_admin_user(current_user: models.User = Depends(get_current
     if not current_user.role or current_user.role.name != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not an admin user")
     return current_user
+
+async def get_current_active_superuser(
+    current_user: models.User = Depends(get_current_active_user),
+) -> models.User:
+    """
+    Проверяет, является ли текущий пользователь суперадминистратором.
+    Если нет - выбрасывает ошибку 403 Forbidden.
+    """
+    # <<< Вот здесь должен быть отступ
+    if not crud.user.is_superuser(current_user):
+        raise HTTPException(
+            status_code=403, detail="The user doesn't have enough privileges"
+        )
+    return current_user

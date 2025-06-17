@@ -1,39 +1,36 @@
-# backend/app/routers/users.py
-
-from __future__ import annotations
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List, Any
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
-from .. import crud, schemas, models 
-from ..dependencies import get_db, get_current_user # Исправлен относительный импорт
+
+from app import crud, models, schemas
+from app.dependencies import get_db, get_current_user, get_current_active_superuser
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    dependencies=[Depends(get_current_user)]
+    responses={404: {"description": "Not found"}},
 )
 
+@router.post("/", response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> Any:
+    db_user = crud.user.get_by_email(db, email=user.email)
+    if db_user:
+        raise HTTPException(
+            status_code=400,
+            detail="Пользователь с таким email уже существует в системе.",
+        )
+    return crud.user.create(db=db, obj_in=user)
+
+@router.get("/me", response_model=schemas.User)
+def read_user_me(current_user: models.User = Depends(get_current_user)):
+    return current_user
+
 @router.get("/", response_model=List[schemas.User])
-async def read_users(
+def read_users(
+    db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
-    # current_user: models.User = Depends(get_current_user)
+    current_user: models.User = Depends(get_current_active_superuser),
 ):
-    # if not current_user.role.name == "admin": 
-        # raise HTTPException(status_code=403, detail="Not authorized to view users") 
-
-    users = crud.get_users(db, skip=skip, limit=limit) 
+    users = crud.user.get_multi(db, skip=skip, limit=limit)
     return users
-
-@router.post("", response_model=schemas.User, status_code=201) 
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)): 
-    db_user = crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db=db, user=user)
-
-@router.get("/me", response_model=schemas.User) 
-async def read_users_me(current_user: models.User = Depends(get_current_user)): 
-    return current_user

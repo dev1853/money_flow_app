@@ -8,4 +8,8 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
-})
+  server: {
+    port: 3000, // <--- Попробуй, например, порт 3000
+    // host: true // Если хочешь, чтобы был доступен по сети (например, с мобильного)
+  }
+});

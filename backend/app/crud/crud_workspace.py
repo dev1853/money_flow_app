@@ -4,14 +4,19 @@ from __future__ import annotations
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status # Импортируем status
 from typing import List, Optional
+from .base import CRUDBase
 
-from .. import models, schemas # schemas импортируется здесь
+from .. import models, schemas
+
+class CRUDWorkspace(CRUDBase[models.Workspace, schemas.WorkspaceCreate, schemas.WorkspaceUpdate]):
+    pass
 
 def get_workspace(db: Session, workspace_id: int):
     return db.query(models.Workspace).filter_by(id=workspace_id).first()
 
 def create_workspace_for_user(db: Session, workspace: schemas.WorkspaceCreate, user_id: int):
-    db_workspace = models.Workspace(**workspace.model_dump(), owner_id=user_id) # Используем .model_dump()
+    # Измени .model_dump() на .dict()
+    db_workspace = models.Workspace(**workspace.dict(), owner_id=user_id)
     db.add(db_workspace)
     db.commit()
     db.refresh(db_workspace)
@@ -56,3 +61,5 @@ def validate_workspace_ownership_for_ids(
         ).all()
         if len(db_dds_articles) != len(dds_article_ids):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Одна или несколько статей ДДС не принадлежат этому рабочему пространству или вам")
+
+workspace = CRUDWorkspace(models.Workspace)

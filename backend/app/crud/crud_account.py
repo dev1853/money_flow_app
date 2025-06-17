@@ -3,20 +3,22 @@
 from __future__ import annotations
 from sqlalchemy.orm import Session
 from decimal import Decimal
+from .base import CRUDBase
 import logging
 
 from .. import models, schemas # Схемы импортируются здесь
-
 # Настройка логирования
 logger = logging.getLogger(__name__)
+
+class CRUDAccount(CRUDBase[models.Account, schemas.AccountCreate, schemas.AccountUpdate]):
+    pass
 
 def get_account(db: Session, account_id: int):
     return db.query(models.Account).filter_by(id=account_id).first()
 
 def create_account(db: Session, account: schemas.AccountCreate, workspace_id: int, user_id: int):
     db_account = models.Account(
-        **account.model_dump(exclude_unset=True), # Используем .model_dump()
-        # **account.dict(), # Для Pydantic v1
+        **account.dict(exclude_unset=True), 
         workspace_id=workspace_id,
         owner_id=user_id
     )
@@ -107,3 +109,11 @@ def create_default_accounts(db: Session, workspace_id: int, user_id: int):
             user_id=user_id
         )
     db.commit() # Коммит всех дефолтных счетов
+
+def get_account_by_name_and_workspace(db: Session, account_name: str, workspace_id: int):
+    return db.query(models.Account).filter(
+        models.Account.name == account_name,
+        models.Account.workspace_id == workspace_id
+    ).first()
+
+account = CRUDAccount(models.Account)
