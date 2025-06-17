@@ -1,24 +1,25 @@
-from typing import List, Any
-from fastapi import APIRouter, Depends, HTTPException
+# backend/app/routers/auth.py
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from app import crud, models, schemas
-from app.dependencies import get_db, get_current_user, get_current_active_superuser
+from app import schemas, crud, security
+from app.dependencies import get_db
 
 router = APIRouter(
-    prefix="/users",
-    tags=["users"],
+    prefix="/auth",
+    tags=["auth"]
 )
 
-@router.post("/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> Any:
-    db_user = crud.user.get_by_email(db, email=user.email)
-    if db_user:
+@router.post("/token", response_model=schemas.Token)
+def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+    # Используем правильный метод аутентификации
+    user = crud.user.authenticate(db, email=form_data.username, password=form_data.password)
+    if not user:
         raise HTTPException(
-            status_code=400,
-            detail="Пользователь с таким email уже существует.",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
         )
-    return crud.user.create(db=db, obj_in=user)
-
-@router.get("/me", response_model=schemas.User, dependencies=[Depends(get_current_user)])
-def read_user_me(current_user: models.User = Depends(get_current_user)):
-    return current_user
+    access_token = security.create_access_token(data={"sub": user.email})
+    return {"access_token": access_token, "token_type": "bearer"}

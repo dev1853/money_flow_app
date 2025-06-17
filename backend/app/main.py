@@ -2,17 +2,13 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from .database import Base, engine
 from .routers import (
-    auth,
-    users,
-    workspaces,
-    accounts,
-    dds_articles,
-    transactions,
-    statement,
-    reports,
-    dashboard
+    auth, users, workspaces, accounts, dds_articles,
+    transactions, statement, reports, dashboard
 )
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Money Flow App API",
@@ -20,45 +16,23 @@ app = FastAPI(
     version="1.0.0",
 )
 
-origins = [
-    "http://localhost",
-    "http://localhost:5173", # Если ты все еще используешь этот порт
-    "http://127.0.0.1:5173", # Если ты все еще используешь этот порт
-    "http://localhost:3000",   # <--- УБЕДИСЬ, ЧТО ЭТО ЗДЕСЬ ЕСТЬ
-    "http://127.0.0.1:3000",   # <--- УБЕДИСЬ, ЧТО ЭТО ЗДЕСЬ ЕСТЬ
-    # Если ты разворачиваешь приложение на других доменах, добавь их тоже
-]
-
+origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"], # Это позволяет всем методам, включая POST и OPTIONS
-    allow_headers=["*"], # Это позволяет всем заголовкам
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Включение роутеров:
+api_prefix = "/api"
 
-app.include_router(auth.router, prefix="/api", tags=["auth"])
-app.include_router(users.router, prefix="/api", tags=["users"])
-app.include_router(workspaces.router, prefix="/api", tags=["workspaces"])
-app.include_router(accounts.router, prefix="/api", tags=["accounts"])
-app.include_router(dds_articles.router, prefix="/api", tags=["dds_articles"])
-app.include_router(transactions.router, prefix="/api", tags=["transactions"])
-app.include_router(statement.router, prefix="/api", tags=["statement"])
-app.include_router(reports.router, prefix="/api", tags=["reports"])
-app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
-
-@app.get("/")
-async def root():
-    return {"message": "Welcome to Money Flow App API"}
-
-# --- БЛОК ДЛЯ ОТЛАДКИ МАРШРУТОВ ---
-from fastapi.routing import APIRoute
-
-print("\n--- ЗАРЕГИСТРИРОВАННЫЕ МАРШРУТЫ ---")
-for route in app.routes:
-    if isinstance(route, APIRoute):
-        print(f"Путь: {route.path}, Имя: {route.name}, Методы: {route.methods}")
-print("-------------------------------------\n")
-# --- КОНЕЦ БЛОКА ОТЛАДКИ ---
+app.include_router(auth.router, prefix=api_prefix, tags=["auth"])
+app.include_router(users.router, prefix=api_prefix, tags=["users"])
+app.include_router(workspaces.router, prefix=api_prefix, tags=["workspaces"])
+app.include_router(accounts.router, prefix=api_prefix, tags=["accounts"])
+app.include_router(dds_articles.router, prefix=api_prefix, tags=["dds_articles"])
+app.include_router(transactions.router, prefix=api_prefix, tags=["transactions"])
+app.include_router(statement.router, prefix=api_prefix, tags=["statement"])
+app.include_router(reports.router, prefix=api_prefix, tags=["reports"])
+app.include_router(dashboard.router, prefix=api_prefix, tags=["dashboard"])

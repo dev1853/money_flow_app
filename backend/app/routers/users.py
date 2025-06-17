@@ -7,8 +7,7 @@ from app.dependencies import get_db, get_current_user, get_current_active_superu
 
 router = APIRouter(
     prefix="/users",
-    tags=["users"],
-    responses={404: {"description": "Not found"}},
+    tags=["users"]
 )
 
 @router.post("/", response_model=schemas.User)
