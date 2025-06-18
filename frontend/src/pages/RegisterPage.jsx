@@ -19,7 +19,7 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccessMessage(null);
@@ -36,31 +36,30 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      // КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Передаем false в качестве последнего аргумента,
-      // чтобы ОТКЛЮЧИТЬ отправку токена авторизации для этого запроса.
-      await apiService.post('/auth/register/', {
-          email,
-          username,
-          password
-      }, {}, false); // <--- Вот здесь изменили: добавлен {}, false
-      // Первый {} - это options, второй false - это authenticate.
+      // ИСПРАВЛЕНИЕ: Собираем данные из существующих переменных состояния
+      const payload = {
+        email: email,
+        username: username,
+        password: password,
+      };
+      
+      await apiService.post('/users/', payload);
 
       setSuccessMessage('Регистрация прошла успешно! Сейчас вы будете перенаправлены на страницу входа.');
-      setTimeout(() => {
-        navigate('/login');
-      }, 3000); // Перенаправить через 3 секунды
+      setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
-        console.error('Ошибка регистрации:', err);
-        if (err instanceof ApiError) {
-            setError(err.message);
-        } else {
-            setError('Произошла ошибка при регистрации. Пожалуйста, попробуйте еще раз.');
-        }
+      console.error('Ошибка регистрации:', err);
+      if (err instanceof ApiError) {
+          setError(err.message);
+      } else {
+          setError('Произошла ошибка при регистрации.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Общие классы для стилей
   const commonInputDivClasses = "relative mt-2 rounded-md shadow-sm";
   const commonIconClasses = "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3";
 

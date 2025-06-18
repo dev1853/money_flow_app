@@ -20,13 +20,13 @@ def test_get_account_by_another_user_fails(client: TestClient, db: Session):
     headers_2 = {"Authorization": f"Bearer {token_2}"}
 
     # 3. Пользователь 1 создает рабочее пространство
-    response = client.post("/api/v1/workspaces/", json={"name": "Workspace 1"}, headers=headers_1)
+    response = client.post("/api/workspaces/", json={"name": "Workspace 1"}, headers=headers_1)
     assert response.status_code == 200
     workspace_1 = response.json()
 
     # 4. Пользователь 1 создает счет в своем рабочем пространстве
     response = client.post(
-        "/api/v1/accounts/",
+        "/api/accounts/",
         json={
             "name": "My Bank Account",
             "currency": "USD",
@@ -39,9 +39,9 @@ def test_get_account_by_another_user_fails(client: TestClient, db: Session):
     account_1 = response.json()
 
     # 5. Пользователь 2 пытается получить доступ к счету пользователя 1
-    response = client.get(f"/api/v1/accounts/{account_1['id']}", headers=headers_2)
+    response = client.get(f"/api/accounts/{account_1['id']}", headers=headers_2)
 
     # 6. Проверяем, что доступ запрещен
     # С текущим кодом этот тест УПАДЕТ, потому что вернется статус 200.
     # Мы ожидаем 403 (Forbidden) или 404 (Not Found).
-    assert response.status_code == 403 or response.status_code == 404
+    assert response.status_code == 404

@@ -6,10 +6,7 @@ from sqlalchemy.orm import Session
 from app import schemas, crud, security
 from app.dependencies import get_db
 
-router = APIRouter(
-    prefix="/auth",
-    tags=["auth"]
-)
+router = APIRouter(tags=["auth"])
 
 @router.post("/token", response_model=schemas.Token)
 def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):

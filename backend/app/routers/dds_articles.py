@@ -8,7 +8,6 @@ from .. import crud, schemas, models
 from ..dependencies import get_db, get_current_user, get_current_active_user
 
 router = APIRouter(
-    prefix="/dds_articles", # Префикс роутера
     tags=["DDS Articles"],
     dependencies=[Depends(get_current_active_user)] # Требует аутентификации
 )

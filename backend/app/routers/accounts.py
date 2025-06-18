@@ -9,7 +9,6 @@ from .. import crud, models, schemas
 from ..dependencies import get_db, get_current_active_user
 
 router = APIRouter(
-    prefix="/accounts",
     tags=["accounts"],
     responses={404: {"description": "Not found"}},
 )
@@ -25,7 +24,7 @@ def create_account(
     Создает новый счет в указанном рабочем пространстве.
     """
     if not crud.workspace.is_owner(db=db, workspace_id=account.workspace_id, user_id=current_user.id):
-        raise HTTPException(status_code=403, detail="Not enough permissions to add account to this workspace")
+        raise HTTPException(status_code=403, detail="Not enough permissions")
     return crud.account.create(db=db, obj_in=account)
 
 

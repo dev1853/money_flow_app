@@ -8,7 +8,6 @@ from .. import crud, models, schemas
 from ..dependencies import get_db, get_current_active_user
 
 router = APIRouter(
-    prefix="/transactions",
     tags=["transactions"],
     responses={404: {"description": "Not found"}},
 )
@@ -20,13 +19,11 @@ def create_transaction(
     current_user: models.User = Depends(get_current_active_user),
 ):
     db_account = crud.account.get(db, id=transaction.account_id)
-    if not db_account:
+    if not db_account or not crud.workspace.is_owner(db, workspace_id=db_account.workspace_id, user_id=current_user.id):
         raise HTTPException(status_code=404, detail="Account not found")
-    if not crud.workspace.is_owner(db, workspace_id=db_account.workspace_id, user_id=current_user.id):
-        raise HTTPException(status_code=403, detail="Not enough permissions")
     
     created_transaction = crud.transaction.create(db=db, obj_in=transaction)
-    # Используем надежный пересчет баланса вместо простого добавления
+    # Используем надежный пересчет баланса
     crud.account.recalculate_balance(db, account_id=transaction.account_id)
     return created_transaction
 
@@ -38,8 +35,8 @@ def read_transactions(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
 ):
-    db_account = crud.account.get(db, id=account_id)
-    if not db_account:
+    db_account = crud.account.get(db, id=transaction.account_id)
+    if not db_account or not crud.workspace.is_owner(db, workspace_id=db_account.workspace_id, user_id=current_user.id):
         raise HTTPException(status_code=404, detail="Account not found")
     if not crud.workspace.is_owner(db=db, workspace_id=db_account.workspace_id, user_id=current_user.id):
         raise HTTPException(status_code=403, detail="Not enough permissions")
@@ -58,14 +55,14 @@ def update_transaction(
     if not db_transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
 
-    # --- ИСПРАВЛЕНИЕ: ПРОВЕРКА ПРАВ ДОСТУПА ---
+    # --- ИСПРАВЛЕНИЕ 1: ПРОВЕРКА ПРАВ ДОСТУПА ---
     db_account = crud.account.get(db, id=db_transaction.account_id)
-    if not crud.workspace.is_owner(db=db, workspace_id=db_account.workspace_id, user_id=current_user.id):
+    if not db_account or not crud.workspace.is_owner(db=db, workspace_id=db_account.workspace_id, user_id=current_user.id):
         raise HTTPException(status_code=404, detail="Transaction not found")
 
     updated_transaction = crud.transaction.update(db, db_obj=db_transaction, obj_in=transaction_in)
     
-    # --- ИСПРАВЛЕНИЕ: ПЕРЕСЧЕТ БАЛАНСА ---
+    # --- ИСПРАВЛЕНИЕ 2: ПЕРЕСЧЕТ БАЛАНСА ---
     crud.account.recalculate_balance(db, account_id=db_transaction.account_id)
     
     return updated_transaction
@@ -80,15 +77,15 @@ def delete_transaction(
     if not db_transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
 
-    # --- ИСПРАВЛЕНИЕ: ПРОВЕРКА ПРАВ ДОСТУПА ---
+    # --- ИСПРАВЛЕНИЕ 1: ПРОВЕРКА ПРАВ ДОСТУПА ---
     db_account = crud.account.get(db, id=db_transaction.account_id)
-    if not crud.workspace.is_owner(db=db, workspace_id=db_account.workspace_id, user_id=current_user.id):
+    if not db_account or not crud.workspace.is_owner(db=db, workspace_id=db_account.workspace_id, user_id=current_user.id):
         raise HTTPException(status_code=404, detail="Transaction not found")
     
     account_id_to_recalculate = db_transaction.account_id
     deleted_transaction = crud.transaction.remove(db, id=transaction_id)
     
-    # --- ИСПРАВЛЕНИЕ: ПЕРЕСЧЕТ БАЛАНСА ---
+    # --- ИСПРАВЛЕНИЕ 2: ПЕРЕСЧЕТ БАЛАНСА ---
     crud.account.recalculate_balance(db, account_id=account_id_to_recalculate)
     
-    return deleted_transaction
+    return deleted_transactionf

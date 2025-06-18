@@ -10,7 +10,6 @@ from .. import crud, models, schemas, auth_utils
 from ..database import get_db
 
 router = APIRouter(
-    prefix="/api/reports",
     tags=["Reports"],
     dependencies=[Depends(auth_utils.get_current_active_user)]
 )

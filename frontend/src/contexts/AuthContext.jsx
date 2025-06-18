@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       apiService.setToken(token);
       try {
-        const userData = await apiService.get('/users/me/');
+        const userData = await apiService.get('/users/me');
         setUser(userData);
         await fetchWorkspaces();
       } catch (error) {
@@ -67,17 +67,15 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     setIsLoading(true);
     try {
-      const data = await apiService.post('/auth/login', new URLSearchParams({
-        username: username,
-        password: password,
-      }), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      const data = await apiService.login({ username, password });
+      
       const { access_token } = data;
       localStorage.setItem('accessToken', access_token);
       setToken(access_token);
+      
       await initializeUser(); 
       navigate('/dashboard');
+
     } catch (error) {
       setIsLoading(false);
       throw error;
