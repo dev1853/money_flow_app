@@ -6,8 +6,8 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
 import { UserCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import Input from '../components/forms/Input'; 
-import Label from '../components/forms/Label'; 
+import Input from '../components/forms/Input'; // Используем наш Input
+import Label from '../components/forms/Label'; // Используем наш Label
 
 
 function LoginPage() {

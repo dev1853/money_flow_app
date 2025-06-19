@@ -1,5 +1,4 @@
 // frontend/src/contexts/AuthContext.jsx
-
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiService';
@@ -46,7 +45,7 @@ export const AuthProvider = ({ children }) => {
   const fetchWorkspaces = useCallback(async () => {
     if (!token) return;
     try {
-      const data = await apiService.get('/workspaces/'); // Добавлен слэш в конце
+      const data = await apiService.get('/workspaces');
       setWorkspaces(data);
       if (data.length > 0) {
         const savedId = localStorage.getItem('activeWorkspaceId');
@@ -55,9 +54,11 @@ export const AuthProvider = ({ children }) => {
         if (!savedId || !data.some(w => w.id === parseInt(savedId, 10))) {
           localStorage.setItem('activeWorkspaceId', active.id);
         }
+      } else {
+        setActiveWorkspace(null);
       }
     } catch (error) {
-      console.error("Не удалось загрузить рабочие пространства", error);
+      console.error("Ошибка при загрузке рабочих пространств:", error);
     }
   }, [token]);
 
@@ -94,7 +95,6 @@ export const AuthProvider = ({ children }) => {
 
     } catch (error) {
       setIsLoading(false);
-      // Пробрасываем ошибку выше, чтобы компонент LoginPage мог ее поймать
       throw error;
     }
   };
@@ -129,9 +129,7 @@ export const AuthProvider = ({ children }) => {
     fetchAccounts
   };
 
-  return <AuthContext.Provider value={value}>{!isLoading && children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
