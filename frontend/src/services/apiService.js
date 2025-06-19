@@ -1,5 +1,6 @@
 // frontend/src/services/apiService.js
 import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from '../apiConfig';
 
 // Определяем класс для кастомных ошибок API
 export class ApiError extends Error {
