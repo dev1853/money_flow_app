@@ -94,7 +94,7 @@ const DdsReportPage = () => {
     params.append('workspace_id', activeWorkspace.id); // Добавляем workspace_id
 
     try {
-      const data = await apiService.get(`/reports/dds/?${params.toString()}`);
+      const data = await apiService.get('/reports/dds', params); 
       setReportData(data);
     } catch (err) {
       console.error("DdsReportPage: Ошибка при формировании отчета ДДС:", err);

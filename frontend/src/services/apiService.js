@@ -31,14 +31,27 @@ const request = async (endpoint, options = {}) => {
   try {
     const response = await fetch(url, config);
     if (!response.ok) {
-      let errorData;
-      try {
-        errorData = await response.json();
-      } catch (e) {
-        errorData = { detail: response.statusText };
-      }
-      const errorMessage = errorData.detail || 'Произошла ошибка API';
-      throw new ApiError(errorMessage, response.status);
+        let errorMessage = `HTTP-ошибка! Статус: ${response.status}`;
+        try {
+            const errorData = await response.json();
+            if (errorData.detail) {
+                // FastAPI часто возвращает массив ошибок валидации в поле 'detail'
+                if (Array.isArray(errorData.detail)) {
+                    errorMessage = errorData.detail.map(err => {
+                        // Превращаем путь к полю в строку, например "body -> name"
+                        const field = err.loc.join(' → ');
+                        return `${field}: ${err.msg}`; // Собираем сообщение, например "body → name: field required"
+                    }).join('; ');
+                } else {
+                    // Если detail - это просто строка
+                    errorMessage = errorData.detail;
+                }
+            }
+        } catch (e) {
+            // Если тело ответа не в формате JSON, просто используем текст
+            errorMessage = await response.text();
+        }
+        throw new ApiError(errorMessage);
     }
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -90,7 +103,7 @@ export const apiService = {
     body.append('password', credentials.password);
 
     // Вызываем базовый метод request с правильным путем и параметрами
-    return request('/auth/token', {
+    return request('/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body,

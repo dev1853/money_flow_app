@@ -1,0 +1,71 @@
+[
+  {
+    "name": "Операционная деятельность",
+    "type": "group",
+    "children": [
+      {
+        "name": "Поступления",
+        "type": "group",
+        "children": [
+          { "name": "Поступления от клиентов", "type": "income", "children": [] },
+          { "name": "Авансы от покупателей", "type": "income", "children": [] }
+        ]
+      },
+      {
+        "name": "Платежи",
+        "type": "group",
+        "children": [
+          { "name": "Платежи поставщикам", "type": "expense", "children": [] },
+          { "name": "Оплата труда", "type": "expense", "children": [] },
+          { "name": "Налоги и взносы", "type": "expense", "children": [] },
+          { "name": "Аренда", "type": "expense", "children": [] },
+          { "name": "Прочие операционные расходы", "type": "expense", "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Инвестиционная деятельность",
+    "type": "group",
+    "children": [
+      {
+        "name": "Поступления",
+        "type": "group",
+        "children": [
+          { "name": "Продажа основных средств", "type": "income", "children": [] },
+          { "name": "Продажа нематериальных активов", "type": "income", "children": [] },
+          { "name": "Полученные дивиденды", "type": "income", "children": [] }
+        ]
+      },
+      {
+        "name": "Платежи",
+        "type": "group",
+        "children": [
+          { "name": "Покупка основных средств", "type": "expense", "children": [] },
+          { "name": "Покупка нематериальных активов", "type": "expense", "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Финансовая деятельность",
+    "type": "group",
+    "children": [
+      {
+        "name": "Поступления",
+        "type": "group",
+        "children": [
+          { "name": "Получение кредитов и займов", "type": "income", "children": [] }
+        ]
+      },
+      {
+        "name": "Платежи",
+        "type": "group",
+        "children": [
+          { "name": "Погашение кредитов и займов", "type": "expense", "children": [] },
+          { "name": "Выплата дивидендов", "type": "expense", "children": [] }
+        ]
+      }
+    ]
+  }
+]

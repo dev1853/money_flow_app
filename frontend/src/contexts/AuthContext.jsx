@@ -13,6 +13,8 @@ export const AuthProvider = ({ children }) => {
 
   const [workspaces, setWorkspaces] = useState([]);
   const [activeWorkspace, setActiveWorkspace] = useState(null);
+  
+  const [accounts, setAccounts] = useState([]);
 
   const logout = useCallback(() => {
     localStorage.removeItem('accessToken');
@@ -25,6 +27,21 @@ export const AuthProvider = ({ children }) => {
     navigate('/login');
   }, [navigate]);
   
+  const fetchAccounts = useCallback(async () => {
+    if (!token || !activeWorkspace) return; // Не грузим, если нет токена или рабочего пространства
+    try {
+      // Убедитесь, что ваш API-эндпоинт правильный
+    const data = await apiService.get(`/accounts/?workspace_id=${activeWorkspace.id}`);
+      // Гарантируем, что в состояние всегда попадет массив
+      // ДЛЯ ОТЛАДКИ
+    console.log("Получены данные счетов с сервера:", data);
+      setAccounts(data || []);
+    } catch (error) {
+      console.error("Не удалось загрузить счета:", error);
+      setAccounts([]); // В случае ошибки устанавливаем пустой массив
+    }
+  }, [token, activeWorkspace]);
+
   const fetchWorkspaces = useCallback(async () => {
     if (!token) return;
     try {
@@ -87,9 +104,29 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('activeWorkspaceId', workspace.id);
   }
 
+  useEffect(() => {
+    console.log("useEffect для загрузки счетов сработал. activeWorkspace:", activeWorkspace);
+    if (activeWorkspace) {
+      console.log("activeWorkspace определен, вызываем fetchAccounts...");
+      fetchAccounts();
+    } else {
+      console.log("activeWorkspace не определен, счета не загружаем.");
+    }
+  }, [activeWorkspace, fetchAccounts]);
+
   const value = {
-    token, user, isAuthenticated: !!token, isLoading, login, logout,
-    workspaces, activeWorkspace, changeWorkspace, fetchWorkspaces
+    token,
+    user,
+    isAuthenticated: !!token,
+    isLoading,
+    login,
+    logout,
+    workspaces,
+    activeWorkspace,
+    changeWorkspace,
+    fetchWorkspaces,
+    accounts,
+    fetchAccounts
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

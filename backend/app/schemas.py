@@ -53,11 +53,18 @@ class Workspace(WorkspaceBase):
 # --- Account Schemas ---
 class AccountBase(BaseModel):
     name: str
+    account_type: str
     currency: str
-    current_balance: float = 0.0
+    is_active: bool = True
+    initial_balance: float = 0.0
+    current_balance: float = 0.0    
+
+    class Config:
+        from_attributes = True 
 
 class AccountCreate(AccountBase):
     workspace_id: int
+    owner_id: int 
 
 class AccountUpdate(BaseModel):
     name: Optional[str] = None
@@ -67,30 +74,34 @@ class AccountUpdate(BaseModel):
 class Account(AccountBase):
     id: int
     workspace_id: int
-    is_active: bool
 
     class Config:
         orm_mode = True
 
-# --- DDSArticle Schemas ---
-class DDSArticleBase(BaseModel):
+# --- DdsArticle Schemas ---
+class DdsArticleBase(BaseModel):
     name: str
-    type: str
+    code: Optional[str] = None
+    type: str 
     parent_id: Optional[int] = None
 
-class DDSArticleCreate(DDSArticleBase):
+class DdsArticleCreate(DdsArticleBase):
+    workspace_id: int
+    owner_id: int
+
+class DdsArticleUpdate(DdsArticleBase):
     pass
 
-class DDSArticleUpdate(DDSArticleBase):
-    pass
-
-class DDSArticle(DDSArticleBase):
+class DdsArticle(DdsArticleBase):
     id: int
     owner_id: int
     workspace_id: int
+    children: List['DdsArticle'] = []
 
     class Config:
         orm_mode = True
+        
+DdsArticle.update_forward_refs()
 
 # --- Transaction Schemas ---
 TransactionType = Literal["income", "expense", "transfer"]
@@ -158,3 +169,5 @@ class AccountBalance(BaseModel):
 
     class Config:
         orm_mode = True
+        
+    

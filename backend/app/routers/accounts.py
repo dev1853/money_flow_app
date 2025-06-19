@@ -16,16 +16,19 @@ router = APIRouter(
 
 @router.post("/", response_model=schemas.Account)
 def create_account(
-    account: schemas.AccountCreate,
+    *,
     db: Session = Depends(get_db),
+    account_in: schemas.AccountCreate,
     current_user: models.User = Depends(get_current_active_user),
-):
+) -> schemas.Any:
     """
-    Создает новый счет в указанном рабочем пространстве.
+    Create new account for the current user.
     """
-    if not crud.workspace.is_owner(db=db, workspace_id=account.workspace_id, user_id=current_user.id):
-        raise HTTPException(status_code=403, detail="Not enough permissions")
-    return crud.account.create(db=db, obj_in=account)
+    # Этот вызов берет ID текущего пользователя и передает его дальше
+    account = crud.account.create_with_owner(
+        db=db, obj_in=account_in, owner_id=current_user.id
+    )
+    return account
 
 
 @router.get("/", response_model=List[schemas.Account])

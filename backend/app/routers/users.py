@@ -11,21 +11,32 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.user.get_by_email(db, email=user.email)
-    if db_user:
+def create_user(
+    *,
+    db: Session = Depends(get_db),
+    user_in: schemas.UserCreate,
+) -> Any:
+    """
+    Create new user and trigger the onboarding process.
+    """
+    user = crud.user.get_by_email(db, email=user_in.email)
+    if user:
         raise HTTPException(
             status_code=400,
-            detail="Пользователь с таким email уже существует.",
+            detail="The user with this email already exists in the system.",
         )
     
-    # Шаг 1: Создаем пользователя
-    new_user = crud.user.create(db=db, obj_in=user)
+    # 1. Создаем пользователя
+    user = crud.user.create(db, obj_in=user_in)
+
+    # 2. Вызываем централизованную функцию онбординга
+    # Она сделает все остальное: создаст воркспейс, счета, статьи и т.д.
+    crud.onboarding.onboard_new_user(db=db, user=user)
     
-    # Шаг 2: Запускаем процесс онбординга
-    crud.onboarding.onboard_new_user(db=db, user=new_user)
+    # 3. Обновляем объект пользователя из БД, чтобы получить active_workspace_id
+    db.refresh(user)
     
-    return new_user
+    return user
 
 # Этот эндпоинт ЗАЩИЩЕННЫЙ
 @router.get("/me", response_model=schemas.User)

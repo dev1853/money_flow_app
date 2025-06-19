@@ -14,14 +14,14 @@ def onboard_new_user(db: Session, *, user: models.User):
     # 2. Создаем статьи ДДС
     crud.dds_article.create_default_articles(db=db, workspace_id=db_workspace.id, owner_id=user.id)
     
-    # 3. Создаем счета и получаем их для следующего шага
-    default_accounts = crud.account.create_default_accounts(db=db, workspace_id=db_workspace.id, owner_id=user.id)
+    # 3. Создаем счета
+    crud.account.create_default_accounts(db=db, workspace_id=db_workspace.id, owner_id=user.id)
 
-    # 4. Создаем транзакции, если были созданы счета
-    if default_accounts:
-        accounts_map = {acc.name: acc.id for acc in default_accounts}
-        crud.transaction.create_default_transactions(db=db, workspace_id=db_workspace.id, user_id=user.id, accounts_map=accounts_map)
+    # --- ЭТИ ШАГИ МЫ УБИРАЕМ, ЧТОБЫ НЕ СОЗДАВАТЬ ЛИШНИХ ТРАНЗАКЦИЙ ---
+    # Транзакции и пересчет баланса больше не нужны при онбординге.
+    # Пользователь начнет с чистого листа.
     
-    # 5. Пересчитываем балансы после создания транзакций
-    for acc in default_accounts:
-        crud.account.recalculate_balance(db, account_id=acc.id)
+    # Последний шаг - устанавливаем рабочее пространство активным
+    user.active_workspace_id = db_workspace.id
+    db.add(user)
+    db.commit()

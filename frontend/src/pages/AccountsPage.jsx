@@ -1,174 +1,123 @@
 // frontend/src/pages/AccountsPage.jsx
-import React, { useEffect, useState, useCallback } from 'react';
-import { PlusIcon } from '@heroicons/react/24/outline';
 
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
 
+// Компоненты
+import Modal from '../components/Modal';
+import AccountForm from '../components/AccountForm';
+import AccountCard from '../components/AccountCard'; // <-- Импортируем новый компонент
+import ConfirmationModal from '../components/ConfirmationModal';
 import PageTitle from '../components/PageTitle';
 import Button from '../components/Button';
+import Alert from '../components/Alert';
 import Loader from '../components/Loader';
 import EmptyState from '../components/EmptyState';
-import AccountForm from '../components/AccountForm';
-import Modal from '../components/Modal';
+import { PlusIcon } from '@heroicons/react/24/solid';
 
-const AccountsPage = () => {
-  const [accounts, setAccounts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+function AccountsPage() {
+  const { accounts, fetchAccounts, isLoading: authLoading } = useAuth();
   
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingAccount, setEditingAccount] = useState(null);
-
-  const { activeWorkspace } = useAuth();
-
-  // Определяем уникальный ID для формы аккаунта
-  const ACCOUNT_FORM_ID = "accountForm";
-
-  const fetchAccounts = useCallback(async () => {
-    if (!activeWorkspace) {
-        setIsLoading(false); // Устанавливаем isLoading в false, если нет активного пространства
-        return;
-    }
-    
-    setIsLoading(true);
-    setError('');
-    try {
-        const params = new URLSearchParams({
-            workspace_id: activeWorkspace.id,
-        });
-        const data = await apiService.get(`/accounts?${params.toString()}`);
-        setAccounts(data);
-    } catch (err) {
-        console.error("Ошибка при загрузке счетов:", err);
-        setError('Не удалось загрузить список счетов. ' + err.message);
-    } finally {
-        setIsLoading(false);
-    }
-}, [activeWorkspace]);
+  const [accountToEdit, setAccountToEdit] = useState(null);
+  const [accountToDelete, setAccountToDelete] = useState(null);
 
   useEffect(() => {
-    fetchAccounts();
-  }, [fetchAccounts]);
+    // Используем статус загрузки из AuthContext
+    setLoading(authLoading);
+  }, [authLoading]);
 
-  const handleOpenModal = (account = null) => {
-    setEditingAccount(account);
+  // --- Функции для управления модальными окнами ---
+  const handleOpenCreateModal = () => {
+    setAccountToEdit(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (account) => {
+    setAccountToEdit(account);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setEditingAccount(null);
+    setAccountToEdit(null);
   };
 
-  const handleFormSuccess = () => {
-    handleCloseModal();
-    fetchAccounts(); // Обновляем список после успешного сохранения
+  const handleDeleteRequest = (account) => {
+    setAccountToDelete(account);
   };
 
-  // Футер для модального окна AccountForm
-  const modalFooter = (
-    <div className="flex justify-end space-x-3">
-      <Button variant="secondary" size="md" onClick={handleCloseModal} disabled={isLoading}>
-        Отмена
-      </Button>
-      <Button
-        type="submit"
-        variant="primary"
-        size="md"
-        form={ACCOUNT_FORM_ID} // Связываем кнопку с формой по ID
-        disabled={isLoading} // Управляем состоянием кнопки извне формы
-      >
-        {isLoading ? 'Сохранение...' : 'Сохранить'}
-      </Button>
-    </div>
-  );
+  const handleDeleteConfirm = async () => {
+    if (!accountToDelete) return;
+    try {
+      await apiService.delete(`/accounts/${accountToDelete.id}`);
+      await fetchAccounts(); // Обновляем список после удаления
+      setAccountToDelete(null); 
+    } catch (err) {
+      console.error("Ошибка при удалении счета:", err);
+      setError(err.message || 'Не удалось удалить счет');
+    }
+  };
 
-  if (isLoading) {
-    return <Loader message="Загрузка счетов..." />;
+  // --- Рендеринг ---
+  if (loading) {
+    return <Loader text="Загрузка счетов..." />;
+  }
+
+  if (error) {
+    return <Alert type="error">{error}</Alert>;
   }
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <PageTitle title="Счета" />
-        <Button 
-          onClick={() => handleOpenModal()} 
-          variant="primary" 
-          size="md"
-          disabled={!activeWorkspace} // Блокируем кнопку, если нет активного пространства
-        >
-          <PlusIcon className="h-5 w-5 mr-2" />
+      <div className="flex justify-between items-center mb-8">
+        <PageTitle title="Ваши счета" />
+        <Button onClick={handleOpenCreateModal} icon={<PlusIcon className="h-5 w-5 mr-2" />}>
           Добавить счет
         </Button>
       </div>
 
-      {error && <div className="text-red-500">{error}</div>}
-      
-      {!activeWorkspace && (
-         <EmptyState
-            title="Рабочее пространство не выбрано"
-            message="Пожалуйста, выберите рабочее пространство в шапке сайта, чтобы увидеть счета."
-          />
-      )}
-
-      {activeWorkspace && accounts.length === 0 && !error && (
-        <EmptyState
-          title="Счета еще не созданы"
-          message="Начните с добавления вашего первого счета, например, 'Наличные' или 'Карта'."
-          actionButton={<Button variant="primary" onClick={() => handleOpenModal()} iconLeft={<PlusIcon className="h-5 w-5"/>}>Добавить первый счет</Button>}
+      {accounts && accounts.length > 0 ? (
+        // --- НОВАЯ СЕТКА ДЛЯ КАРТОЧЕК ---
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {accounts.map((account) => (
+            <AccountCard 
+              key={account.id} 
+              account={account}
+              onEdit={handleOpenEditModal}
+              onDelete={handleDeleteRequest}
+            />
+          ))}
+        </div>
+      ) : (
+        <EmptyState 
+          message="У вас еще нет ни одного счета."
+          buttonText="Создать первый счет"
+          onButtonClick={handleOpenCreateModal}
         />
       )}
 
-      {activeWorkspace && accounts.length > 0 && (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul role="list" className="divide-y divide-gray-200">
-            {accounts.map((account) => (
-              <li key={account.id}>
-                <div className="px-4 py-4 sm:px-6">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-indigo-600 truncate">{account.name}</p>
-                    <div className="ml-2 flex-shrink-0 flex">
-                      <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        {account.balance.toFixed(2)} {account.currency}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-2 sm:flex sm:justify-between">
-                    <div className="sm:flex">
-                      <p className="flex items-center text-sm text-gray-500">
-                        Начальный баланс: {account.initial_balance.toFixed(2)} {account.currency}
-                      </p>
-                    </div>
-                    <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                      <button onClick={() => handleOpenModal(account)} className="font-medium text-indigo-600 hover:text-indigo-500">
-                        Редактировать
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
+      {/* Модальные окна остаются без изменений */}
       <Modal 
         isOpen={isModalOpen} 
         onClose={handleCloseModal} 
-        title={editingAccount ? 'Редактировать счет' : 'Новый счет'}
-        formId={ACCOUNT_FORM_ID} // Передаем formId в Modal
-        footer={modalFooter} // Передаем футер с кнопками
+        title={accountToEdit ? 'Редактировать счет' : 'Новый счет'}
       >
-        <AccountForm 
-          accountToEdit={editingAccount} // Проп должен быть accountToEdit
-          onAccountActionSuccess={handleFormSuccess} 
-          formId={ACCOUNT_FORM_ID} // Передаем formId в AccountForm
-          // onCancelEdit больше не нужен, т.к. кнопки снаружи
-        />
+        <AccountForm account={accountToEdit} onSuccess={handleCloseModal} />
       </Modal>
+
+      <ConfirmationModal
+        isOpen={Boolean(accountToDelete)}
+        onClose={() => setAccountToDelete(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Удалить счет"
+        message={`Вы уверены, что хотите удалить счет "${accountToDelete?.name}"? Все связанные с ним транзакции будут также удалены. Это действие необратимо.`}
+      />
     </div>
   );
-};
+}
 
 export default AccountsPage;

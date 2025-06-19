@@ -58,7 +58,7 @@ function TransactionForm({
     } catch (err) { errors.push(`Счета: ${err.message}`); }
 
     try {
-      const articlesDataRaw = await apiService.get(`/dds_articles?workspace_id=${activeWorkspace.id}`);
+      const ddsArticlesData = await apiService.get('/dds-articles', { workspace_id: activeWorkspace.id });
       const articlesData = Array.isArray(articlesDataRaw) ? articlesDataRaw : [];
       const flattenArticles = (articles, level = 0) => {
         let flatList = [];

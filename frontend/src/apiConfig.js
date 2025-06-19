@@ -1,6 +1,4 @@
 // frontend/src/apiConfig.js
+const API_BASE_URL = 'http://localhost:8001/api'; // *** ЗДЕСЬ НЕ ДОЛЖНО БЫТЬ "/V1" ***
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8001') + '/api';
-
-// Экспортируем переменную как значение по умолчанию
 export default API_BASE_URL;
