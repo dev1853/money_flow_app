@@ -64,7 +64,6 @@ class AccountBase(BaseModel):
 
 class AccountCreate(AccountBase):
     workspace_id: int
-    owner_id: int 
 
 class AccountUpdate(BaseModel):
     name: Optional[str] = None
