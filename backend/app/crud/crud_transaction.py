@@ -2,8 +2,10 @@
 import os
 import json
 from sqlalchemy.orm import Session
-from typing import List, Dict
-from datetime import date, timedelta
+from typing import List, Any, Dict, Optional 
+from datetime import date
+from fastapi.encoders import jsonable_encoder 
+from sqlalchemy.orm import joinedload
 
 from .base import CRUDBase
 from app import models, schemas
@@ -56,6 +58,69 @@ class CRUDTransaction(CRUDBase[models.Transaction, schemas.TransactionCreate, sc
             )
             # Вызываем базовый метод create через self
             self.create(db=db, obj_in=transaction_schema)
+            
+    def create_with_owner_and_workspace(
+        self,
+        db: Session,
+        *,
+        obj_in: schemas.TransactionCreate,
+        owner_id: int,
+        workspace_id: int
+    ) -> models.Transaction:
+        """
+        Создает транзакцию с указанием владельца и рабочего пространства.
+        """
+        obj_in_data = jsonable_encoder(obj_in)
+        # Мы явно добавляем owner_id и workspace_id к данным из схемы
+        db_obj = self.model(**obj_in_data, owner_id=owner_id, workspace_id=workspace_id)
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
+            
+    def get_multi_paginated_by_workspace_and_filters(
+        self,
+        db: Session,
+        *,
+        workspace_id: int,
+        page: int = 1,
+        size: int = 20,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
+        transaction_type: Optional[schemas.TransactionType] = None,
+        account_id: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        
+        # Начинаем строить запрос
+        query = (
+            db.query(self.model)
+            .join(models.Account)
+            .filter(models.Account.workspace_id == workspace_id)
+            .options(
+                joinedload(self.model.account), 
+                joinedload(self.model.dds_article)
+            )
+        )
+        
+        # Применяем фильтры, если они есть
+        if start_date:
+            query = query.filter(self.model.date >= start_date)
+        if end_date:
+            query = query.filter(self.model.date <= end_date)
+        if transaction_type:
+            query = query.filter(self.model.transaction_type == transaction_type)
+        if account_id:
+            query = query.filter(self.model.account_id == account_id)
+            
+        # Сначала считаем общее количество записей с учетом фильтров
+        total_count = query.count()
+        
+        # Затем применяем пагинацию
+        skip = (page - 1) * size
+        items = query.order_by(self.model.date.desc(), self.model.id.desc()).offset(skip).limit(size).all()
+        
+        return {"items": items, "total_count": total_count}
 
 # Создаем единый экземпляр для импорта в других частях приложения
 transaction = CRUDTransaction(models.Transaction)

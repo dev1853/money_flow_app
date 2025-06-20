@@ -46,6 +46,21 @@ class CRUDDDSArticle(CRUDBase[models.DdsArticle, schemas.DdsArticleCreate, schem
                 root_nodes.append(node)
         
         return root_nodes
+    
+    def get_multi_by_workspace(
+        self, db: Session, *, workspace_id: int, skip: int = 0, limit: int = 1000
+    ) -> List[models.DdsArticle]:
+        """
+        Получает плоский список статей для указанного рабочего пространства.
+        """
+        return (
+            db.query(self.model)
+            .filter(models.DdsArticle.workspace_id == workspace_id)
+            .order_by(self.model.id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
 
     def create_with_owner(
         self, db: Session, *, obj_in: schemas.DdsArticleCreate, owner_id: int

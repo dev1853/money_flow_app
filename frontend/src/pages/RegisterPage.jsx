@@ -21,7 +21,15 @@ const RegisterPage = () => {
   const [successMessage, setSuccessMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();s
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
 
   // --- ШАГ 2: Добавляем универсальный обработчик изменений ---
   const handleChange = (e) => {

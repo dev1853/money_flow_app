@@ -125,10 +125,12 @@ class TransactionUpdate(BaseModel):
 
 class Transaction(TransactionBase):
     id: int
-    account_id: int
-    dds_article_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime
+    workspace_id: int
+    owner_id: int
+    account: Account
+    dds_article: Optional[DdsArticle] = None
 
     class Config:
         orm_mode = True

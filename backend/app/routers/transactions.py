@@ -32,13 +32,36 @@ def create_transaction(
 
 @router.get("/", response_model=schemas.TransactionPage)
 def read_transactions(
-    workspace_id: int,
+    *,
     db: Session = Depends(get_db),
-    # ... другие фильтры ...
+    workspace_id: int,
     current_user: models.User = Depends(get_current_active_user),
+    page: int = Query(1, ge=1),
+    size: int = Query(20, ge=1, le=100),
+    # Добавим остальные фильтры
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    transaction_type: Optional[schemas.TransactionType] = None,
+    account_id: Optional[int] = None
 ):
-    # ... ваш код получения списка транзакций, проверка прав здесь важна и остается ...
-    return crud.transaction.get_multi_by_workspace_and_filters(...)
+    """
+    Получает список транзакций с пагинацией и фильтрами.
+    """
+    if not crud.workspace.is_owner_or_member(db, workspace_id=workspace_id, user_id=current_user.id):
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+
+    # Используем новую CRUD-функцию, которая поддерживает пагинацию
+    transactions_data = crud.transaction.get_multi_paginated_by_workspace_and_filters(
+        db,
+        workspace_id=workspace_id,
+        page=page,
+        size=size,
+        start_date=start_date,
+        end_date=end_date,
+        transaction_type=transaction_type,
+        account_id=account_id
+    )
+    return transactions_data
 
 @router.get("/{transaction_id}", response_model=schemas.Transaction)
 def read_transaction(*, transaction: models.Transaction = Depends(get_transaction_for_user)):
