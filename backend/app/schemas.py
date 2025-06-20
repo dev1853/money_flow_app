@@ -133,6 +133,10 @@ class Transaction(TransactionBase):
 
     class Config:
         orm_mode = True
+        
+class TransactionPage(BaseModel):
+    items: List[Transaction]
+    total_count: int
 
 # --- Statement Schemas ---
 class FailedRowDetail(BaseModel):
@@ -146,7 +150,7 @@ class StatementUploadResponse(BaseModel):
     failed_row_details: List[FailedRowDetail]
 
 # --- Report Schemas ---
-class DDSReportItem(BaseModel):
+class DdsReportItem(BaseModel): # <-- Переименовано
     article_id: int
     article_name: str
     initial_balance: float
@@ -154,12 +158,13 @@ class DDSReportItem(BaseModel):
     expense: float
     final_balance: float
     parent_id: Optional[int] = None
-    children: List['DDSReportItem'] = []
+    children: List['DdsReportItem'] = [] # <-- Также здесь
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-DDSReportItem.update_forward_refs()
+# В конце файла нужно обновить и эту строку
+DdsReportItem.update_forward_refs() # <-- Переименовано
 
 # Схема для отчета по балансам (ПОСЛЕДНЯЯ НЕДОСТАЮЩАЯ СХЕМА)
 class AccountBalance(BaseModel):

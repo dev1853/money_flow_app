@@ -14,41 +14,38 @@ class CRUDDDSArticle(CRUDBase[models.DdsArticle, schemas.DdsArticleCreate, schem
     CRUD-класс для работы со статьями ДДС (Движение Денежных Средств).
     """
 
-    def get_dds_articles_tree(self, db: Session, workspace_id: int) -> List[schemas.DdsArticle]:
+    def get_dds_articles_tree(self, db: Session, *, workspace_id: int) -> List[schemas.DdsArticle]:
         """
-        Получает все статьи ДДС для рабочего пространства и строит их иерархическое дерево.
-
-        :param db: Сессия базы данных SQLAlchemy.
-        :param workspace_id: Идентификатор рабочего пространства.
-        :return: Список корневых статей в виде дерева (Pydantic схемы).
+        Получает все статьи ДДС для рабочего пространства и строит их в виде дерева.
+        Финальная, наиболее надежная версия.
         """
-        all_articles = db.query(models.DdsArticle).filter(
-            models.DdsArticle.workspace_id == workspace_id
-        ).all()
+        # 1. Получаем все статьи одним запросом из базы, отсортированные по ID
+        all_articles_from_db = (
+            db.query(self.model)
+            .filter(self.model.workspace_id == workspace_id)
+            .order_by(self.model.id)
+            .all()
+        )
 
-        articles_map = {article.id: article for article in all_articles}
-        root_articles = []
+        # 2. Создаем Pydantic-модели и словарь для быстрого доступа по ID.
+        #    Использование словаря по уникальному ключу `id` гарантирует отсутствие дублей.
+        nodes = {article.id: schemas.DdsArticle.from_orm(article) for article in all_articles_from_db}
 
-        for article in all_articles:
-            if article.parent_id is None:
-                root_articles.append(article)
+        # 3. У каждой Pydantic-модели очищаем список дочерних элементов
+        for node in nodes.values():
+            node.children = []
+
+        # 4. Строим дерево: добавляем каждый узел в список children его родителя
+        root_nodes = []
+        for node_id, node in nodes.items():
+            if node.parent_id and node.parent_id in nodes:
+                # Находим родителя в нашем словаре и добавляем текущий узел ему в дети
+                nodes[node.parent_id].children.append(node)
             else:
-                parent = articles_map.get(article.parent_id)
-                if parent:
-                    if not hasattr(parent, 'children') or parent.children is None:
-                        parent.children = []
-                    parent.children.append(article)
-
-        def to_pydantic_tree(db_article: models.DdsArticle):
-            """
-            Рекурсивно преобразует ORM-объект в Pydantic-схему с учетом иерархии.
-            """
-            pydantic_article = schemas.DdsArticle.from_orm(db_article)
-            if db_article.children:
-                pydantic_article.children = [to_pydantic_tree(child) for child in db_article.children]
-            return pydantic_article
-
-        return [to_pydantic_tree(article) for article in root_articles]
+                # Если родителя нет, это узел верхнего уровня
+                root_nodes.append(node)
+        
+        return root_nodes
 
     def create_with_owner(
         self, db: Session, *, obj_in: schemas.DdsArticleCreate, owner_id: int

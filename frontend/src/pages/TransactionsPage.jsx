@@ -351,7 +351,7 @@ const TransactionsPage = () => {
                   </thead>
                   <tbody>
                     {transactions?.items?.length > 0 ? (
-                      transactions.items.map((transaction) => (
+                      transactions?.items?.map((transaction) => (
                         <tr key={transaction.id} className="border-b hover:bg-gray-50">
                           <td className="py-3 px-4 text-sm text-gray-700">
                             {isValid(parseISO(transaction.date)) 
