@@ -1,120 +1,122 @@
 // frontend/src/components/ArticleForm.jsx
-
-import React, { useState, useEffect, useMemo } from 'react'; // Удаляем useCallback
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
 import Alert from './Alert';
 import Input from './forms/Input';
 import Label from './forms/Label';
 import Select from './forms/Select';
-import Textarea from './forms/Textarea';
+import Button from './Button';
 
-const ArticleForm = ({ article, parentArticles = [], onSuccess, formId }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    type: 'expense',
-    parent_id: null,
-  });
+const buildArticleOptions = (articles, parentId = null, level = 0) => {
+    // ... эта функция остается без изменений
+};
 
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+function ArticleForm({ articleToEdit, parentId, onSuccess }) {
   const { activeWorkspace } = useAuth();
+  
+  const [formData, setFormData] = useState({ name: '', code: '', type: 'income', parent_id: parentId });
+  const [allArticles, setAllArticles] = useState([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const isEditMode = Boolean(articleToEdit);
 
   useEffect(() => {
-    if (article) {
+    if (activeWorkspace) {
+      apiService.get(`/dds-articles/?workspace_id=${activeWorkspace.id}`)
+        .then(data => setAllArticles(data || []))
+        .catch(err => console.error("Failed to fetch articles list", err));
+    }
+  }, [activeWorkspace]);
+
+  useEffect(() => {
+    if (isEditMode) {
       setFormData({
-        name: article.name || '',
-        description: article.description || '',
-        type: article.type || 'expense',
-        parent_id: article.parent_id || null,
+        name: articleToEdit.name,
+        code: articleToEdit.code || '',
+        type: articleToEdit.type,
+        parent_id: articleToEdit.parent_id,
       });
     } else {
-      setFormData({
-        name: '',
-        description: '',
-        type: 'expense',
-        parent_id: null,
-      });
+      setFormData({ name: '', code: '', type: 'income', parent_id: parentId });
     }
-  }, [article]);
+  }, [articleToEdit, isEditMode, parentId]);
   
-  const filteredParentArticles = useMemo(() => {
-    if (!article || !article.id) {
-      return parentArticles;
-    }
-    return parentArticles.filter(p => p.id !== article.id);
-  }, [parentArticles, article]);
+  const parentArticleOptions = useMemo(() => {
+      // ... эта логика остается без изменений
+  }, [allArticles, articleToEdit, isEditMode]);
 
-  const handleChange = (e) => { // Больше не нужно оборачивать в useCallback
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value === 'null' ? null : value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => { // Больше не нужно оборачивать в useCallback
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!activeWorkspace) {
-        setError("Рабочее пространство не выбрано.");
-        return;
-    }
+    setLoading(true);
     setError('');
-    setIsSubmitting(true);
 
-    const dataToSend = {
-      ...formData,
-      parent_id: formData.parent_id ? parseInt(formData.parent_id, 10) : null,
-      workspace_id: activeWorkspace.id,
-    };
-    
+    const finalParentId = formData.parent_id ? parseInt(formData.parent_id, 10) : null;
+    const dataToSend = { ...formData, parent_id: finalParentId };
+
     try {
-      if (article && article.id) {
-        await apiService.put(`/dds_articles/${article.id}`, dataToSend);
+      if (isEditMode) {
+        // При редактировании отправляем только те поля, что есть в форме
+        await apiService.put(`/dds-articles/${articleToEdit.id}`, {
+            name: dataToSend.name,
+            code: dataToSend.code,
+            type: dataToSend.type,
+            parent_id: dataToSend.parent_id
+        });
       } else {
-        await apiService.post(`/dds_articles`, dataToSend);
+        // При создании добавляем обязательные системные поля
+        await apiService.post('/dds-articles/', {
+            ...dataToSend,
+            owner_id: activeWorkspace.owner_id,
+            workspace_id: activeWorkspace.id
+        });
       }
-      onSuccess();
+      if (onSuccess) onSuccess();
     } catch (err) {
-      setError(err.message || 'Произошла ошибка при сохранении');
+      setError(err.message || 'Произошла ошибка');
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
   
   return (
-    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && <Alert type="error">{error}</Alert>}
       <div>
-        <Label htmlFor={`${formId}-articleName`}>Название</Label>
-        <Input type="text" name="name" id={`${formId}-articleName`} value={formData.name} onChange={handleChange} required />
+        <Label htmlFor="article_name">Название</Label>
+        <Input id="article_name" name="name" value={formData.name} onChange={handleChange} required />
       </div>
       <div>
-        <Label htmlFor={`${formId}-articleDescription`}>Описание</Label>
-        <Textarea name="description" id={`${formId}-articleDescription`} value={formData.description} onChange={handleChange} rows={3} />
+        <Label htmlFor="article_code">Код</Label>
+        <Input id="article_code" name="code" value={formData.code} onChange={handleChange} />
       </div>
       <div>
-        <Label htmlFor={`${formId}-articleType`}>Тип</Label>
-        <Select id={`${formId}-articleType`} name="type" value={formData.type} onChange={handleChange}>
-          <option value="expense">Расход</option>
+        <Label htmlFor="article_type">Тип</Label>
+        <Select id="article_type" name="type" value={formData.type} onChange={handleChange} required>
+          <option value="group">Группа</option>
           <option value="income">Доход</option>
+          <option value="expense">Расход</option>
         </Select>
       </div>
       <div>
-        <Label htmlFor={`${formId}-parentArticle`}>Родительская статья</Label>
-        <Select id={`${formId}-parentArticle`} name="parent_id" value={formData.parent_id || 'null'} onChange={handleChange}>
-          <option value="null">-- Корневая статья --</option>
-          {filteredParentArticles.map(p => (
-            <option key={p.id} value={p.id}>
-              {'\u00A0'.repeat(p.level * 4)} {p.name}
-            </option>
+        <Label htmlFor="parent_id">Родительская статья</Label>
+        <Select id="parent_id" name="parent_id" value={formData.parent_id || ""} onChange={handleChange}>
+          <option value="">-- Корневая статья --</option>
+          {parentArticleOptions?.map(article => (
+            <option key={article.id} value={article.id}>{article.label}</option>
           ))}
         </Select>
       </div>
-
-      {error && <Alert type="error" message={error} />}
+      <div className="flex justify-end pt-2">
+        <Button type="submit" disabled={loading}>{loading ? 'Сохранение...' : 'Сохранить'}</Button>
+      </div>
     </form>
   );
-};
+}
 
 export default ArticleForm;

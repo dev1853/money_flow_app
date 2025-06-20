@@ -1,10 +1,7 @@
-// frontend/src/components/ArticleNode.jsx
 import React, { useState } from 'react';
 import {
-  PencilIcon,
-  ArchiveBoxArrowDownIcon,
+  PencilSquareIcon,
   TrashIcon,
-  InboxArrowDownIcon,
   FolderIcon,
   DocumentTextIcon,
   ChevronRightIcon,
@@ -13,126 +10,70 @@ import {
 } from '@heroicons/react/24/outline';
 import Button from './Button';
 
-const ArticleNode = ({ article, level = 0, onEdit, onArchive, onDelete }) => {
-  const hasChildren = article.children && article.children.length > 0; //
-  const [isOpen, setIsOpen] = useState(true); //
+// --- Создаем объект для стилей и названий меток ---
+const ARTICLE_TYPE_INFO = {
+  income: {
+    label: 'Доход',
+    styles: 'bg-green-100 text-green-800',
+  },
+  expense: {
+    label: 'Расход',
+    styles: 'bg-red-100 text-red-800',
+  },
+};
 
-  const handleToggleOpen = (e) => { //
-    // Проверяем, был ли клик на самой кнопке Button или на элементе с ролью button внутри нее
-    if (e.target.closest('button, [role="button"]')) {
-        // Если клик был на кнопке (или элементе с ролью кнопки),
-        // и эта кнопка является одной из кнопок действий (имеет title), то не меняем состояние isOpen.
-        // Это предотвращает закрытие/открытие узла при клике на кнопки редактирования/архивации/удаления.
-        // Дополнительно проверяем, что это не основной div, которому мы присвоили role="button"
-        if (e.target.closest('[title]')) { // Предполагаем, что у кнопок действий есть title
-             return;
-        }
-    }
+const ArticleNode = ({ article, level = 0, onEdit, onDelete, onAddSubArticle }) => {
+  const hasChildren = article.children && article.children.length > 0;
+  const [isOpen, setIsOpen] = useState(true);
+
+  const handleToggleOpen = () => {
     if (hasChildren) setIsOpen(!isOpen);
   };
+
+  const handleEditClick = (e) => { e.stopPropagation(); onEdit(article); };
+  const handleDeleteClick = (e) => { e.stopPropagation(); onDelete(article); };
+  const handleAddSubArticleClick = (e) => { e.stopPropagation(); onAddSubArticle(article.id); };
   
-    // --- ИСПРАВЛЕНИЕ НАЧИНАЕТСЯ ЗДЕСЬ ---
-
-  // 1. Определяем, является ли статья доходом
-  const isIncome = article.type === 'income';
-
-  // 2. Определяем цвет для иконки в зависимости от типа и статуса архивации
-  const iconColor = article.is_archived
-    ? 'text-gray-400' // Серый для архивных
-    : isIncome
-    ? 'text-green-600' // Зеленый для доходов
-    : 'text-red-600';  // Красный для расходов
-
-  // --- КОНЕЦ ИСПРАВЛЕНИЯ ---
-
-  let NodeIconComponent = hasChildren ? FolderIcon : DocumentTextIcon;
-  const paddingLeft = level * 16;
+  const Icon = hasChildren ? FolderIcon : DocumentTextIcon;
+  const ToggleIcon = isOpen ? ChevronDownIcon : ChevronRightIcon;
+  const typeInfo = ARTICLE_TYPE_INFO[article.type]; // Получаем информацию о типе
 
   return (
-    <div className="py-0.5 first:pt-0 last:pb-0" style={{ paddingLeft: `${paddingLeft}px` }}> {/* */}
+    <div>
       <div
-        className={`flex items-center p-2 pr-1 rounded group hover:bg-gray-100 transition-colors duration-150 ${article.is_archived ? 'bg-gray-100 opacity-60' : 'bg-white shadow-sm'}`} //
+        className="flex items-center p-2 rounded-md hover:bg-gray-100 group cursor-pointer"
         onClick={handleToggleOpen}
-        role={hasChildren ? "button" : undefined} // listitem не совсем подходит, если нет дочерних, но div не имеет роли по умолчанию
-        aria-expanded={hasChildren ? isOpen : undefined}
-        tabIndex={hasChildren ? 0 : undefined} //
-        onKeyDown={hasChildren ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggleOpen(e); }} : undefined} //
       >
-        <div className="flex items-center flex-shrink-0 mr-1.5"> {/* */}
-          {hasChildren ? ( //
-            isOpen ? <ChevronDownIcon className="h-4 w-4 text-gray-500" /> : <ChevronRightIcon className="h-4 w-4 text-gray-500" /> //
-          ) : (
-            <span className="w-4 h-4 inline-block"></span> //
+        <div style={{ paddingLeft: `${level * 24}px` }} className="flex items-center flex-grow truncate">
+          {hasChildren ? <ToggleIcon className="h-4 w-4 mr-2 text-gray-400"/> : <div className="w-6 mr-2"></div>}
+          <Icon className="h-5 w-5 mr-3 text-gray-500" />
+          <span className="text-sm font-medium text-gray-800 truncate" title={article.name}>
+            {article.name}
+          </span>
+          
+          {/* --- ИЗМЕНЕНИЕ: Добавляем метку типа (доход/расход) --- */}
+          {typeInfo && (
+            <span className={`ml-3 text-xs font-medium px-2.5 py-0.5 rounded-full ${typeInfo.styles}`}>
+              {typeInfo.label}
+            </span>
           )}
-          <NodeIconComponent
-            className={`h-5 w-5 shrink-0 ml-1 ${article.is_archived ? 'text-gray-400' : (hasChildren ? 'text-yellow-500' : 'text-blue-500')}`} //
-            aria-hidden="true"
-          />
+
         </div>
 
-        <div className="flex-grow min-w-0 mr-1 sm:mr-2"> {/* */}
-          <span className={`font-medium text-sm truncate ${article.is_archived ? 'text-gray-500 line-through' : 'text-gray-800'}`} title={article.name}> {/* */}
-            {article.name} {/* */}
-          </span>
-          <span
-            className={`ml-2 text-xs font-medium px-1.5 py-0.5 rounded-full ${
-              article.type === 'income' 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-red-100 text-red-800'
-            }`}
-          >
-            {article.article_type === 'income' ? 'Доход' : 'Расход'} {/* */}
-          </span>
-        </div>
-
-        <div className="flex-shrink-0 flex items-center space-x-0.5"> {/* */}
-          <span className="text-xs text-gray-400 font-mono hidden md:inline mr-1"> {/* */}
-            ID:{article.id} {/* */}
-          </span>
-          <Button
-            variant="icon"
-            size="sm" // p-1.5 для icon variant + sm size
-            onClick={(e) => { e.stopPropagation(); onEdit(article); }} //
-            title="Редактировать"
-            className="text-gray-500 hover:text-blue-600 focus:ring-blue-500" //
-          >
-            <PencilIcon className="h-4 w-4" /> {/* */}
-          </Button>
-          <Button
-            variant="icon"
-            size="sm"
-            onClick={(e) => { e.stopPropagation(); onArchive(article); }} //
-            title={article.is_archived ? "Разархивировать" : "Архивировать"} //
-            className={article.is_archived ? 'text-yellow-500 hover:text-yellow-700 focus:ring-yellow-500' : 'text-gray-500 hover:text-green-600 focus:ring-green-500'} //
-          >
-            {article.is_archived ? <InboxArrowDownIcon className="h-4 w-4" /> : <ArchiveBoxArrowDownIcon className="h-4 w-4" />} {/* */}
-          </Button>
-          {!hasChildren && ( //
-             <Button
-                variant="icon"
-                size="sm"
-                onClick={(e) => { e.stopPropagation(); onDelete(article); }} //
-                title="Удалить"
-                className="text-gray-500 hover:text-red-600 focus:ring-red-500" //
-             >
-                <TrashIcon className="h-4 w-4" /> {/* */}
-            </Button>
-          )}
+        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button variant="icon" title="Добавить подстатью" onClick={handleAddSubArticleClick}><PlusCircleIcon className="h-5 w-5 text-gray-500 hover:text-green-600"/></Button>
+          <Button variant="icon" title="Редактировать" onClick={handleEditClick}><PencilSquareIcon className="h-5 w-5 text-gray-500 hover:text-indigo-600"/></Button>
+          {!hasChildren && <Button variant="icon" title="Удалить" onClick={handleDeleteClick}><TrashIcon className="h-5 w-5 text-gray-500 hover:text-red-600"/></Button>}
         </div>
       </div>
 
-      {hasChildren && isOpen && ( //
-        <div className="mt-0.5"> {/* */}
-          {article.children.map(child => ( //
-            <ArticleNode
-                key={child.id} article={child} level={level + 1} //
-                onEdit={onEdit} onArchive={onArchive} onDelete={onDelete} //
-            />
-          ))}
+      {hasChildren && isOpen && (
+        <div className="border-l-2 border-gray-200 ml-5">
+          {article.children.map(child => <ArticleNode key={child.id} article={child} level={level + 1} onEdit={onEdit} onDelete={onDelete} onAddSubArticle={onAddSubArticle} />)}
         </div>
       )}
     </div>
   );
 };
 
-export default ArticleNode; //
+export default ArticleNode;
