@@ -17,7 +17,7 @@ import TransactionForm from '../components/TransactionForm';
 import ConfirmationModal from '../components/ConfirmationModal';
 import StatementUploadModal from '../components/StatementUploadModal';
 import Select from '../components/forms/Select';
-import DatePicker from '../components/forms/DatePicker';
+import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { 
   ChevronDownIcon, 
