@@ -4,7 +4,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import Base, engine
 from .routers import (
-    auth, users, workspaces, accounts, dds_articles, transactions, statement, reports, dashboard
+    auth, 
+    users, 
+    workspaces, 
+    accounts, 
+    dds_articles, 
+    transactions, 
+    statement, 
+    reports, 
+     dashboard
 )
 
 Base.metadata.create_all(bind=engine)

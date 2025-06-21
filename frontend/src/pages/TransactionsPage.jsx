@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback, Fragment } from 'react';
+import React, { useState, useEffect, useCallback, useReducer, Fragment } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { Menu, Transition } from '@headlessui/react'; // Headless UI
+import { Menu, Transition } from '@headlessui/react';
 
-// Компоненты
+// Импорт всех UI компонентов
 import PageTitle from '../components/PageTitle';
 import Button from '../components/Button';
 import Loader from '../components/Loader';
@@ -17,8 +17,7 @@ import TransactionForm from '../components/TransactionForm';
 import ConfirmationModal from '../components/ConfirmationModal';
 import StatementUploadModal from '../components/StatementUploadModal';
 import Select from '../components/forms/Select';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import DateRangePicker from '../components/forms/DateRangePicker';
 import { 
   ChevronDownIcon, 
   PlusIcon, 
@@ -31,43 +30,64 @@ import {
   TrashIcon 
 } from '@heroicons/react/24/solid';
 
+
 const ITEMS_PER_PAGE = 20;
 
-function TransactionsPage() {
-  const { activeWorkspace, accounts } = useAuth();
+// --- Логика для управления фильтрами (Reducer) ---
+const initialFilters = {
+  start_date: null,
+  end_date: null,
+  transaction_type: '',
+  account_id: '',
+};
 
-  // Состояния данных и UI
+function filtersReducer(state, action) {
+  switch (action.type) {
+    case 'SET_FILTER':
+      // Обновляет одно поле фильтра
+      return { ...state, [action.field]: action.payload };
+    case 'RESET':
+      // Сбрасывает все фильтры к начальным значениям
+      return initialFilters;
+    default:
+      throw new Error("Неизвестное действие для фильтра");
+  }
+}
+
+function TransactionsPage() {
+  const { activeWorkspace, accounts, fetchAccounts } = useAuth();
+
+  // --- Состояния Компонента ---
   const [transactionsData, setTransactionsData] = useState({ items: [], total_count: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
-  // Состояния пагинации и фильтров
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState({
-      start_date: null,
-      end_date: null,
-      transaction_type: '',
-      account_id: '',
-  });
-
-  // Состояния модальных окон
+  const [filters, dispatch] = useReducer(filtersReducer, initialFilters);
+  
+  // Состояния для управления модальными окнами
   const [isFormModalOpen, setFormModalOpen] = useState(false);
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
-  const [defaultTransactionType, setDefaultTransactionType] = useState('expense'); // 'expense' или 'income'
+  const [defaultTransactionType, setDefaultTransactionType] = useState('expense');
   const [transactionToDelete, setTransactionToDelete] = useState(null);
 
-  // --- Загрузка данных с учетом фильтров и пагинации ---
+
+  // --- Загрузка данных ---
   const fetchTransactions = useCallback(async (page, currentFilters) => {
-    if (!activeWorkspace) return;
+    if (!activeWorkspace) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
+
     try {
       const params = new URLSearchParams({
         workspace_id: activeWorkspace.id,
         page: page,
         size: ITEMS_PER_PAGE,
       });
+      // Динамически добавляем фильтры в параметры запроса, если они установлены
       if (currentFilters.start_date) params.append('start_date', format(currentFilters.start_date, 'yyyy-MM-dd'));
       if (currentFilters.end_date) params.append('end_date', format(currentFilters.end_date, 'yyyy-MM-dd'));
       if (currentFilters.transaction_type) params.append('transaction_type', currentFilters.transaction_type);
@@ -82,179 +102,150 @@ function TransactionsPage() {
     }
   }, [activeWorkspace]);
 
+  // Эффект, который перезагружает данные при смене страницы или фильтров
   useEffect(() => {
-    fetchTransactions(currentPage, filters);
-  }, [currentPage, filters, fetchTransactions]);
+    if (activeWorkspace) {
+      fetchTransactions(currentPage, filters);
+    }
+  }, [currentPage, filters, fetchTransactions, activeWorkspace]);
 
-  // --- Обработчики ---
-  const handleFilterChange = (field, value) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
-    setCurrentPage(1); // Сбрасываем на первую страницу при смене фильтра
-  };
-
-  const handleResetFilters = () => {
-    setFilters({ startDate: null, endDate: null, type: '', accountId: '' });
-    setCurrentPage(1);
-  };
   
-  const handleOpenModal = (type, transaction = null) => {
+  // --- Обработчики Действий ---
+  const handleOpenFormModal = (type, transaction = null) => {
     setDefaultTransactionType(type);
     setEditingTransaction(transaction);
     setFormModalOpen(true);
   };
   
-  const handleCloseModal = () => {
+  const handleCloseFormModal = () => {
     setFormModalOpen(false);
     setEditingTransaction(null);
-    fetchTransactions(currentPage, filters); // Обновляем данные после закрытия
+    fetchTransactions(currentPage, filters); // Обновляем транзакции
+    fetchAccounts(); // Обновляем балансы счетов в контексте
   };
 
-  const handleDeleteRequest = (tx) => setTransactionToDelete(tx);
-  const handleDeleteConfirm = async () => { /* ... логика удаления ... */ };
+  const handleDeleteRequest = (tx) => {
+    setTransactionToDelete(tx);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!transactionToDelete) return;
+    try {
+      await apiService.delete(`/transactions/${transactionToDelete.id}`);
+      setTransactionToDelete(null);
+      fetchTransactions(currentPage, filters);
+      fetchAccounts();
+    } catch(err) {
+      setError(err.message || 'Не удалось удалить транзакцию');
+      setTransactionToDelete(null);
+    }
+  };
+
+
+  // --- Рендеринг ---
+  if (loading && transactionsData.items.length === 0) {
+    return <div className="flex justify-center items-center h-64"><Loader text="Загрузка транзакций..." /></div>;
+  }
   
-  if (loading && transactionsData.items.length === 0) return <Loader text="Загрузка транзакций..." />;
+  if (!activeWorkspace) {
+    return <Alert type="info">Пожалуйста, выберите или создайте рабочее пространство.</Alert>;
+  }
 
   return (
     <Fragment>
+      {/* -- ЗАГОЛОВОК И КНОПКИ ДЕЙСТВИЙ -- */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                <PageTitle title="Транзакции" />
-                
-                {/* --- НОВЫЙ БЛОК КНОПОК --- */}
-                <div className="flex items-center space-x-2">
-                    
-                    {/* Кнопка загрузки выписки остается отдельной */}
-                    <Button onClick={() => setUploadModalOpen(true)} variant="outline" icon={<ArrowUpOnSquareIcon className="h-5 w-5"/>}>
-                        Загрузить
-                    </Button>
-
-                    {/* Комбинированная кнопка "Добавить транзакцию" */}
-                    <div className="inline-flex rounded-md shadow-sm">
-                        <Button
-                            onClick={() => handleOpenModal('expense')} // Основное действие - добавить расход
-                            className="rounded-r-none" // Убираем скругление справа
-                        >
-                            <PlusIcon className="h-5 w-5 mr-2" />
-                            Добавить транзакцию
-                        </Button>
-                        <Menu as="div" className="-ml-px relative block">
-                            <Menu.Button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 h-full">
-                                <span className="sr-only">Открыть опции</span>
-                                <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
-                            </Menu.Button>
-                            <Transition
-                                as={Fragment}
-                                enter="transition ease-out duration-100"
-                                enterFrom="transform opacity-0 scale-95"
-                                enterTo="transform opacity-100 scale-100"
-                                leave="transition ease-in duration-75"
-                                leaveFrom="transform opacity-100 scale-100"
-                                leaveTo="transform opacity-0 scale-95"
-                            >
-                                <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
-                                <div className="py-1">
-                                    <Menu.Item>
-                                    {({ active }) => (
-                                        <a href="#" onClick={(e) => { e.preventDefault(); handleOpenModal('income'); }} className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} group flex items-center px-4 py-2 text-sm`}>
-                                            <ArrowUpCircleIcon className="mr-3 h-5 w-5 text-green-500 group-hover:text-green-600" aria-hidden="true" />
-                                            Добавить доход
-                                        </a>
-                                    )}
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                    {({ active }) => (
-                                        <a href="#" onClick={(e) => { e.preventDefault(); handleOpenModal('expense'); }} className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} group flex items-center px-4 py-2 text-sm`}>
-                                            <ArrowDownCircleIcon className="mr-3 h-5 w-5 text-red-500 group-hover:text-red-600" aria-hidden="true" />
-                                            Добавить расход
-                                        </a>
-                                    )}
-                                    </Menu.Item>
-                                </div>
-                                </Menu.Items>
-                            </Transition>
-                        </Menu>
-                    </div>
-                </div>
+        <PageTitle title="Транзакции" />
+        <div className="flex items-center space-x-2">
+            <Button onClick={() => setUploadModalOpen(true)} variant="outline" icon={<ArrowUpOnSquareIcon className="h-5 w-5"/>}>Загрузить</Button>
+            <div className="inline-flex rounded-md shadow-sm">
+                <Button onClick={() => handleOpenFormModal('expense')} className="rounded-r-none"><PlusIcon className="h-5 w-5 mr-2" />Добавить</Button>
+                <Menu as="div" className="-ml-px relative block">
+                    <Menu.Button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 h-full"><ChevronDownIcon className="h-5 w-5" /></Menu.Button>
+                    <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
+                        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                        <div className="py-1">
+                            <Menu.Item>{({ active }) => (<button onClick={() => handleOpenFormModal('income')} className={`${active ? 'bg-gray-100' : ''} group flex w-full items-center px-4 py-2 text-sm text-gray-700`}><ArrowUpCircleIcon className="mr-3 h-5 w-5 text-green-500"/>Добавить доход</button>)}</Menu.Item>
+                            <Menu.Item>{({ active }) => (<button onClick={() => handleOpenFormModal('expense')} className={`${active ? 'bg-gray-100' : ''} group flex w-full items-center px-4 py-2 text-sm text-gray-700`}><ArrowDownCircleIcon className="mr-3 h-5 w-5 text-red-500"/>Добавить расход</button>)}</Menu.Item>
+                        </div>
+                        </Menu.Items>
+                    </Transition>
+                </Menu>
             </div>
+        </div>
+      </div>
       
+      {/* -- ПАНЕЛЬ ФИЛЬТРОВ -- */}
       <div className="p-4 bg-white rounded-xl shadow-sm mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-                    <div className="font-medium text-gray-700 flex items-center col-span-1 md:col-span-2 lg:col-span-1">
-                        <FunnelIcon className="h-5 w-5 mr-2 text-gray-400"/>Фильтры:
-                    </div>
-                    
-                    {/* --- ИЗМЕНЕНИЕ 2: Используем наш кастомный DatePicker --- */}
-                    <DatePicker 
-                        selected={filters.start_date} 
-                        onChange={(date) => handleFilterChange('start_date', date)}
-                        placeholderText="Дата С"
-                        isClearable // Дополнительный пропс, который мы можем передать
-                    />
-                    <DatePicker 
-                        selected={filters.end_date} 
-                        onChange={(date) => handleFilterChange('end_date', date)}
-                        placeholderText="Дата ПО"
-                        isClearable
-                    />
-
-                    {/* Остальные фильтры остаются без изменений */}
-                    <Select value={filters.account_id} onChange={(e) => handleFilterChange('account_id', e.target.value)}>
-                        <option value="">Все счета</option>
-                        {accounts.map(acc => <option key={acc.id} value={acc.id}>{acc.name}</option>)}
-                    </Select>
-                    <div className="flex items-center space-x-2">
-                        <Select value={filters.transaction_type} onChange={(e) => handleFilterChange('transaction_type', e.target.value)} className="flex-grow">
-                            <option value="">Все типы</option>
-                            <option value="income">Доход</option>
-                            <option value="expense">Расход</option>
-                        </Select>
-                        <Button onClick={handleResetFilters} variant="icon" title="Сбросить фильтры"><XMarkIcon className="h-6 w-6 text-gray-500 hover:text-gray-800"/></Button>
-                    </div>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+            <DateRangePicker 
+              startDate={filters.start_date}
+              endDate={filters.end_date}
+              onStartDateChange={(date) => dispatch({ type: 'SET_FILTER', field: 'start_date', payload: date })}
+              onEndDateChange={(date) => dispatch({ type: 'SET_FILTER', field: 'end_date', payload: date })}
+            />
+            <div>
+              <label className="text-sm font-medium text-gray-700">Счет</label>
+              <Select value={filters.account_id} onChange={(e) => dispatch({ type: 'SET_FILTER', field: 'account_id', payload: e.target.value })} className="mt-1">
+                  <option value="">Все счета</option>
+                  {accounts.map(acc => <option key={acc.id} value={acc.id}>{acc.name}</option>)}
+              </Select>
             </div>
-
-      {loading && <p>Обновление данных...</p>}
+            <div className="flex items-end space-x-2">
+                <div className="flex-grow">
+                    <label className="text-sm font-medium text-gray-700">Тип</label>
+                    <Select value={filters.transaction_type} onChange={(e) => dispatch({ type: 'SET_FILTER', field: 'transaction_type', payload: e.target.value })} className="mt-1 flex-grow">
+                        <option value="">Все типы</option>
+                        <option value="income">Доход</option>
+                        <option value="expense">Расход</option>
+                    </Select>
+                </div>
+                <Button onClick={() => dispatch({ type: 'RESET' })} variant="icon" title="Сбросить фильтры"><XMarkIcon className="h-6 w-6 text-gray-500 hover:text-gray-800"/></Button>
+            </div>
+        </div>
+      </div>
+      
+      {loading && <div className="text-center py-4 text-gray-500">Обновление данных...</div>}
       {error && <Alert type="error" className="mb-4">{error}</Alert>}
       
-      {/* --- ТАБЛИЦА С ТРАНЗАКЦИЯМИ И ПАГИНАЦИЯ --- */}
+      {/* -- ОСНОВНОЙ КОНТЕНТ -- */}
       {!loading && transactionsData.items.length === 0 ? (
-         <EmptyState message="Нет транзакций, соответствующих вашим фильтрам." buttonText="Сбросить фильтры" onButtonClick={handleResetFilters} />
+         <EmptyState message="Нет транзакций, соответствующих вашим фильтрам." buttonText="Сбросить все фильтры" onButtonClick={() => dispatch({ type: 'RESET' })} />
       ) : (
         <>
-          <div className="bg-white shadow rounded-lg overflow-x-auto">
-            <div className="bg-white shadow-lg rounded-xl overflow-hidden">
+          <div className="bg-white shadow-lg rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="min-w-full">
-                <thead className="bg-gray-50">
-                    <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Счет / Статья</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Описание</th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Сумма</th>
-                    <th scope="col" className="relative px-6 py-3"><span className="sr-only">Действия</span></th>
-                    </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                    {transactionsData.items.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{format(parseISO(tx.date), 'dd MMMM yyyy', { locale: ru })}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <div className="font-medium text-gray-900">{tx.account?.name}</div>
-                            <div className="text-gray-500">{tx.dds_article?.name || 'Без статьи'}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{tx.description}</td>
-                        <td className={`px-6 py-4 whitespace-nowrap text-sm text-right font-semibold ${tx.transaction_type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                            {tx.transaction_type === 'income' ? '+' : '-'} {tx.amount.toLocaleString('ru-RU', { minimumFractionDigits: 2 })}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button onClick={() => handleOpenModal(tx.transaction_type, tx)} className="text-indigo-600 hover:text-indigo-900"><PencilSquareIcon className="h-5 w-5"/></button>
-                            <button onClick={() => handleDeleteRequest(tx)} className="text-red-600 hover:text-red-900 ml-4"><TrashIcon className="h-5 w-5"/></button>
-                        </td>
-                    </tr>
-                    ))}
-                </tbody>
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Счет / Статья</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Описание</th>
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Сумма</th>
+                            <th scope="col" className="relative px-6 py-3"><span className="sr-only">Действия</span></th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {transactionsData.items.map((tx) => (
+                        <tr key={tx.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{format(parseISO(tx.date), 'dd MMMM yyyy', { locale: ru })}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                <div className="font-medium text-gray-900">{tx.account?.name}</div>
+                                <div className="text-gray-500">{tx.dds_article?.name || 'Без статьи'}</div>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-800 break-words max-w-xs truncate" title={tx.description}>{tx.description}</td>
+                            <td className={`px-6 py-4 whitespace-nowrap text-sm text-right font-semibold ${tx.transaction_type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                {tx.transaction_type === 'income' ? '+' : ''} {tx.amount.toLocaleString('ru-RU', { minimumFractionDigits: 2 })}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <Button variant="icon" onClick={() => handleOpenFormModal(tx.transaction_type, tx)}><PencilSquareIcon className="h-5 w-5"/></Button>
+                                <Button variant="icon" onClick={() => handleDeleteRequest(tx)} className="text-red-600 hover:text-red-800 ml-2"><TrashIcon className="h-5 w-5"/></Button>
+                            </td>
+                        </tr>
+                        ))}
+                    </tbody>
                 </table>
             </div>
-          </div>
           </div>
           <Pagination
             currentPage={currentPage}
@@ -263,21 +254,13 @@ function TransactionsPage() {
           />
         </>
       )}
-
-      {/* --- Модальные окна --- */}
-      <Modal isOpen={isFormModalOpen} onClose={handleCloseModal} title={editingTransaction ? 'Редактировать транзакцию' : 'Новая транзакция'}>
-        <TransactionForm
-          transaction={editingTransaction}
-          defaultType={defaultTransactionType}
-          onSuccess={handleCloseModal}
-        />
+      
+      <Modal isOpen={isFormModalOpen} onClose={handleCloseFormModal} title={editingTransaction ? 'Редактировать транзакцию' : 'Новая транзакция'}>
+        <TransactionForm transaction={editingTransaction} defaultType={defaultTransactionType} onSuccess={handleCloseFormModal}/>
       </Modal>
-
-      <StatementUploadModal isOpen={isUploadModalOpen} onClose={() => setUploadModalOpen(false)} onSuccess={() => fetchTransactions(1, filters)} />
-
+      <StatementUploadModal isOpen={isUploadModalOpen} onClose={() => setUploadModalOpen(false)} onSuccess={() => fetchTransactions(1, initialFilters)} />
       <ConfirmationModal isOpen={Boolean(transactionToDelete)} onClose={() => setTransactionToDelete(null)} onConfirm={handleDeleteConfirm} title="Удалить транзакцию" message={`Вы уверены?`} />
     </Fragment>
   );
 }
-
 export default TransactionsPage;

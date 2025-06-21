@@ -57,6 +57,7 @@ class DdsArticle(Base):
     __tablename__ = "dds_articles"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
+    # is_income = Column(Boolean, nullable=False, default=False) 
     code = Column(String, nullable=True, index=True) 
     type = Column(String, nullable=False) 
     parent_id = Column(Integer, ForeignKey("dds_articles.id"), nullable=True)

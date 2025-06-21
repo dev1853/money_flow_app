@@ -1,4 +1,3 @@
-// frontend/src/components/ArticleForm.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
@@ -8,14 +7,21 @@ import Label from './forms/Label';
 import Select from './forms/Select';
 import Button from './Button';
 
+// Вспомогательная функция для построения дерева для <select>
 const buildArticleOptions = (articles, parentId = null, level = 0) => {
-    // ... эта функция остается без изменений
+  let options = [];
+  const children = articles.filter(a => a.parent_id === parentId);
+  for (const article of children) {
+    options.push({ ...article, label: `${'— '.repeat(level)}${article.name}` });
+    options = options.concat(buildArticleOptions(articles, article.id, level + 1));
+  }
+  return options;
 };
 
 function ArticleForm({ articleToEdit, parentId, onSuccess }) {
-  const { activeWorkspace } = useAuth();
+    const { activeWorkspace, user } = useAuth(); 
   
-  const [formData, setFormData] = useState({ name: '', code: '', type: 'income', parent_id: parentId });
+   const [formData, setFormData] = useState({ name: '', code: '', type: 'group', parent_id: parentId });
   const [allArticles, setAllArticles] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +31,7 @@ function ArticleForm({ articleToEdit, parentId, onSuccess }) {
     if (activeWorkspace) {
       apiService.get(`/dds-articles/?workspace_id=${activeWorkspace.id}`)
         .then(data => setAllArticles(data || []))
-        .catch(err => console.error("Failed to fetch articles list", err));
+        .catch(err => console.error("Failed to fetch articles list for form", err));
     }
   }, [activeWorkspace]);
 
@@ -38,12 +44,22 @@ function ArticleForm({ articleToEdit, parentId, onSuccess }) {
         parent_id: articleToEdit.parent_id,
       });
     } else {
-      setFormData({ name: '', code: '', type: 'income', parent_id: parentId });
+      setFormData({ name: '', code: '', type: 'group', parent_id: parentId });
     }
   }, [articleToEdit, isEditMode, parentId]);
   
   const parentArticleOptions = useMemo(() => {
-      // ... эта логика остается без изменений
+    let availableArticles = allArticles;
+    if (isEditMode) {
+      const articlesToExclude = new Set();
+      const getChildrenIds = (articleId) => {
+          articlesToExclude.add(articleId);
+          allArticles.filter(a => a.parent_id === articleId).forEach(child => getChildrenIds(child.id));
+      };
+      getChildrenIds(articleToEdit.id);
+      availableArticles = allArticles.filter(a => !articlesToExclude.has(a.id));
+    }
+    return buildArticleOptions(availableArticles);
   }, [allArticles, articleToEdit, isEditMode]);
 
   const handleChange = (e) => {
@@ -55,25 +71,19 @@ function ArticleForm({ articleToEdit, parentId, onSuccess }) {
     e.preventDefault();
     setLoading(true);
     setError('');
-
-    const finalParentId = formData.parent_id ? parseInt(formData.parent_id, 10) : null;
-    const dataToSend = { ...formData, parent_id: finalParentId };
-
+    const dataToSend = { ...formData, parent_id: formData.parent_id ? parseInt(formData.parent_id, 10) : null };
     try {
       if (isEditMode) {
-        // При редактировании отправляем только те поля, что есть в форме
         await apiService.put(`/dds-articles/${articleToEdit.id}`, {
             name: dataToSend.name,
-            code: dataToSend.code,
             type: dataToSend.type,
             parent_id: dataToSend.parent_id
         });
       } else {
-        // При создании добавляем обязательные системные поля
-        await apiService.post('/dds-articles/', {
-            ...dataToSend,
-            owner_id: activeWorkspace.owner_id,
-            workspace_id: activeWorkspace.id
+        await apiService.post('/dds-articles/', { 
+            ...dataToSend, 
+            workspace_id: activeWorkspace.id,
+            owner_id: user.id 
         });
       }
       if (onSuccess) onSuccess();
@@ -88,16 +98,12 @@ function ArticleForm({ articleToEdit, parentId, onSuccess }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <Alert type="error">{error}</Alert>}
       <div>
-        <Label htmlFor="article_name">Название</Label>
-        <Input id="article_name" name="name" value={formData.name} onChange={handleChange} required />
+        <Label htmlFor="name">Название</Label>
+        <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
       </div>
       <div>
-        <Label htmlFor="article_code">Код</Label>
-        <Input id="article_code" name="code" value={formData.code} onChange={handleChange} />
-      </div>
-      <div>
-        <Label htmlFor="article_type">Тип</Label>
-        <Select id="article_type" name="type" value={formData.type} onChange={handleChange} required>
+        <Label htmlFor="type">Тип</Label>
+        <Select id="type" name="type" value={formData.type} onChange={handleChange} required>
           <option value="group">Группа</option>
           <option value="income">Доход</option>
           <option value="expense">Расход</option>
@@ -107,9 +113,7 @@ function ArticleForm({ articleToEdit, parentId, onSuccess }) {
         <Label htmlFor="parent_id">Родительская статья</Label>
         <Select id="parent_id" name="parent_id" value={formData.parent_id || ""} onChange={handleChange}>
           <option value="">-- Корневая статья --</option>
-          {parentArticleOptions?.map(article => (
-            <option key={article.id} value={article.id}>{article.label}</option>
-          ))}
+          {parentArticleOptions.map(article => (<option key={article.id} value={article.id}>{article.label}</option>))}
         </Select>
       </div>
       <div className="flex justify-end pt-2">
@@ -118,5 +122,4 @@ function ArticleForm({ articleToEdit, parentId, onSuccess }) {
     </form>
   );
 }
-
 export default ArticleForm;

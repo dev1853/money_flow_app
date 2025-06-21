@@ -1,6 +1,6 @@
 # backend/app/schemas.py
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional, Literal, Dict, Any
 from datetime import date, datetime
 
@@ -102,6 +102,15 @@ class DdsArticle(DdsArticleBase):
         
 DdsArticle.update_forward_refs()
 
+class DashboardCashflowTrendData(BaseModel):
+    event_date: date = Field(..., description="Дата для точки данных тренда") # <--- ИЗМЕНЕНО
+    income: float = Field(..., description="Сумма доходов за эту дату")
+    expense: float = Field(..., description="Сумма расходов за эту дату")
+    net_flow: float = Field(..., description="Чистый денежный поток (доходы - расходы) за эту дату")
+
+    class Config:
+        from_attributes = True
+        
 # --- Transaction Schemas ---
 TransactionType = Literal["income", "expense", "transfer"]
 
@@ -150,24 +159,21 @@ class StatementUploadResponse(BaseModel):
     skipped_duplicates_count: int
     failed_row_details: List[FailedRowDetail]
 
-# --- Report Schemas ---
-class DdsReportItem(BaseModel): # <-- Переименовано
+class DdsReportItem(BaseModel):
     article_id: int
     article_name: str
-    initial_balance: float
+    parent_id: Optional[int] = None
     income: float
     expense: float
+    initial_balance: float
     final_balance: float
-    parent_id: Optional[int] = None
-    children: List['DdsReportItem'] = [] # <-- Также здесь
+    children: List['DdsReportItem'] = []
 
     class Config:
         from_attributes = True
+DdsReportItem.update_forward_refs()
 
-# В конце файла нужно обновить и эту строку
-DdsReportItem.update_forward_refs() # <-- Переименовано
-
-# Схема для отчета по балансам (ПОСЛЕДНЯЯ НЕДОСТАЮЩАЯ СХЕМА)
+# Схема для отчета по балансам 
 class AccountBalance(BaseModel):
     account_id: int
     account_name: str
@@ -175,5 +181,12 @@ class AccountBalance(BaseModel):
 
     class Config:
         orm_mode = True
-        
-    
+
+class DashboardCashflowTrendData(BaseModel):
+    event_date: date = Field(..., description="Дата для точки данных тренда")
+    income: float = Field(..., description="Сумма доходов за эту дату")
+    expense: float = Field(..., description="Сумма расходов за эту дату")
+    net_flow: float = Field(..., description="Чистый денежный поток (доходы - расходы) за эту дату")
+
+    class Config:
+        from_attributes = True # 

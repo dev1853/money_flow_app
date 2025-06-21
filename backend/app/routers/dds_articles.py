@@ -13,11 +13,11 @@ router = APIRouter(
 )
 
 # --- Эндпоинт для получения дерева статей ---
-@router.get("/", response_model=List[schemas.DdsArticle])
+@router.get("/", response_model=List[schemas.DdsArticle]) # Остается "/"
 def read_dds_articles(
     *,
     db: Session = Depends(get_db),
-    workspace_id: int,
+    workspace_id: int = Query(..., description="ID рабочего пространства"), # Предполагаем, что ты уже добавил Query
     skip: int = 0,
     limit: int = 1000,
     current_user: models.User = Depends(get_current_active_user)
@@ -27,11 +27,12 @@ def read_dds_articles(
     """
     if not crud.workspace.is_owner_or_member(db=db, workspace_id=workspace_id, user_id=current_user.id):
         raise HTTPException(status_code=403, detail="Not enough permissions")
-    
+
     articles = crud.dds_article.get_multi_by_workspace(
         db=db, workspace_id=workspace_id, skip=skip, limit=limit
     )
     return articles
+
 
 # --- Эндпоинт для создания статьи ---
 @router.post("/", response_model=schemas.DdsArticle)

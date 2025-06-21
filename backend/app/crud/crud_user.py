@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from .base import CRUDBase
 from app import models, schemas, security
+from app.security import get_password_hash
 
 class CRUDUser(CRUDBase[models.User, schemas.UserCreate, schemas.UserUpdate]):
     def get_by_email(self, db: Session, *, email: str) -> Optional[models.User]:
