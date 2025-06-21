@@ -22,3 +22,7 @@ frontend/yarn-error.log*
 .vscode/
 *.swp
 *.swo
+
+# Python-специфические файлы и директории
+__pycache__/
+*.pyc
