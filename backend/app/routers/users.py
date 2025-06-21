@@ -29,6 +29,8 @@ def create_user(
     # 1. Создаем пользователя
     user = crud.user.create(db, obj_in=user_in)
 
+    # --- ОТЛАДКА 1 ---
+    print(f"--- DEBUG 1 (Router): User created with ID: {user.id} ---")
     # 2. Вызываем централизованную функцию онбординга
     # Она сделает все остальное: создаст воркспейс, счета, статьи и т.д.
     crud.onboarding.onboard_new_user(db=db, user=user)

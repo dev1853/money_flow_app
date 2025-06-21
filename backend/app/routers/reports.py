@@ -1,34 +1,34 @@
 # backend/app/routers/reports.py
-from typing import List, Optional
-from datetime import date
-from fastapi import APIRouter, Depends, Query
+
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
-from app import crud, models, schemas
-from app.dependencies import get_db, get_current_active_user, get_workspace_for_user
+from typing import List, Dict, Any
+from datetime import date
 
-router = APIRouter(tags=["Reports"], dependencies=[Depends(get_current_active_user)])
+from app.dependencies import get_db, get_current_active_user
+from app.models import User, Transaction
+from app.crud.crud_report import report as crud_report
 
-@router.get("/dds", response_model=List[schemas.DdsReportItem])
-def get_dds_report(
-    start_date: date,
-    end_date: date,
-    *,
+
+from app.schemas import DdsReportEntry, BaseModel 
+
+router = APIRouter(
+    tags=["Reports"],
+    dependencies=[Depends(get_current_active_user)]
+)
+
+@router.get("/dds", response_model=List[DdsReportEntry])
+async def get_dds_report(
+    start_date: date = Query(...),
+    end_date: date = Query(...),
+    workspace_id: int = Query(...),
     db: Session = Depends(get_db),
-    workspace: models.Workspace = Depends(get_workspace_for_user),
+    current_user: User = Depends(get_current_active_user)
 ):
-    # Зависимость уже проверила права на воркспейс
-    return crud.report.get_dds_report_data(
-        db, workspace_id=workspace.id, start_date=start_date, end_date=end_date
+    report_data = crud_report.get_dds_report_data(
+        db,
+        workspace_id=workspace_id,
+        start_date=start_date,
+        end_date=end_date
     )
-
-@router.get("/account-balances", response_model=List[schemas.AccountBalance])
-def get_account_balances_report(
-    *,
-    on_date: Optional[date] = None,
-    db: Session = Depends(get_db),
-    workspace: models.Workspace = Depends(get_workspace_for_user),
-):
-    # Зависимость уже проверила права на воркспейс
-    return crud.report.get_account_balances_report_data(
-        db, workspace_id=workspace.id, on_date=on_date
-    )
+    return report_data

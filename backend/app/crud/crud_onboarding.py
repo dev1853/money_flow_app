@@ -13,7 +13,7 @@ def onboard_new_user(db: Session, *, user: models.User):
     
     # 2. Создаем статьи ДДС
     crud.dds_article.create_default_articles(db=db, workspace_id=db_workspace.id, owner_id=user.id)
-    
+    print(f"--- DEBUG 2 (Onboarding): Calling create_default_accounts with owner_id: {user.id} ---")
     # 3. Создаем счета
     crud.account.create_default_accounts(db=db, workspace_id=db_workspace.id, owner_id=user.id)
 
