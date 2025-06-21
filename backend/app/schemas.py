@@ -159,7 +159,6 @@ class StatementUploadResponse(BaseModel):
     skipped_duplicates_count: int
     failed_row_details: List[FailedRowDetail]
 
-# Заменяем DdsReportEntry на правильную версию
 class DdsReportItem(BaseModel):
     article_id: int
     article_name: str
@@ -172,7 +171,6 @@ class DdsReportItem(BaseModel):
 
     class Config:
         from_attributes = True
-
 DdsReportItem.update_forward_refs()
 
 # Схема для отчета по балансам 
@@ -192,14 +190,3 @@ class DashboardCashflowTrendData(BaseModel):
 
     class Config:
         from_attributes = True # 
-
-class DdsReportEntry(BaseModel): 
-    article_id: int = Field(..., description="ID статьи ДДС")
-    article_name: str = Field(..., description="Название статьи ДДС")
-    is_income: bool = Field(..., description="Признак: доход (true) или расход (false)")
-    total_amount: float = Field(..., description="Сумма транзакций по этой статье за период")
-
-    class Config:
-        from_attributes = True 
-        
-    
