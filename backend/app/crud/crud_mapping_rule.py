@@ -3,6 +3,8 @@
 from typing import List, Optional, Dict, Any, Union
 from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import or_ 
+
 from app.crud.base import CRUDBase
 from app import models, schemas
 
@@ -50,7 +52,30 @@ class CRUDMappingRule(CRUDBase[models.MappingRule, schemas.MappingRuleCreate, sc
         query = query.order_by(self.model.priority.desc(), self.model.id) 
         
         return query.all()
+    
+    def find_matching_dds_article_id(
+        self, db: Session, *, workspace_id: int, description: str, transaction_type: schemas.TransactionType
+    ) -> Optional[int]:
+        """
+        Ищет подходящую статью ДДС на основе описания транзакции и её типа,
+        используя активные правила сопоставления.
 
+        Возвращает ID статьи ДДС, если найдено совпадение, иначе None.
+        """
+        # Получаем все активные правила для данного рабочего пространства и типа транзакции
+        # Они уже отсортированы по приоритету (начиная с более высокого)
+        rules = self.get_active_rules(
+            db=db, workspace_id=workspace_id, transaction_type=transaction_type
+        )
+
+        for rule in rules:
+            # Преобразуем ключевое слово и описание в нижний регистр для регистронезависимого поиска
+            if rule.keyword.lower() in description.lower():
+                print(f"DEBUG (Auto-categorization): Rule matched: '{rule.keyword}' -> Article ID: {rule.dds_article_id}")
+                return rule.dds_article_id
+        
+        print(f"DEBUG (Auto-categorization): No rule matched for description '{description}' and type '{transaction_type}'.")
+        return None # Если совпадений не найдено
 
 # Создаем экземпляр CRUD-операций для MappingRule
 mapping_rule = CRUDMappingRule(models.MappingRule)
