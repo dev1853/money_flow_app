@@ -4,6 +4,8 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional, Literal, Dict, Any
 from datetime import date, datetime
 
+TransactionType = Literal["income", "expense"] 
+
 # --- User Schemas ---
 class UserBase(BaseModel):
     email: EmailStr
@@ -60,28 +62,32 @@ class AccountBase(BaseModel):
     current_balance: float = 0.0    
 
     class Config:
-        from_attributes = True 
+        orm_mode = True # Changed from from_attributes=True to match existing codebase (assuming Pydantic V1)
 
 class AccountCreate(AccountBase):
     workspace_id: int
 
 class AccountUpdate(BaseModel):
     name: Optional[str] = None
+    account_type: Optional[str] = None
     currency: Optional[str] = None
     is_active: Optional[bool] = None
+    initial_balance: Optional[float] = None
+    current_balance: Optional[float] = None
 
 class Account(AccountBase):
     id: int
+    owner_id: int
     workspace_id: int
-
+    
     class Config:
-        orm_mode = True
+        orm_mode = True # Changed from from_attributes=True to match existing codebase (assuming Pydantic V1)
 
-# --- DdsArticle Schemas ---
+# --- DDS Article Schemas ---
 class DdsArticleBase(BaseModel):
     name: str
     code: Optional[str] = None
-    type: str 
+    type: Literal["income", "expense", "group"]
     parent_id: Optional[int] = None
 
 class DdsArticleCreate(DdsArticleBase):
@@ -89,48 +95,42 @@ class DdsArticleCreate(DdsArticleBase):
     owner_id: int
 
 class DdsArticleUpdate(DdsArticleBase):
-    pass
+    name: Optional[str] = None
+    code: Optional[str] = None
+    type: Optional[Literal["income", "expense", "group"]] = None
+    parent_id: Optional[int] = None
 
 class DdsArticle(DdsArticleBase):
     id: int
-    owner_id: int
     workspace_id: int
-    children: List['DdsArticle'] = []
-
+    owner_id: int
+    children: List['DdsArticle'] # Если нужна рекурсивная связь, раскомментируйте
+    
     class Config:
         orm_mode = True
         
 DdsArticle.update_forward_refs()
 
-class DashboardCashflowTrendData(BaseModel):
-    event_date: date = Field(..., description="Дата для точки данных тренда") # <--- ИЗМЕНЕНО
-    income: float = Field(..., description="Сумма доходов за эту дату")
-    expense: float = Field(..., description="Сумма расходов за эту дату")
-    net_flow: float = Field(..., description="Чистый денежный поток (доходы - расходы) за эту дату")
-
-    class Config:
-        from_attributes = True
-        
 # --- Transaction Schemas ---
-TransactionType = Literal["income", "expense", "transfer"]
-
 class TransactionBase(BaseModel):
     date: date
-    description: Optional[str] = None
     amount: float
+    description: Optional[str] = None
+    account_id: int
+    dds_article_id: Optional[int] = None
     transaction_type: TransactionType
 
 class TransactionCreate(TransactionBase):
-    account_id: int
-    dds_article_id: Optional[int] = None
+    workspace_id: int
+    owner_id: int
 
 class TransactionUpdate(BaseModel):
     date: Optional[date] = None
-    description: Optional[str] = None
     amount: Optional[float] = None
-    transaction_type: Optional[TransactionType] = None
+    description: Optional[str] = None
     account_id: Optional[int] = None
     dds_article_id: Optional[int] = None
+    transaction_type: Optional[Literal["income", "expense"]] = None
 
 class Transaction(TransactionBase):
     id: int
@@ -143,7 +143,7 @@ class Transaction(TransactionBase):
 
     class Config:
         orm_mode = True
-        
+
 class TransactionPage(BaseModel):
     items: List[Transaction]
     total_count: int
@@ -170,10 +170,10 @@ class DdsReportItem(BaseModel):
     children: List['DdsReportItem'] = []
 
     class Config:
-        from_attributes = True
+        orm_mode = True # Changed from from_attributes=True to match existing codebase (assuming Pydantic V1)
 DdsReportItem.update_forward_refs()
 
-# Схема для отчета по балансам 
+# Схема для отчета по балансам
 class AccountBalance(BaseModel):
     account_id: int
     account_name: str
@@ -186,7 +186,39 @@ class DashboardCashflowTrendData(BaseModel):
     event_date: date = Field(..., description="Дата для точки данных тренда")
     income: float = Field(..., description="Сумма доходов за эту дату")
     expense: float = Field(..., description="Сумма расходов за эту дату")
-    net_flow: float = Field(..., description="Чистый денежный поток (доходы - расходы) за эту дату")
 
+class DashboardSummaryData(BaseModel):
+    total_income: float
+    total_expense: float
+    net_profit: float
+
+# --- НОВЫЕ СХЕМЫ ДЛЯ MappingRule ---
+class MappingRuleBase(BaseModel):
+    keyword: str = Field(..., min_length=1, max_length=255, description="Ключевое слово для автоматического разнесения")
+    dds_article_id: int = Field(..., description="ID статьи ДДС, к которой относится правило")
+    transaction_type: Optional[Literal['income', 'expense']] = Field(None, description="Тип транзакции (income/expense), к которому применяется правило. Null для обоих.")
+    priority: int = Field(0, description="Приоритет правила (чем выше, тем раньше применяется)")
+    is_active: bool = Field(True, description="Активно ли правило")
+
+class MappingRuleCreate(MappingRuleBase):
+    owner_id: int
+    workspace_id: int
+
+class MappingRuleUpdate(MappingRuleBase):
+    keyword: Optional[str] = None
+    dds_article_id: Optional[int] = None
+    transaction_type: Optional[Literal['income', 'expense']] = None
+    priority: Optional[int] = None
+    is_active: Optional[bool] = None
+
+class MappingRule(MappingRuleBase):
+    id: int
+    owner_id: int
+    workspace_id: int
+    created_at: datetime
+    updated_at: datetime
+    # Включаем вложенную статью ДДС для удобства в API ответах
+    dds_article: DdsArticle # Используем уже существующую схему DdsArticle
+    
     class Config:
-        from_attributes = True # 
+        orm_mode = True

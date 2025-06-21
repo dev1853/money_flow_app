@@ -9,7 +9,8 @@ from app.dependencies import get_db, get_current_active_user, get_article_for_us
 
 router = APIRouter(
     tags=["dds_articles"],
-    dependencies=[Depends(get_current_active_user)]
+    dependencies=[Depends(get_current_active_user)],
+    responses={404: {"description": "Not found"}},
 )
 
 # --- Эндпоинт для получения дерева статей ---
@@ -17,7 +18,7 @@ router = APIRouter(
 def read_dds_articles(
     *,
     db: Session = Depends(get_db),
-    workspace_id: int = Query(..., description="ID рабочего пространства"), # Предполагаем, что ты уже добавил Query
+    workspace_id: int = Query(..., description="ID рабочего пространства"),
     skip: int = 0,
     limit: int = 1000,
     current_user: models.User = Depends(get_current_active_user)
