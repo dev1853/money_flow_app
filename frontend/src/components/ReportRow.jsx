@@ -1,39 +1,36 @@
 // frontend/src/components/ReportRow.jsx
 import React from 'react';
 
-// Функция для форматирования чисел
-const formatCurrency = (value) => {
-  return (value || 0).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-};
-
-const ReportRow = ({ item, level = 0 }) => {
-  // Используем `|| 0`, чтобы гарантировать, что мы всегда работаем с числами
+const ReportRow = ({ item, level = 0, formatCurrency }) => {
   const income = item.income || 0;
   const expense = item.expense || 0;
   const netFlow = income - expense;
 
-  const indentationStyle = { paddingLeft: `${level * 24}px` };
-  const isGroup = item.children?.length > 0;
-  const textStyle = isGroup ? 'font-bold text-gray-800' : 'font-normal text-gray-700';
+  const indentationStyle = { paddingLeft: `${level * 24}px` }; // Для вложенности
+  const isGroup = item.children && item.children.length > 0;
+
+  // Базовые классы для ячеек данных
+  const baseTdClasses = "whitespace-nowrap px-3 py-4 text-sm";
 
   return (
     <>
-      <tr className={`border-t border-gray-200 ${isGroup ? 'bg-gray-50' : 'bg-white'}`}>
-        <td style={indentationStyle} className={`px-6 py-3 whitespace-nowrap text-sm ${textStyle}`}>
-          {item.article_name}
+      {/* Классы для строки: фон белый, нижняя граница, и условное выделение для родительских статей */}
+      <tr className={`bg-white border-b border-gray-200 ${isGroup ? 'font-semibold text-gray-900' : 'text-gray-500'}`}>
+        <td style={indentationStyle} className={`py-4 pl-4 pr-3 text-sm ${isGroup ? 'font-semibold text-gray-900' : 'font-medium text-gray-900'} sm:pl-6`}>
+          {isGroup ? item.article_name.toUpperCase() : item.article_name}
         </td>
-        <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-green-600">
-          {income > 0 ? formatCurrency(income) : '-'}
+        <td className={`${baseTdClasses} text-right text-green-600`}>
+          {formatCurrency(income)}
         </td>
-        <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-red-600">
-          {expense > 0 ? formatCurrency(expense) : '-'}
+        <td className={`${baseTdClasses} text-right text-red-600`}>
+          {formatCurrency(expense)}
         </td>
-        <td className={`px-6 py-3 whitespace-nowrap text-sm text-right font-semibold ${netFlow >= 0 ? 'text-gray-800' : 'text-red-700'}`}>
+        <td className={`${baseTdClasses} text-right ${netFlow >= 0 ? 'text-blue-600' : 'text-purple-600'}`}>
           {formatCurrency(netFlow)}
         </td>
       </tr>
-      {isGroup && item.children?.map(child => (
-        <ReportRow key={child.article_id} item={child} level={level + 1} />
+      {isGroup && item.children.map(child => (
+        <ReportRow key={child.article_id} item={child} level={level + 1} formatCurrency={formatCurrency} />
       ))}
     </>
   );

@@ -36,7 +36,7 @@ const getInitialFormData = (transaction, defaultType) => ({
     dds_article_id: transaction?.dds_article_id || '',
 });
 
-function TransactionForm({ transaction, defaultType = 'expense', onSuccess }) {
+function TransactionForm({ transaction, onSubmit, defaultType = 'expense', onSuccess }) {
     const { activeWorkspace, accounts, fetchAccounts } = useAuth();
     
     const [formData, setFormData] = useState(getInitialFormData(transaction, defaultType));
@@ -80,42 +80,30 @@ function TransactionForm({ transaction, defaultType = 'expense', onSuccess }) {
         setFormData(prev => ({ ...prev, date: date }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.account_id) {
-            setError("Пожалуйста, выберите счет.");
-            return;
-        }
-        setLoading(true);
         setError('');
-        
-        try {
-            const dataToSend = {
-                ...formData,
-                date: format(formData.date, 'yyyy-MM-dd'),
-                account_id: parseInt(formData.account_id, 10),
-                amount: Math.abs(parseFloat(String(formData.amount).replace(',', '.'))),
-                transaction_type: formData.transaction_type,
-                description: formData.description,
-                dds_article_id: formData.dds_article_id ? parseInt(formData.dds_article_id, 10) : null,
-            };
 
-            if (isEditMode) {
-                // --- ИСПРАВЛЕНИЕ: Отправляем все измененные данные ---
-                await apiService.put(`/transactions/${transaction.id}`, dataToSend);
-            } else {
-                await apiService.post('/transactions/', dataToSend);
-            }
-            
-            await fetchAccounts();
-            if (onSuccess) onSuccess();
-
-        } catch (err) {
-            setError(err.message || 'Произошла ошибка при сохранении транзакции');
-        } finally {
-            setLoading(false);
+        // Простая валидация
+        if (!formData.account_id || !formData.amount || !formData.transaction_type || !formData.date) {
+            setError("Пожалуйста, заполните все обязательные поля: Счет, Сумма, Тип, Дата.");
+            return; // Валидация не пройдена, функция завершается здесь
         }
+
+        // *** ВОТ ЭТА ЧАСТЬ КОДА ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ ЗДЕСЬ! ***
+        const dataToSubmit = { // <-- Убедитесь, что эта строка присутствует!
+            ...formData,
+            amount: parseFloat(formData.amount),
+            date: format(formData.date, 'yyyy-MM-dd'),
+            workspace_id: activeWorkspace.id,
+            // Добавляем payee к описанию, если оно есть и включен режим быстрого ввода
+            description: formData.payee ? `Кому: ${formData.payee}. ${formData.description}`.trim() : formData.description.trim()
+        };
+        // ******************************************************
+        
+        onSubmit(dataToSubmit); // Вызов onSubmit с подготовленными данными
     };
+
     
     // Определяем информацию о типе для отображения бейджа
     const typeInfo = formData.transaction_type === 'income' 

@@ -1,10 +1,11 @@
 // src/components/Header.jsx
-import { Fragment } from 'react'; // <-- Импорт Fragment
+import { Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bars3Icon, BellIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useAuth } from '../contexts/AuthContext';
-import { Menu, Transition } from '@headlessui/react'; // <-- Импорт Menu и Transition
+import { Menu, Transition } from '@headlessui/react'; 
+import QuickCashExpenseForm from '../components/QuickCashExpenseForm'
 
 // Функция для объединения классов (утилита из Headless UI примеров)
 function classNames(...classes) {
@@ -52,6 +53,7 @@ const Header = ({ setSidebarOpen }) => {
 
         {/* Элементы справа */}
         <div className="flex items-center gap-x-4 lg:gap-x-6">
+          <QuickCashExpenseForm /> 
           <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
             <span className="sr-only">Уведомления</span>
             <BellIcon className="h-6 w-6" aria-hidden="true" />

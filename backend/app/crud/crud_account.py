@@ -3,7 +3,7 @@
 from sqlalchemy.orm import Session, joinedload
 from fastapi.encoders import jsonable_encoder
 from typing import Any, Dict, List, Optional, Union
-
+from sqlalchemy import func, case
 from app.crud.base import CRUDBase
 from app import models, schemas
 

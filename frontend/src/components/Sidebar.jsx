@@ -1,14 +1,15 @@
 // src/components/Sidebar.jsx
 import { Link, useLocation } from 'react-router-dom';
+
 import {
-  ChartBarIcon, // Для Дашборда
+  ChartBarIcon,
   DocumentDuplicateIcon,
   CreditCardIcon,
   ArrowsRightLeftIcon,
   Cog6ToothIcon,
-  ArrowTrendingUpIcon, // Использовали для лого "Финансы"
-  ChartPieIcon,      // Для Отчета ДДС
-  ScaleIcon          // Для Отчета Остатки ДС
+  ArrowTrendingUpIcon,
+  ChartPieIcon,
+  ScaleIcon
 } from '@heroicons/react/24/outline';
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -52,8 +53,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               group flex items-center rounded-md px-3 py-2.5 text-sm font-medium
               transition-colors duration-150 ease-in-out
               ${isActive
-                ? 'bg-indigo-600 text-white shadow-sm' // Активная ссылка
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' // Неактивная ссылка
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' 
               }
             `}
           >
