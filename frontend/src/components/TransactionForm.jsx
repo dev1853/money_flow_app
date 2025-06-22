@@ -1,3 +1,4 @@
+// frontend/src/components/TransactionForm.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
@@ -5,12 +6,12 @@ import { format, parseISO } from 'date-fns';
 
 // Импорт компонентов
 import Alert from './Alert';
-import Button from './Button';
+import Button from './Button'; 
 import Select from './forms/Select';
 import Input from './forms/Input';
 import Label from './forms/Label';
 import Textarea from './forms/Textarea';
-import DatePicker from './forms/DatePicker'; // Наш кастомный DatePicker
+import DatePicker from './forms/DatePicker';
 import { ru } from 'date-fns/locale';
 
 // Вспомогательная функция для построения иерархического списка для <select>
@@ -27,104 +28,170 @@ const buildArticleOptions = (articles, parentId = null, level = 0) => {
 };
 
 // Функция для установки начального состояния формы
-const getInitialFormData = (transaction, defaultType) => ({
-    date: transaction ? parseISO(transaction.date) : new Date(),
-    account_id: transaction?.account_id || '',
-    amount: transaction?.amount?.toFixed(2) || '',
-    transaction_type: transaction?.transaction_type || defaultType,
-    description: transaction?.description || '',
-    dds_article_id: transaction?.dds_article_id || '',
-});
+const getInitialFormData = (transaction, defaultType, defaultAccountId = '') => {
+    console.log("DEBUG(TransactionForm): getInitialFormData called.");
+    return {
+        date: transaction ? parseISO(transaction.date) : new Date(),
+        account_id: transaction?.account_id || defaultAccountId,
+        amount: transaction?.amount?.toFixed(2) || '',
+        transaction_type: transaction?.transaction_type || defaultType,
+        dds_article_id: transaction?.dds_article_id || '',
+        description: transaction?.description || '',
+        payee: ''
+    };
+};
 
-function TransactionForm({ transaction, onSubmit, defaultType = 'expense', onSuccess }) {
-    const { activeWorkspace, accounts, fetchAccounts } = useAuth();
-    
-    const [formData, setFormData] = useState(getInitialFormData(transaction, defaultType));
+function TransactionForm({ transaction, onSubmit, onCancel, loading, isQuickCashExpense = false }) {
+    console.log("DEBUG(TransactionForm): Component Rendered. Props:", { transaction, onSubmit, onCancel, loading, isQuickCashExpense }); // <--- ЛОГ РЕНДЕРА
+    const { activeWorkspace } = useAuth();
+    const [formData, setFormData] = useState(() => getInitialFormData(transaction, 'expense', ''));
+    const [accounts, setAccounts] = useState([]);
     const [ddsArticles, setDdsArticles] = useState([]);
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    const isEditMode = Boolean(transaction);
-
-    // Загрузка справочника статей ДДС
     useEffect(() => {
-        if (activeWorkspace) {
-            apiService.get(`/dds-articles/?workspace_id=${activeWorkspace.id}`)
-                .then(data => setDdsArticles(data || []))
-                .catch(err => console.error("Failed to fetch DDS articles", err));
-        }
-    }, [activeWorkspace]);
+        console.log("DEBUG(TransactionForm): useEffect mounted/updated. activeWorkspace:", activeWorkspace); // <--- ЛОГ useEffect
+        const fetchDependencies = async () => {
+            setError('');
+            try {
+                if (!activeWorkspace) {
+                    console.log("DEBUG(TransactionForm): activeWorkspace is null, cannot fetch dependencies.");
+                    setError("Рабочее пространство не активно.");
+                    return;
+                }
 
-    // Обновление формы, только если меняется пропс transaction
-    useEffect(() => {
-        setFormData(getInitialFormData(transaction, defaultType));
-    }, [transaction, defaultType]);
-    
-    const articleOptions = useMemo(() => buildArticleOptions(ddsArticles), [ddsArticles]);
+                console.log("DEBUG(TransactionForm): Fetching accounts for workspace:", activeWorkspace.id);
+                const fetchedAccounts = await apiService.get(`/accounts/?workspace_id=${activeWorkspace.id}`);
+                setAccounts(fetchedAccounts);
+                console.log("DEBUG(TransactionForm): Fetched accounts:", fetchedAccounts);
 
-    // Умный обработчик изменений, который сам обновляет тип транзакции
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        const newState = { ...formData, [name]: value };
+                console.log("DEBUG(TransactionForm): Fetching DDS articles for workspace:", activeWorkspace.id);
+                const fetchedDdsArticles = await apiService.get(`/dds-articles/?workspace_id=${activeWorkspace.id}`);
+                setDdsArticles(fetchedDdsArticles);
+                console.log("DEBUG(TransactionForm): Fetched DDS articles:", fetchedDdsArticles);
 
-        if (name === 'dds_article_id') {
-            const selectedArticle = ddsArticles.find(a => a.id === parseInt(value));
-            if (selectedArticle && selectedArticle.type !== 'group') {
-                newState.transaction_type = selectedArticle.type;
+                if (isQuickCashExpense && fetchedAccounts.length > 0) {
+                    const cashAccount = fetchedAccounts.find(acc => acc.account_type === 'cash');
+                    const defaultAccountId = cashAccount ? cashAccount.id : (fetchedAccounts[0] ? fetchedAccounts[0].id : '');
+                    console.log("DEBUG(TransactionForm): QuickExpense mode. Setting default cash account:", defaultAccountId);
+                    setFormData(prev => ({
+                        ...prev,
+                        account_id: defaultAccountId,
+                        transaction_type: 'expense',
+                        date: new Date(),
+                    }));
+                }
+            } catch (err) {
+                setError(err.message || "Ошибка загрузки данных для формы.");
+                console.error("DEBUG(TransactionForm): Ошибка загрузки зависимостей формы:", err);
             }
+        };
+
+        fetchDependencies();
+        // Cleanup function (optional, but good practice for useEffect)
+        return () => console.log("DEBUG(TransactionForm): useEffect cleanup.");
+    }, [activeWorkspace, isQuickCashExpense]);
+
+    const accountOptions = useMemo(() => {
+        console.log("DEBUG(TransactionForm): accountOptions useMemo re-calculated.");
+        return accounts.map(acc => ({ value: acc.id, label: `${acc.name} (${acc.currency})` }));
+    }, [accounts]);
+
+    const articleOptions = useMemo(() => {
+        console.log("DEBUG(TransactionForm): articleOptions useMemo re-calculated.");
+        return buildArticleOptions(ddsArticles);
+    }, [ddsArticles]);
+
+    const typeInfo = useMemo(() => {
+        console.log("DEBUG(TransactionForm): typeInfo useMemo re-calculated. transaction_type:", formData.transaction_type);
+        switch (formData.transaction_type) {
+            case 'income':
+                return { label: 'Доход', styles: 'bg-green-100 text-green-800' };
+            case 'expense':
+                return { label: 'Расход', styles: 'bg-red-100 text-red-800' };
+            default:
+                return { label: 'Тип', styles: 'bg-gray-100 text-gray-800' };
         }
-        setFormData(newState);
+    }, [formData.transaction_type]);
+
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        console.log(`DEBUG(TransactionForm): handleChange called. Field: ${name}, Value: ${value}, Type: ${type}`); // <--- ЛОГ
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+        console.log("DEBUG(TransactionForm): formData after handleChange:", { ...formData, [name]: type === 'checkbox' ? checked : value }); // Лог нового состояния
     };
 
     const handleDateChange = (date) => {
-        setFormData(prev => ({ ...prev, date: date }));
+        console.log("DEBUG(TransactionForm): handleDateChange called. Date:", date); // <--- ЛОГ
+        setFormData(prev => ({
+            ...prev,
+            date: date
+        }));
+        console.log("DEBUG(TransactionForm): formData after handleDateChange:", { ...formData, date: date }); // Лог нового состояния
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log("DEBUG(TransactionForm): handleSubmit invoked!"); // <--- ЛОГ
+        console.log("DEBUG(TransactionForm): Current formData BEFORE validation:", JSON.stringify(formData)); // <--- ЛОГ
         setError('');
 
-        // Простая валидация
         if (!formData.account_id || !formData.amount || !formData.transaction_type || !formData.date) {
             setError("Пожалуйста, заполните все обязательные поля: Счет, Сумма, Тип, Дата.");
-            return; // Валидация не пройдена, функция завершается здесь
+            console.log("DEBUG(TransactionForm): Validation FAILED."); // <--- ЛОГ
+            return;
         }
+        console.log("DEBUG(TransactionForm): Validation PASSED. Preparing dataToSubmit."); // <--- ЛОГ
 
-        // *** ВОТ ЭТА ЧАСТЬ КОДА ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ ЗДЕСЬ! ***
-        const dataToSubmit = { // <-- Убедитесь, что эта строка присутствует!
-            ...formData,
-            amount: parseFloat(formData.amount),
+        const dataToSubmit = {
             date: format(formData.date, 'yyyy-MM-dd'),
+            amount: parseFloat(formData.amount),
+            account_id: parseInt(formData.account_id),
+            transaction_type: formData.transaction_type,
+            description: formData.payee ? `Кому: ${formData.payee}. ${formData.description}`.trim() : formData.description.trim(),
+            
+            dds_article_id: formData.dds_article_id ? parseInt(formData.dds_article_id) : null, 
+            
+            owner_id: activeWorkspace.owner_id, 
             workspace_id: activeWorkspace.id,
-            // Добавляем payee к описанию, если оно есть и включен режим быстрого ввода
-            description: formData.payee ? `Кому: ${formData.payee}. ${formData.description}`.trim() : formData.description.trim()
         };
-        // ******************************************************
         
-        onSubmit(dataToSubmit); // Вызов onSubmit с подготовленными данными
+        console.log("DEBUG(TransactionForm): Calling onSubmit with dataToSubmit:", JSON.stringify(dataToSubmit)); // <--- ЛОГ
+        console.log("DEBUG(TransactionForm): Type of onSubmit prop:", typeof onSubmit); // <--- КРИТИЧЕСКИ ВАЖНЫЙ ЛОГ
+        onSubmit(dataToSubmit); // <--- СТРОКА 140 (или около того)
     };
-
-    
-    // Определяем информацию о типе для отображения бейджа
-    const typeInfo = formData.transaction_type === 'income' 
-        ? { label: 'Доход', styles: 'bg-green-100 text-green-800' }
-        : { label: 'Расход', styles: 'bg-red-100 text-red-800' };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
+            {console.log("DEBUG(TransactionForm): Form JSX rendered.")} {/* Лог рендера JSX */}
             {error && <Alert type="error">{error}</Alert>}
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <DatePicker label="Дата" selected={formData.date} onChange={handleDateChange} />
-                <div>
-                    <Label htmlFor="account_id">Счет</Label>
-                    <Select id="account_id" name="account_id" value={formData.account_id} onChange={handleChange} required>
-                        <option value="" disabled>Выберите счет</option>
-                        {accounts.filter(a => a.is_active).map(acc => <option key={acc.id} value={acc.id}>{acc.name} ({acc.currency})</option>)}
-                    </Select>
-                </div>
+
+            <div>
+                <Label htmlFor="date">Дата</Label>
+                <DatePicker selected={formData.date} onChange={handleDateChange} dateFormat="dd.MM.yyyy" locale={ru} required />
             </div>
-            
+
+            <div>
+                <Label htmlFor="account_id">Счет</Label>
+                <Select
+                    id="account_id"
+                    name="account_id"
+                    value={formData.account_id || ''}
+                    onChange={handleChange}
+                    required
+                    disabled={isQuickCashExpense}
+                    className={isQuickCashExpense ? 'bg-gray-100' : ''}
+                >
+                    <option value="">Выберите счет</option>
+                    {accountOptions.map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                </Select>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                 <div>
                     <Label htmlFor="amount">Сумма</Label>
@@ -132,8 +199,28 @@ function TransactionForm({ transaction, onSubmit, defaultType = 'expense', onSuc
                 </div>
                 <div className={`p-2 rounded-md text-center font-medium ${typeInfo.styles}`}>
                     {typeInfo.label}
+                    {!isQuickCashExpense && (
+                        <Select
+                            id="transaction_type"
+                            name="transaction_type"
+                            value={formData.transaction_type}
+                            onChange={handleChange}
+                            required
+                            className="mt-1 block w-full"
+                        >
+                            <option value="income">Доход</option>
+                            <option value="expense">Расход</option>
+                        </Select>
+                    )}
                 </div>
             </div>
+            
+            {isQuickCashExpense && (
+                <div>
+                    <Label htmlFor="payee">Кому (получатель платежа)</Label>
+                    <Input type="text" id="payee" name="payee" value={formData.payee} onChange={handleChange} placeholder="Например, Магазин 'Пятерочка'" />
+                </div>
+            )}
 
             <div>
                 <Label htmlFor="dds_article_id">Статья ДДС</Label>
@@ -146,11 +233,14 @@ function TransactionForm({ transaction, onSubmit, defaultType = 'expense', onSuc
             </div>
 
             <div>
-                <Label htmlFor="description">Описание</Label>
-                <Textarea id="description" name="description" value={formData.description} onChange={handleChange} rows={3} placeholder="Назначение платежа..." />
+                <Label htmlFor="description">Описание (Назначение платежа)</Label>
+                <Textarea id="description" name="description" value={formData.description} onChange={handleChange} rows={3} placeholder="Описание расхода..." />
             </div>
 
             <div className="flex justify-end pt-4">
+                {onCancel && (
+                    <Button type="button" onClick={onCancel} variant="secondary" className="mr-2">Отмена</Button>
+                )}
                 <Button type="submit" disabled={loading}>{loading ? 'Сохранение...' : 'Сохранить'}</Button>
             </div>
         </form>

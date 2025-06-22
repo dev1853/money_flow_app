@@ -1,33 +1,69 @@
 # backend/app/routers/transactions.py
 from typing import List, Any, Optional
 from datetime import date
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from app import crud, models, schemas
 from app.dependencies import get_db, get_current_active_user, get_transaction_for_user, get_account_for_user
 
 router = APIRouter(tags=["transactions"], dependencies=[Depends(get_current_active_user)])
 
-@router.post("/", response_model=schemas.Transaction)
+@router.post("/", response_model=schemas.Transaction, status_code=status.HTTP_201_CREATED)
 def create_transaction(
     *,
     db: Session = Depends(get_db),
     transaction_in: schemas.TransactionCreate,
     current_user: models.User = Depends(get_current_active_user),
-) -> models.Transaction:
-    # Используем зависимость для проверки счета
-    account = get_account_for_user(db=db, account_id=transaction_in.account_id, current_user=current_user)
+) -> Any:
+    """
+    Создать новую транзакцию.
+    """
+    # Проверка принадлежности счета
+    account = crud.account.get(db, id=transaction_in.account_id)
+    if not account or account.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Указанный счет не существует или не принадлежит текущему пользователю.",
+        )
     
-    # Проверяем статью ДДС, если она есть
+    # Проверка принадлежности статьи ДДС, если она указана
     if transaction_in.dds_article_id:
-        article = crud.dds_article.get(db, id=transaction_in.dds_article_id)
-        if not article or article.workspace_id != account.workspace_id:
-            raise HTTPException(status_code=400, detail="DDS Article is invalid or does not belong to the workspace")
-            
+        dds_article = crud.dds_article.get(db, id=transaction_in.dds_article_id)
+        if not dds_article or dds_article.owner_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Указанная статья ДДС не существует или не принадлежит текущему пользователю.",
+            )
+
+    # НОВОЕ: Автоматическое определение dds_article_id, если оно не указано
+    if transaction_in.dds_article_id is None:
+        if transaction_in.description and transaction_in.transaction_type:
+            print("DEBUG (Auto-categorization - Router): Attempting to auto-categorize transaction.") # <--- ЛОГ
+            # Используем функцию поиска правила
+            matched_dds_article_id = crud.mapping_rule.find_matching_dds_article_id(
+                db=db,
+                workspace_id=current_user.active_workspace_id,
+                description=transaction_in.description,
+                transaction_type=transaction_in.transaction_type
+            )
+            if matched_dds_article_id:
+                # Если правило найдено, присваиваем ID статьи ДДС
+                transaction_in.dds_article_id = matched_dds_article_id
+                print(f"DEBUG (Auto-categorization - Router): DDS Article ID {matched_dds_article_id} assigned automatically for description: '{transaction_in.description}'.") # <--- ЛОГ
+            else:
+                print(f"DEBUG (Auto-categorization - Router): No matching rule found for description: '{transaction_in.description}'. DDS Article ID remains None.") # <--- ЛОГ
+        else:
+            print("DEBUG (Auto-categorization - Router): Description or Transaction Type missing, skipping auto-categorization.") # <--- ЛОГ
+
+
+    # Создание транзакции
     transaction = crud.transaction.create_with_owner_and_workspace(
-        db=db, obj_in=transaction_in, owner_id=current_user.id, workspace_id=account.workspace_id
+        db=db, obj_in=transaction_in, owner_id=current_user.id, workspace_id=current_user.active_workspace_id
     )
-    crud.account.recalculate_balance(db, account_id=transaction.account_id)
+    
+    # Пересчет баланса счета после создания транзакции
+    crud.account.recalculate_balance(db=db, account_id=transaction.account_id)
+    
     return transaction
 
 @router.get("/", response_model=schemas.TransactionPage)

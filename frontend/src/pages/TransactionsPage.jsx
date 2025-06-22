@@ -1,3 +1,5 @@
+// frontend/src/pages/TransactionsPage.jsx
+
 import React, { useState, useEffect, useCallback, useReducer, Fragment } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
@@ -12,6 +14,7 @@ import Loader from '../components/Loader';
 import Alert from '../components/Alert';
 import EmptyState from '../components/EmptyState';
 import Pagination from '../components/Pagination';
+import Label from '../components/forms/Label';
 import Modal from '../components/Modal';
 import TransactionForm from '../components/TransactionForm';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -43,199 +46,254 @@ const initialFilters = {
 
 function filtersReducer(state, action) {
   switch (action.type) {
-    case 'SET_FILTER':
-      // Обновляет одно поле фильтра
-      return { ...state, [action.field]: action.payload };
-    case 'RESET':
-      // Сбрасывает все фильтры к начальным значениям
+    case 'SET_DATE_RANGE':
+      return { ...state, start_date: action.payload.startDate, end_date: action.payload.endDate };
+    case 'SET_TYPE':
+      return { ...state, transaction_type: action.payload };
+    case 'SET_ACCOUNT':
+      return { ...state, account_id: action.payload };
+    case 'RESET_FILTERS':
       return initialFilters;
     default:
-      throw new Error("Неизвестное действие для фильтра");
+      return state;
   }
 }
 
-function TransactionsPage() {
-  const { activeWorkspace, accounts, fetchAccounts } = useAuth();
 
-  // --- Состояния Компонента ---
+function TransactionsPage() {
+  const { activeWorkspace, current_user } = useAuth();
   const [transactionsData, setTransactionsData] = useState({ items: [], total_count: 0 });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, dispatch] = useReducer(filtersReducer, initialFilters);
-  
-  // Состояния для управления модальными окнами
-  const [isFormModalOpen, setFormModalOpen] = useState(false);
-  const [isUploadModalOpen, setUploadModalOpen] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
-  const [defaultTransactionType, setDefaultTransactionType] = useState('expense');
+  const [defaultTransactionType, setDefaultTransactionType] = useState('expense'); // Для кнопки "новая транзакция"
+  const [currentFilters, dispatchFilters] = useReducer(filtersReducer, initialFilters);
+  const [isUploadModalOpen, setUploadModalOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState(null);
 
 
-  // --- Загрузка данных ---
-  const fetchTransactions = useCallback(async (page, currentFilters) => {
-    if (!activeWorkspace) {
-      setLoading(false);
-      return;
-    }
+  const fetchTransactions = useCallback(async (page, filters) => {
     setLoading(true);
     setError('');
-
     try {
+      if (!activeWorkspace) {
+        setError("Рабочее пространство не активно.");
+        setLoading(false);
+        return;
+      }
+
       const params = new URLSearchParams({
         workspace_id: activeWorkspace.id,
         page: page,
         size: ITEMS_PER_PAGE,
       });
-      // Динамически добавляем фильтры в параметры запроса, если они установлены
-      if (currentFilters.start_date) params.append('start_date', format(currentFilters.start_date, 'yyyy-MM-dd'));
-      if (currentFilters.end_date) params.append('end_date', format(currentFilters.end_date, 'yyyy-MM-dd'));
-      if (currentFilters.transaction_type) params.append('transaction_type', currentFilters.transaction_type);
-      if (currentFilters.account_id) params.append('account_id', currentFilters.account_id);
+
+      if (filters.start_date) params.append('start_date', format(filters.start_date, 'yyyy-MM-dd'));
+      if (filters.end_date) params.append('end_date', format(filters.end_date, 'yyyy-MM-dd'));
+      if (filters.transaction_type) params.append('transaction_type', filters.transaction_type);
+      if (filters.account_id) params.append('account_id', filters.account_id);
 
       const data = await apiService.get(`/transactions/?${params.toString()}`);
-      setTransactionsData(data || { items: [], total_count: 0 });
+      setTransactionsData(data);
     } catch (err) {
-      setError(err.message || "Не удалось загрузить транзакции");
+      setError(err.message || "Не удалось загрузить транзакции.");
+      console.error("Ошибка загрузки транзакций:", err);
     } finally {
       setLoading(false);
     }
   }, [activeWorkspace]);
 
-  // Эффект, который перезагружает данные при смене страницы или фильтров
+
+  // Effect для загрузки транзакций при изменении страницы или фильтров
   useEffect(() => {
     if (activeWorkspace) {
-      fetchTransactions(currentPage, filters);
+      fetchTransactions(currentPage, currentFilters);
     }
-  }, [currentPage, filters, fetchTransactions, activeWorkspace]);
+  }, [currentPage, currentFilters, activeWorkspace, fetchTransactions]);
 
-  
-  // --- Обработчики Действий ---
-  const handleOpenFormModal = (type, transaction = null) => {
-    setDefaultTransactionType(type);
+  // Обработчики открытия/закрытия модальных окон
+  const handleOpenFormModal = (type = 'expense', transaction = null) => {
     setEditingTransaction(transaction);
-    setFormModalOpen(true);
+    setDefaultTransactionType(type);
+    setIsFormModalOpen(true);
   };
-  
-  const handleCloseFormModal = () => {
-    setFormModalOpen(false);
+
+  const handleCloseFormModal = useCallback(() => {
+    setIsFormModalOpen(false);
     setEditingTransaction(null);
-    fetchTransactions(currentPage, filters); // Обновляем транзакции
-    fetchAccounts(); // Обновляем балансы счетов в контексте
-  };
+    setDefaultTransactionType('expense'); // Сброс на расход по умолчанию
+    fetchTransactions(currentPage, currentFilters); // Обновляем список транзакций
+  }, [fetchTransactions, currentPage, currentFilters]);
 
-  const handleDeleteRequest = (tx) => {
-    setTransactionToDelete(tx);
-  };
 
-  const handleDeleteConfirm = async () => {
-    if (!transactionToDelete) return;
+  // НОВАЯ ФУНКЦИЯ: ОБРАБОТКА ОТПРАВКИ ФОРМЫ ТРАНЗАКЦИИ
+  const handleTransactionSubmit = useCallback(async (formData) => {
+    setLoading(true); // Устанавливаем загрузку для формы
+    setError(''); // Очищаем ошибки страницы
     try {
-      await apiService.delete(`/transactions/${transactionToDelete.id}`);
-      setTransactionToDelete(null);
-      fetchTransactions(currentPage, filters);
-      fetchAccounts();
-    } catch(err) {
-      setError(err.message || 'Не удалось удалить транзакцию');
-      setTransactionToDelete(null);
+        let response;
+        if (editingTransaction) {
+            // Обновление существующей транзакции
+            response = await apiService.put(`/transactions/${editingTransaction.id}`, formData);
+            // Если вам нужно обновить owner_id и workspace_id при обновлении,
+            // добавьте их в formData здесь, но обычно они не меняются при PUT
+        } else {
+            // Создание новой транзакции
+            // FormData уже содержит owner_id и workspace_id из TransactionForm
+            response = await apiService.post('/transactions/', formData);
+        }
+        
+        console.log("Транзакция успешно сохранена:", response);
+        handleCloseFormModal(); // Закрываем модальное окно и обновляем список
+
+    } catch (err) {
+        setError(err.message || "Не удалось сохранить транзакцию.");
+        console.error("Ошибка сохранения транзакции:", err);
+    } finally {
+        setLoading(false); // Снимаем загрузку
     }
+  }, [editingTransaction, handleCloseFormModal]);
+
+
+  // Обработчики для фильтров
+  const handleDateRangeChange = (startDate, endDate) => {
+    dispatchFilters({ type: 'SET_DATE_RANGE', payload: { startDate, endDate } });
+    setCurrentPage(1); // Сбросить на первую страницу при изменении фильтров
   };
 
+  const handleTypeFilterChange = (e) => {
+    dispatchFilters({ type: 'SET_TYPE', payload: e.target.value });
+    setCurrentPage(1);
+  };
 
-  // --- Рендеринг ---
-  if (loading && transactionsData.items.length === 0) {
-    return <div className="flex justify-center items-center h-64"><Loader text="Загрузка транзакций..." /></div>;
-  }
-  
-  if (!activeWorkspace) {
-    return <Alert type="info">Пожалуйста, выберите или создайте рабочее пространство.</Alert>;
-  }
+  const handleAccountFilterChange = (e) => {
+    dispatchFilters({ type: 'SET_ACCOUNT', payload: parseInt(e.target.value) || '' });
+    setCurrentPage(1);
+  };
+
+  const handleResetFilters = () => {
+    dispatchFilters({ type: 'RESET_FILTERS' });
+    setCurrentPage(1);
+  };
+
+  // Удаление транзакций
+  const handleDeleteRequest = (transaction) => {
+    setTransactionToDelete(transaction);
+  };
+
+  const handleDeleteConfirm = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      if (!transactionToDelete) return;
+      await apiService.delete(`/transactions/${transactionToDelete.id}`);
+      setTransactionToDelete(null); // Сброс транзакции для удаления
+      fetchTransactions(currentPage, currentFilters); // Обновляем список
+    } catch (err) {
+      setError(err.message || "Не удалось удалить транзакцию.");
+      console.error("Ошибка удаления транзакции:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [transactionToDelete, fetchTransactions, currentPage, currentFilters]);
+
 
   return (
     <Fragment>
-      {/* -- ЗАГОЛОВОК И КНОПКИ ДЕЙСТВИЙ -- */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <PageTitle title="Транзакции" />
-        <div className="flex items-center space-x-2">
-            <Button onClick={() => setUploadModalOpen(true)} variant="outline" icon={<ArrowUpOnSquareIcon className="h-5 w-5"/>}>Загрузить</Button>
-            <div className="inline-flex rounded-md shadow-sm">
-                <Button onClick={() => handleOpenFormModal('expense')} className="rounded-r-none"><PlusIcon className="h-5 w-5 mr-2" />Добавить</Button>
-                <Menu as="div" className="-ml-px relative block">
-                    <Menu.Button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 h-full"><ChevronDownIcon className="h-5 w-5" /></Menu.Button>
-                    <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
-                        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
-                        <div className="py-1">
-                            <Menu.Item>{({ active }) => (<button onClick={() => handleOpenFormModal('income')} className={`${active ? 'bg-gray-100' : ''} group flex w-full items-center px-4 py-2 text-sm text-gray-700`}><ArrowUpCircleIcon className="mr-3 h-5 w-5 text-green-500"/>Добавить доход</button>)}</Menu.Item>
-                            <Menu.Item>{({ active }) => (<button onClick={() => handleOpenFormModal('expense')} className={`${active ? 'bg-gray-100' : ''} group flex w-full items-center px-4 py-2 text-sm text-gray-700`}><ArrowDownCircleIcon className="mr-3 h-5 w-5 text-red-500"/>Добавить расход</button>)}</Menu.Item>
-                        </div>
-                        </Menu.Items>
-                    </Transition>
-                </Menu>
-            </div>
+      <PageTitle title="Транзакции" />
+
+      {/* Кнопки действий и фильтры */}
+      <div className="mb-4 flex justify-between items-center">
+        <div className="flex space-x-2">
+          <Button onClick={() => handleOpenFormModal('income')} variant="success"><ArrowUpCircleIcon className="h-5 w-5 mr-2"/> Доход</Button>
+          <Button onClick={() => handleOpenFormModal('expense')} variant="danger"><ArrowDownCircleIcon className="h-5 w-5 mr-2"/> Расход</Button>
+          <Button onClick={() => setUploadModalOpen(true)} variant="secondary"><ArrowUpOnSquareIcon className="h-5 w-5 mr-2"/> Выписка</Button>
+        </div>
+        <div className="relative">
+          <Button onClick={() => {}} variant="outline" className="flex items-center">
+            <FunnelIcon className="h-5 w-5 mr-2"/> Фильтры
+            <ChevronDownIcon className="-mr-1 h-5 w-5" />
+          </Button>
+          {/* Здесь будет выпадающее меню фильтров */}
         </div>
       </div>
-      
-      {/* -- ПАНЕЛЬ ФИЛЬТРОВ -- */}
-      <div className="p-4 bg-white rounded-xl shadow-sm mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-            <DateRangePicker 
-              startDate={filters.start_date}
-              endDate={filters.end_date}
-              onStartDateChange={(date) => dispatch({ type: 'SET_FILTER', field: 'start_date', payload: date })}
-              onEndDateChange={(date) => dispatch({ type: 'SET_FILTER', field: 'end_date', payload: date })}
+
+      {/* Панель фильтров */}
+      <div className="bg-white p-4 rounded-xl shadow-sm my-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <div>
+            <Label htmlFor="dateRange">Период</Label>
+            <DateRangePicker
+              startDate={currentFilters.start_date}
+              endDate={currentFilters.end_date}
+              onChange={handleDateRangeChange}
             />
-            <div>
-              <label className="text-sm font-medium text-gray-700">Счет</label>
-              <Select value={filters.account_id} onChange={(e) => dispatch({ type: 'SET_FILTER', field: 'account_id', payload: e.target.value })} className="mt-1">
-                  <option value="">Все счета</option>
-                  {accounts.map(acc => <option key={acc.id} value={acc.id}>{acc.name}</option>)}
-              </Select>
-            </div>
-            <div className="flex items-end space-x-2">
-                <div className="flex-grow">
-                    <label className="text-sm font-medium text-gray-700">Тип</label>
-                    <Select value={filters.transaction_type} onChange={(e) => dispatch({ type: 'SET_FILTER', field: 'transaction_type', payload: e.target.value })} className="mt-1 flex-grow">
-                        <option value="">Все типы</option>
-                        <option value="income">Доход</option>
-                        <option value="expense">Расход</option>
-                    </Select>
-                </div>
-                <Button onClick={() => dispatch({ type: 'RESET' })} variant="icon" title="Сбросить фильтры"><XMarkIcon className="h-6 w-6 text-gray-500 hover:text-gray-800"/></Button>
-            </div>
+          </div>
+          <div>
+            <Label htmlFor="transactionType">Тип транзакции</Label>
+            <Select
+              id="transactionType"
+              name="transaction_type"
+              value={currentFilters.transaction_type}
+              onChange={handleTypeFilterChange}
+            >
+              <option value="">Все</option>
+              <option value="income">Доход</option>
+              <option value="expense">Расход</option>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="accountId">Счет</Label>
+            <Select
+              id="accountId"
+              name="account_id"
+              value={currentFilters.account_id}
+              onChange={handleAccountFilterChange}
+            >
+              <option value="">Все</option>
+              {/* Тут нужно будет загрузить список счетов */}
+              {/* Пока заглушка */}
+              <option value="1">Счет 1</option>
+              <option value="2">Счет 2</option>
+            </Select>
+          </div>
+          <Button onClick={handleResetFilters} variant="secondary">Сбросить фильтры</Button>
         </div>
       </div>
-      
-      {loading && <div className="text-center py-4 text-gray-500">Обновление данных...</div>}
-      {error && <Alert type="error" className="mb-4">{error}</Alert>}
-      
-      {/* -- ОСНОВНОЙ КОНТЕНТ -- */}
-      {!loading && transactionsData.items.length === 0 ? (
-         <EmptyState message="Нет транзакций, соответствующих вашим фильтрам." buttonText="Сбросить все фильтры" onButtonClick={() => dispatch({ type: 'RESET' })} />
-      ) : (
+
+      {error && <Alert type="error" className="my-4">{error}</Alert>}
+      {loading && <Loader text="Загрузка транзакций..." />}
+
+      {!loading && !error && transactionsData.total_count === 0 && (
+        <EmptyState message="Пока нет транзакций по выбранным критериям. Создайте новую!" />
+      )}
+
+      {!loading && !error && transactionsData.total_count > 0 && (
         <>
-          <div className="bg-white shadow-lg rounded-xl overflow-hidden">
+          <div className="bg-white shadow overflow-hidden sm:rounded-lg mt-4">
             <div className="overflow-x-auto">
-                <table className="min-w-full">
+                <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Счет / Статья</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Описание</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Счет</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статья ДДС</th>
                             <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Сумма</th>
                             <th scope="col" className="relative px-6 py-3"><span className="sr-only">Действия</span></th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {transactionsData.items.map((tx) => (
-                        <tr key={tx.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{format(parseISO(tx.date), 'dd MMMM yyyy', { locale: ru })}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                <div className="font-medium text-gray-900">{tx.account?.name}</div>
-                                <div className="text-gray-500">{tx.dds_article?.name || 'Без статьи'}</div>
-                            </td>
-                            <td className="px-6 py-4 text-sm text-gray-800 break-words max-w-xs truncate" title={tx.description}>{tx.description}</td>
-                            <td className={`px-6 py-4 whitespace-nowrap text-sm text-right font-semibold ${tx.transaction_type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                                {tx.transaction_type === 'income' ? '+' : ''} {tx.amount.toLocaleString('ru-RU', { minimumFractionDigits: 2 })}
+                        {transactionsData.items.map(tx => (
+                        <tr key={tx.id} className={tx.transaction_type === 'income' ? 'bg-green-50' : 'bg-red-50'}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{format(parseISO(tx.date), 'dd.MM.yyyy', { locale: ru })}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{tx.description}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tx.account.name}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tx.dds_article ? tx.dds_article.name : 'Без статьи'}</td>
+                            <td className={`px-6 py-4 whitespace-nowrap text-right text-sm font-medium ${tx.transaction_type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                {tx.amount.toLocaleString('ru-RU', { style: 'currency', currency: tx.account.currency })}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <Button variant="icon" onClick={() => handleOpenFormModal(tx.transaction_type, tx)}><PencilSquareIcon className="h-5 w-5"/></Button>
@@ -256,7 +314,7 @@ function TransactionsPage() {
       )}
       
       <Modal isOpen={isFormModalOpen} onClose={handleCloseFormModal} title={editingTransaction ? 'Редактировать транзакцию' : 'Новая транзакция'}>
-        <TransactionForm transaction={editingTransaction} defaultType={defaultTransactionType} onSuccess={handleCloseFormModal}/>
+        <TransactionForm transaction={editingTransaction} defaultType={defaultTransactionType} onSubmit={handleTransactionSubmit} onCancel={handleCloseFormModal}/> {/* <--- ИСПРАВЛЕНО ЗДЕСЬ! */}
       </Modal>
       <StatementUploadModal isOpen={isUploadModalOpen} onClose={() => setUploadModalOpen(false)} onSuccess={() => fetchTransactions(1, initialFilters)} />
       <ConfirmationModal isOpen={Boolean(transactionToDelete)} onClose={() => setTransactionToDelete(null)} onConfirm={handleDeleteConfirm} title="Удалить транзакцию" message={`Вы уверены?`} />

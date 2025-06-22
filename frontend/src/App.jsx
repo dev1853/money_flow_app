@@ -15,6 +15,7 @@ import AccountBalancesReportPage from './pages/AccountBalancesReportPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminPanelPage from './pages/AdminPanelPage';
 import RegisterPage from './pages/RegisterPage';
+import MappingRulesPage from './pages/MappingRulesPage'; // <--- НОВЫЙ ИМПОРТ
 
 // Можно оставить заглушки для страниц, которые еще не созданы
 const SettingsPage = () => (<div className="p-4"><h1 className="text-2xl">Настройки (в разработке)</h1></div>);
@@ -24,68 +25,59 @@ const NotFoundPage = () => (<div className="p-4 text-center"><h1 className="text
 // Компонент-обертка для страниц с основным макетом приложения (теперь он защищенный)
 const ProtectedRoutesWithMainLayout = () => {
   const { isAuthenticated, isLoading } = useAuth(); // Получаем статус аутентификации и загрузки
-  const location = useLocation(); // Для передачи state при редиректе
+  const location = useLocation();
 
-  if (isLoading) { // Это isLoading из useAuth(), который отвечает за проверку токена
-    // Показываем заглушку или спиннер, пока идет проверка аутентификации
-    return (
-      // Этот внешний div отвечает за полноэкранное центрирование
-      <div className="flex justify-center items-center min-h-screen bg-gray-100"> {/* */}
-        {/* --- ИЗМЕНЕНИЕ ЗДЕСЬ --- */}
-        <Loader 
-          size="h-16 w-16" // Задаем размер как был у оригинального SVG
-          spinnerColor="text-indigo-600" // Цвет как у оригинального SVG
-        />
-        {/* --- КОНЕЦ ИЗМЕНЕНИЯ --- */}
-      </div>
-    );
+  if (isLoading) {
+    return <Loader />; // Показываем лоадер, пока идет проверка аутентификации
   }
 
   if (!isAuthenticated) {
-    // Если пользователь не аутентифицирован, перенаправляем на страницу входа
-    // state: { from: location } позволяет вернуться на предыдущую страницу после логина
-    return <Navigate to="/login" state={{ from: location }} replace />; //
+    // Если не аутентифицирован, перенаправляем на страницу входа, сохраняя текущий путь
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Если аутентифицирован, показываем основной макет с контентом
   return (
-    <MainLayout> {/* */}
-      <Outlet /> {/* */}
+    <MainLayout>
+      <Outlet />
     </MainLayout>
   );
 };
 
-// Компонент-обертка для страниц аутентификации (без изменений)
+// Компонент-обертка для страниц аутентификации
 const AppWithAuthLayout = () => (
-  <AuthLayout> {/* */}
-    <Outlet /> {/* */}
+  <AuthLayout>
+    <Outlet />
   </AuthLayout>
 );
 
 function App() {
   return (
-    <Routes> {/* */}
-      {/* ... (маршруты для AuthLayout) ... */}
-      <Route element={<AppWithAuthLayout />}> {/* */}
-        <Route path="/login" element={<LoginPage />} /> {/* */}
+    <Routes>
+      {/* Маршруты для страниц без аутентификации, использующие AuthLayout */}
+      <Route element={<AppWithAuthLayout />}>
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />       
       </Route>
 
-      <Route element={<ProtectedRoutesWithMainLayout />}> {/* */}
-        <Route path="/" element={<DashboardPage />} /> {/* */}
-        <Route path="/dashboard" element={<DashboardPage />} /> {/* */}
-        <Route path="/articles" element={<DdsArticlesPage />} /> {/* */}
-        <Route path="/accounts" element={<AccountsPage />} /> {/* */}
-        <Route path="/transactions" element={<TransactionsPage />} /> {/* */}
-        <Route path="/reports/dds" element={<DdsReportPage />} /> {/* */}
-        <Route path="/reports/account-balances" element={<AccountBalancesReportPage />} /> {/* */}
-        <Route path="/admin" element={<AdminPanelPage />} /> {/* */}
+      {/* Защищенные маршруты, требующие аутентификации и использующие MainLayout */}
+      <Route element={<ProtectedRoutesWithMainLayout />}>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/articles" element={<DdsArticlesPage />} />
+        <Route path="/accounts" element={<AccountsPage />} />
+        <Route path="/transactions" element={<TransactionsPage />} />
+        <Route path="/reports/dds" element={<DdsReportPage />} />
+        <Route path="/reports/account-balances" element={<AccountBalancesReportPage />} />
+        <Route path="/admin" element={<AdminPanelPage />} />
+        <Route path="/mapping-rules" element={<MappingRulesPage />} /> {/* <--- НОВЫЙ МАРШРУТ */}
         {/* <Route path="/settings" element={<SettingsPage />} /> */}
       </Route>
       
-      <Route path="*" element={<NotFoundPage />} /> {/* */}
+      {/* Маршрут для 404 страницы */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
 
-export default App; 
+export default App;

@@ -1,77 +1,131 @@
-// frontend/src/components/DdsReportTable.jsx
-import React, { useMemo } from 'react';
-import ReportRow from '../components/ReportRow';
+// frontend/src/pages/DdsReportPage.jsx
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { apiService } from '../services/apiService';
+import { format } from 'date-fns';
 
-const DdsReportTable = ({ data }) => {
+// Компоненты
+import PageTitle from '../components/PageTitle';
+import Button from '../components/Button';
+import DatePicker from '../components/forms/DatePicker';
+import Loader from '../components/Loader';
+import Alert from '../components/Alert';
+import DdsReportTable from '../components/DdsReportTable'; // <--- Убедитесь, что это импорт компонента, а не его код
+
+
+function DdsReportPage() {
   const { activeWorkspace } = useAuth();
 
-  const formatCurrency = (value) => {
-    return (value || 0).toLocaleString('ru-RU', {
-      style: 'currency',
-      currency: activeWorkspace?.currency || 'RUB'
-    });
+  // Состояния для фильтров, данных и UI
+  const [startDate, setStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  const [endDate, setEndDate] = useState(new Date());
+  const [reportData, setReportData] = useState(null); // reportData все еще null по умолчанию
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleGenerateReport = async () => {
+    if (!activeWorkspace || !startDate || !endDate) {
+      setError("Пожалуйста, выберите рабочее пространство и укажите полный период.");
+      return;
+    }
+    setLoading(true);
+    setError('');
+    setReportData(null); // Очищаем данные перед новым запросом
+
+    try {
+      const params = new URLSearchParams({
+        workspace_id: activeWorkspace.id,
+        start_date: format(startDate, 'yyyy-MM-dd'),
+        end_date: format(endDate, 'yyyy-MM-dd'),
+      });
+      const data = await apiService.get(`/reports/dds?${params.toString()}`);
+      
+      // Здесь данные фильтруются для отображения только статей с транзакциями
+      const filteredData = data.filter(item => item.income !== 0 || item.expense !== 0 || (item.children && item.children.length > 0));
+      setReportData(filteredData); // Устанавливаем уже отфильтрованные данные
+      
+    } catch (err) {
+      setError(err.message || "Не удалось сформировать отчет");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const totals = useMemo(() => {
-    let totalIncome = 0;
-    let totalExpense = 0;
+  // Расчет итоговых значений ДДС (для блока "ИТОГО" на этой странице)
+  const { totalIncome, totalExpense, netProfit } = useMemo(() => {
+    let income = 0;
+    let expense = 0;
 
-    data.forEach(item => {
-      totalIncome += item.income || 0;
-      totalExpense += item.expense || 0;
-    });
+    // Итерируем по reportData (который уже отфильтрован по ненулевым статьям, но все равно может быть null)
+    if (reportData && reportData.length > 0) {
+      reportData.forEach(item => {
+        income += item.income || 0;
+        expense += item.expense || 0;
+      });
+    }
+    const profit = income - expense;
+    return { totalIncome: income, totalExpense: expense, netProfit: profit };
+  }, [reportData]); 
 
-    const netFlow = totalIncome - totalExpense;
-    return { totalIncome, totalExpense, netFlow };
-  }, [data]);
 
   return (
-    // Внешний контейнер с отступами и flow-root
-    <div className="px-4 sm:px-6 lg:px-8 mt-8 flow-root">
-      {/* Контейнер для горизонтальной прокрутки и отрицательных полей */}
-      <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        {/* Выравнивающий контейнер и отступы для внутренних элементов таблицы */}
-        <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          {/* Контейнер для тени, скругления углов и скрытия содержимого */}
-          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead className="bg-white"> {/* Фон заголовка белый */}
-                <tr>
-                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                    Статья
-                  </th>
-                  <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
-                    Поступления
-                  </th>
-                  <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
-                    Выбытия
-                  </th>
-                  <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
-                    Чистый денежный поток
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white"> {/* Тело таблицы с разделителями и белым фоном */}
-                {data.map(item => (
-                  <ReportRow key={item.article_id} item={item} formatCurrency={formatCurrency} />
-                ))}
-              </tbody>
-              {/* Футер для итоговых значений, повторяет стили заголовка */}
-              <tfoot className="bg-white">
-                <tr className="font-semibold text-gray-900"> {/* Bold для итоговой строки */}
-                    <td className="py-3.5 pl-4 pr-3 text-left text-sm sm:pl-6">ИТОГО</td>
-                    <td className="whitespace-nowrap px-3 py-4 text-right text-sm">{formatCurrency(totals.totalIncome)}</td>
-                    <td className="whitespace-nowrap px-3 py-4 text-right text-sm">{formatCurrency(totals.totalExpense)}</td>
-                    <td className={`whitespace-nowrap px-3 py-4 text-right text-sm ${totals.netFlow >= 0 ? 'text-blue-600' : 'text-purple-600'}`}>{formatCurrency(totals.netFlow)}</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+    <div>
+      <PageTitle title="Отчет о Движении Денежных Средств (ДДС)" />
+
+      <div className="p-4 bg-white rounded-xl shadow-sm my-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          <DatePicker label="Начало периода" selected={startDate} onChange={date => setStartDate(date)} />
+          <DatePicker label="Конец периода" selected={endDate} onChange={date => setEndDate(date)} />
+          <Button onClick={handleGenerateReport} disabled={loading}>
+            {loading ? 'Формирование...' : 'Сформировать отчет'}
+          </Button>
         </div>
       </div>
+
+      {error && <Alert type="error" className="my-4">{error}</Alert>}
+
+      {loading && <Loader text="Загрузка данных отчета..." />}
+
+      {/* Блок ИТОГО */}
+      {reportData && ( // Показываем ИТОГО, если reportData не null
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <dl>
+              <dt className="text-sm font-medium text-gray-500">Доходы</dt>
+              <dd className="mt-1 text-3xl font-semibold tracking-tight text-green-600">
+                {totalIncome.toFixed(2)} {activeWorkspace?.currency || ''}
+              </dd>
+            </dl>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <dl>
+              <dt className="text-sm font-medium text-gray-500">Расходы</dt>
+              <dd className="mt-1 text-3xl font-semibold tracking-tight text-red-600">
+                {totalExpense.toFixed(2)} {activeWorkspace?.currency || ''}
+              </dd>
+            </dl>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <dl>
+              <dt className="text-sm font-medium text-gray-500">Чистая прибыль</dt>
+              <dd className={`mt-1 text-3xl font-semibold tracking-tight ${netProfit >= 0 ? 'text-blue-600' : 'text-purple-600'}`}>
+                {netProfit.toFixed(2)} {activeWorkspace?.currency || ''}
+              </dd>
+            </dl>
+          </div>
+        </div>
+      )}
+
+      {/* Рендерим DdsReportTable только если reportData не пустой и не в состоянии загрузки/ошибки */}
+      {reportData && reportData.length > 0 && !loading && !error && <DdsReportTable data={reportData} />}
+
+      {reportData && reportData.length === 0 && !loading && !error && (
+        <div className="mt-6 text-center text-gray-500">
+          <p>Нет данных для выбранного периода.</p>
+        </div>
+      )}
     </div>
   );
-};
+}
 
-export default DdsReportTable;
+export default DdsReportPage;

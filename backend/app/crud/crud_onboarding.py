@@ -1,7 +1,7 @@
 # backend/app/crud/crud_onboarding.py
 
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError # <--- ИМПОРТИРУЕМ IntegrityError
+from sqlalchemy.exc import IntegrityError 
 from app import models, schemas, crud
 import json 
 from typing import List, Dict, Any
@@ -15,7 +15,7 @@ DEFAULT_MAPPING_RULES_DATA = [
     {"keyword": "Аванс", "dds_article_name": "Авансы от покупателей", "transaction_type": "income", "priority": 7},
     
     {"keyword": "Магазин", "dds_article_name": "Прочие операционные расходы", "transaction_type": "expense", "priority": 10},
-    {"keyword": "Супермаркет", "dds_article_name": "Прочие операционные расходы", "transaction_type": "expense", "priority": 9},
+    {"keyword": "Супермаркет", "dds_article_name": "create_default_mapping_rules операционные расходы", "transaction_type": "expense", "priority": 9},
     {"keyword": "Кафе", "dds_article_name": "Прочие операционные расходы", "transaction_type": "expense", "priority": 8},
     {"keyword": "Такси", "dds_article_name": "Транспортные расходы", "transaction_type": "expense", "priority": 10},
     {"keyword": "Бензин", "dds_article_name": "Транспортные расходы", "transaction_type": "expense", "priority": 9},
@@ -67,8 +67,8 @@ def create_default_mapping_rules(db: Session, *, workspace_id: int, owner_id: in
                 )
                 crud.mapping_rule.create(db=db, obj_in=rule_in)
                 created_rules_count += 1
-            except IntegrityError as e: # <--- ИЗМЕНЕНО: Отлавливаем конкретную ошибку IntegrityError
-                db.rollback() # <--- КРИТИЧЕСКИ ВАЖНО: ОТКАТЫВАЕМ ТРАНЗАКЦИЮ СЕССИИ
+            except IntegrityError as e: 
+                db.rollback()
                 # Проверяем, что это ошибка уникальности по ключевому слову
                 if "ix_mapping_rules_keyword" in str(e) or "duplicate key value violates unique constraint" in str(e):
                     print(f"--- WARNING (Onboarding): Mapping rule with keyword '{rule_data['keyword']}' already exists. Skipping duplicate.")

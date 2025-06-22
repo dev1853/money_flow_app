@@ -13,6 +13,7 @@ class UserBase(BaseModel):
     is_active: bool = True
     is_superuser: bool = False
     full_name: Optional[str] = None
+    active_workspace_id: Optional[int] = None
 
 class UserCreate(UserBase):
     password: str

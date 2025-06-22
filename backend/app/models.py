@@ -1,6 +1,6 @@
 # backend/app/models.py
 
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, Float, ForeignKey, Date, Text
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, Float, ForeignKey, Date, Text, UniqueConstraint 
 from sqlalchemy.orm import relationship
 from .database import Base
 import datetime
@@ -22,12 +22,17 @@ class User(Base):
     is_superuser = Column(Boolean(), default=False)
     role_id = Column(Integer, ForeignKey("roles.id"), nullable=True)
     role = relationship("Role", back_populates="users")
-    workspaces = relationship("Workspace", back_populates="owner")
+    workspaces = relationship(
+        "Workspace", 
+        back_populates="owner",
+        primaryjoin="User.id == Workspace.owner_id" 
+    )    
     accounts = relationship("Account", back_populates="owner")
     dds_articles = relationship("DdsArticle", back_populates="owner")
     transactions = relationship("Transaction", back_populates="owner")
-    # НОВОЕ: Связь с MappingRule
     mapping_rules = relationship("MappingRule", back_populates="owner", cascade="all, delete-orphan")
+    active_workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=True, index=True)
+    active_workspace = relationship("Workspace", foreign_keys=[active_workspace_id])
 
 class Workspace(Base):
     __tablename__ = "workspaces"
@@ -35,11 +40,14 @@ class Workspace(Base):
     name = Column(String, index=True)
     currency = Column(String, nullable=False, default="USD")
     owner_id = Column(Integer, ForeignKey("users.id"))
-    owner = relationship("User", back_populates="workspaces")
+    owner = relationship(
+        "User", 
+        back_populates="workspaces", 
+        primaryjoin="Workspace.owner_id == User.id"
+    ) 
     accounts = relationship("Account", back_populates="workspace", cascade="all, delete-orphan")
     dds_articles = relationship("DdsArticle", back_populates="workspace", cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="workspace", cascade="all, delete-orphan")
-    # НОВОЕ: Связь с MappingRule
     mapping_rules = relationship("MappingRule", back_populates="workspace", cascade="all, delete-orphan")
 
 class Account(Base):
@@ -93,19 +101,23 @@ class Transaction(Base):
 class MappingRule(Base):
     __tablename__ = "mapping_rules"
     id = Column(Integer, primary_key=True, index=True)
-    keyword = Column(String, nullable=False, unique=True, index=True) # Ключевое слово для сопоставления
+    # ИЗМЕНЕНО: УБРАН unique=True из keyword
+    keyword = Column(String, nullable=False, index=True) # <--- УБРАЛИ unique=True
     dds_article_id = Column(Integer, ForeignKey("dds_articles.id"), nullable=False)
-    transaction_type = Column(String, nullable=True) # 'income', 'expense', или null для обоих
-    priority = Column(Integer, default=0, nullable=False) # Приоритет правила
-    is_active = Column(Boolean(), default=True, nullable=False) # Активно ли правило
+    transaction_type = Column(String, nullable=True)
+    priority = Column(Integer, default=0, nullable=False)
+    is_active = Column(Boolean(), default=True, nullable=False)
 
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=False)
 
     # Связи с другими моделями
-    dds_article = relationship("DdsArticle") # Обратная связь не нужна, т.к. статья может быть связана со многими правилами
+    dds_article = relationship("DdsArticle")
     owner = relationship("User", back_populates="mapping_rules")
     workspace = relationship("Workspace", back_populates="mapping_rules")
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    # НОВОЕ: Композитное уникальное ограничение
+    __table_args__ = (UniqueConstraint('keyword', 'workspace_id', name='_keyword_workspace_uc'),) 
