@@ -193,6 +193,14 @@ class DashboardSummaryData(BaseModel):
     total_expense: float
     net_profit: float
 
+# --- НОВАЯ СХЕМА ДЛЯ ОТЧЕТА О ПРИБЫЛЯХ И УБЫТКАХ ---
+class ProfitLossReport(BaseModel):
+    total_income: float
+    total_expense: float
+    net_profit: float
+    # Можно добавить детализацию, если ОПиУ будет иметь статьи
+    # например, by_article_type: Dict[str, float] = {}
+
 # --- СХЕМЫ ДЛЯ MappingRule ---
 class MappingRuleBase(BaseModel):
     keyword: str = Field(..., min_length=1, max_length=255, description="Ключевое слово для автоматического разнесения")

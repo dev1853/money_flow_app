@@ -3,6 +3,8 @@
 from typing import List, Any
 from fastapi import APIRouter, Depends, HTTPException, Query 
 from sqlalchemy.orm import Session
+from sqlalchemy import func, case, and_ 
+
 
 from app import crud, models, schemas
 from app.dependencies import get_db, get_current_active_user, get_article_for_user

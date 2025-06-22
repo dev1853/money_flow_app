@@ -25,11 +25,32 @@ def get_dds_report(
     """
     Формирует Отчет о движении денежных средств (ДДС) для указанного рабочего пространства и периода.
     """
-    # Проверяем, что рабочее пространство принадлежит текущему пользователю
     crud.workspace.validate_workspace_owner(db, workspace_id=workspace_id, user_id=current_user.id)
     
-    # ИЗМЕНЕНО: Заменяем crud.report на crud.report_crud
-    return crud.report_crud.get_dds_report( # <--- ИСПРАВЛЕНО ЗДЕСЬ!
+    return crud.report_crud.get_dds_report(
+        db=db,
+        owner_id=current_user.id,
+        workspace_id=workspace_id,
+        start_date=start_date,
+        end_date=end_date
+    )
+
+# НОВЫЙ ЭНДПОИНТ: Отчет о прибылях и убытках (ОПиУ)
+@router.get("/pnl", response_model=schemas.ProfitLossReport) # <--- НОВЫЙ ЭНДПОИНТ
+def get_profit_and_loss_report(
+    *,
+    db: Session = Depends(get_db),
+    workspace_id: int = Query(..., description="ID рабочего пространства"),
+    start_date: date = Query(..., description="Дата начала периода (ГГГГ-ММ-ДД)"),
+    end_date: date = Query(..., description="Дата окончания периода (ГГГГ-ММ-ДД)"),
+    current_user: models.User = Depends(get_current_active_user),
+) -> Any:
+    """
+    Формирует Отчет о прибылях и убытках (ОПиУ) для указанного рабочего пространства и периода.
+    """
+    crud.workspace.validate_workspace_owner(db, workspace_id=workspace_id, user_id=current_user.id)
+
+    return crud.report_crud.get_profit_and_loss_report(
         db=db,
         owner_id=current_user.id,
         workspace_id=workspace_id,
@@ -46,14 +67,12 @@ def get_account_balances_report(
     """
     Получает отчет по текущим балансам счетов для рабочего пространства.
     """
-    # Проверяем, что рабочее пространство принадлежит текущему пользователю
     crud.workspace.validate_workspace_owner(db, workspace_id=workspace_id, user_id=current_user.id)
     
     accounts = crud.account.get_multi_by_owner_and_workspace(
         db=db, owner_id=current_user.id, workspace_id=workspace_id
     )
     
-    # Форматируем данные для ответа
     report_data = []
     for account in accounts:
         report_data.append(schemas.AccountBalance(
