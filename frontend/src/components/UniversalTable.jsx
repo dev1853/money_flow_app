@@ -10,11 +10,7 @@ const UniversalTable = ({ data, columns, emptyMessage = "Нет данных д�
       </div>
     );
   }
-
-  // Базовые классы для ячеек данных (стандартный вид)
-  // Это общие стили, которые будут дополняться или переопределяться
-  // в render-функциях колонок или в RowComponent
-  const baseTdClasses = "whitespace-nowrap px-3 py-4 text-sm";
+  const baseTdClasses = "whitespace-nowrap px-2 py-3 text-sm";
   const firstColTdClasses = "font-medium text-gray-900 pl-4 sm:pl-6";
 
   return (

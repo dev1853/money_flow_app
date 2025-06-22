@@ -17,17 +17,24 @@ class CRUDMappingRule(CRUDBase[models.MappingRule, schemas.MappingRuleCreate, sc
 
     def get_multi_by_owner_and_workspace(
         self, db: Session, *, owner_id: int, workspace_id: int, skip: int = 0, limit: int = 100
-    ) -> List[models.MappingRule]:
+    ) -> Dict[str, Any]: # <--- ИЗМЕНЕН ТИП ВОЗВРАЩАЕМОГО ЗНАЧЕНИЯ
         """
-        Получает несколько правил сопоставления по ID владельца и ID рабочего пространства.
+        Получает пагинированный список правил сопоставления по ID владельца и ID рабочего пространства.
         """
-        return (
+        query = (
             db.query(self.model)
             .filter(self.model.owner_id == owner_id, self.model.workspace_id == workspace_id)
-            .offset(skip)
-            .limit(limit)
-            .all()
+            .options(joinedload(models.MappingRule.dds_article)) # Жадно загружаем dds_article
         )
+        
+        total_count = query.count() # Получаем общее количество до применения limit/offset
+        
+        rules = query.offset(skip).limit(limit).all() # Получаем правила для текущей страницы
+        
+        return {
+            "items": rules,
+            "total_count": total_count
+        }
 
     def get_active_rules(
         self, db: Session, *, workspace_id: int, transaction_type: Optional[str] = None

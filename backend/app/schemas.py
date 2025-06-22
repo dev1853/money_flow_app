@@ -1,7 +1,7 @@
 # backend/app/schemas.py
 
 from pydantic import BaseModel, EmailStr, Field
-from typing import List, Optional, Literal, Dict, Any
+from typing import List, Optional, Literal, Dict, Any, Union
 from datetime import date, datetime
 
 TransactionType = Literal["income", "expense"] 
@@ -126,7 +126,7 @@ class TransactionCreate(TransactionBase):
     owner_id: int
 
 class TransactionUpdate(BaseModel):
-    date: Optional[date] = None
+    date: Optional[Union[date, str]] = None
     amount: Optional[float] = None
     description: Optional[str] = None
     account_id: Optional[int] = None
@@ -193,11 +193,11 @@ class DashboardSummaryData(BaseModel):
     total_expense: float
     net_profit: float
 
-# --- НОВЫЕ СХЕМЫ ДЛЯ MappingRule ---
+# --- СХЕМЫ ДЛЯ MappingRule ---
 class MappingRuleBase(BaseModel):
     keyword: str = Field(..., min_length=1, max_length=255, description="Ключевое слово для автоматического разнесения")
     dds_article_id: int = Field(..., description="ID статьи ДДС, к которой относится правило")
-    transaction_type: Optional[Literal['income', 'expense']] = Field(None, description="Тип транзакции (income/expense), к которому применяется правило. Null для обоих.")
+    transaction_type: Optional[TransactionType] = Field(None, description="Тип транзакции (income/expense), к которому применяется правило. Null для обоих.")
     priority: int = Field(0, description="Приоритет правила (чем выше, тем раньше применяется)")
     is_active: bool = Field(True, description="Активно ли правило")
 
@@ -208,7 +208,7 @@ class MappingRuleCreate(MappingRuleBase):
 class MappingRuleUpdate(MappingRuleBase):
     keyword: Optional[str] = None
     dds_article_id: Optional[int] = None
-    transaction_type: Optional[Literal['income', 'expense']] = None
+    transaction_type: Optional[TransactionType] = None
     priority: Optional[int] = None
     is_active: Optional[bool] = None
 
@@ -218,8 +218,13 @@ class MappingRule(MappingRuleBase):
     workspace_id: int
     created_at: datetime
     updated_at: datetime
-    # Включаем вложенную статью ДДС для удобства в API ответах
-    dds_article: DdsArticle # Используем уже существующую схему DdsArticle
+    dds_article: DdsArticle
     
     class Config:
         orm_mode = True
+        
+class MappingRulePage(BaseModel):
+    items: List[MappingRule]
+    total_count: int
+
+DdsReportItem.update_forward_refs()

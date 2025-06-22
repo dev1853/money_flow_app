@@ -135,19 +135,23 @@ function TransactionForm({ transaction, onSubmit, onCancel, loading, isQuickCash
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("DEBUG(TransactionForm): handleSubmit invoked!"); // <--- ЛОГ
-        console.log("DEBUG(TransactionForm): Current formData BEFORE validation:", JSON.stringify(formData)); // <--- ЛОГ
+        console.log("DEBUG(TransactionForm): handleSubmit invoked!");
+        console.log("DEBUG(TransactionForm): Current formData BEFORE validation:", JSON.stringify(formData)); 
         setError('');
 
         if (!formData.account_id || !formData.amount || !formData.transaction_type || !formData.date) {
             setError("Пожалуйста, заполните все обязательные поля: Счет, Сумма, Тип, Дата.");
-            console.log("DEBUG(TransactionForm): Validation FAILED."); // <--- ЛОГ
+            console.log("DEBUG(TransactionForm): Validation FAILED."); 
             return;
         }
-        console.log("DEBUG(TransactionForm): Validation PASSED. Preparing dataToSubmit."); // <--- ЛОГ
+        console.log("DEBUG(TransactionForm): Validation PASSED. Preparing dataToSubmit."); 
+        
+        console.log("DEBUG(TransactionForm): formData.date before formatting:", formData.date, "Type:", typeof formData.date); // <--- НОВЫЙ ЛОГ
+        const formattedDate = format(formData.date, 'yyyy-MM-dd'); // Форматируем дату
+        console.log("DEBUG(TransactionForm): Formatted date string:", formattedDate); // <--- НОВЫЙ ЛОГ
 
         const dataToSubmit = {
-            date: format(formData.date, 'yyyy-MM-dd'),
+            date: formattedDate, // Используем отформатированную дату
             amount: parseFloat(formData.amount),
             account_id: parseInt(formData.account_id),
             transaction_type: formData.transaction_type,
@@ -159,9 +163,9 @@ function TransactionForm({ transaction, onSubmit, onCancel, loading, isQuickCash
             workspace_id: activeWorkspace.id,
         };
         
-        console.log("DEBUG(TransactionForm): Calling onSubmit with dataToSubmit:", JSON.stringify(dataToSubmit)); // <--- ЛОГ
-        console.log("DEBUG(TransactionForm): Type of onSubmit prop:", typeof onSubmit); // <--- КРИТИЧЕСКИ ВАЖНЫЙ ЛОГ
-        onSubmit(dataToSubmit); // <--- СТРОКА 140 (или около того)
+        console.log("DEBUG(TransactionForm): Calling onSubmit with dataToSubmit:", JSON.stringify(dataToSubmit)); 
+        console.log("DEBUG(TransactionForm): Type of onSubmit prop:", typeof onSubmit); 
+        onSubmit(dataToSubmit); 
     };
 
     return (

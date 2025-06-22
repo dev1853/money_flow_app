@@ -1,8 +1,7 @@
 // frontend/src/components/ReportRow.jsx
 import React from 'react';
 
-// ДОБАВЛЕНО: baseTdClasses и firstColTdClasses как пропсы
-const ReportRow = ({ item, level = 0, columns, formatCurrency, baseTdClasses, firstColTdClasses }) => { 
+const ReportRow = ({ item, level = 0, columns, formatCurrency, baseTdClasses, firstColTdClasses, onArticleClick }) => { // ДОБАВЛЕН onArticleClick
   const income = item.income || 0;
   const expense = item.expense || 0;
   const netFlow = income - expense;
@@ -12,18 +11,32 @@ const ReportRow = ({ item, level = 0, columns, formatCurrency, baseTdClasses, fi
   
   return (
     <>
-      {/* ИЗМЕНЕНО: Базовые классы для строки и чередования цветов */}
       <tr className={`border-b border-gray-200 odd:bg-white even:bg-gray-50 ${isGroup ? 'font-semibold text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`}>
         {columns.map((column, colIndex) => {
           let cellContent;
-          let currentCellClasses = baseTdClasses; // Начинаем с базовых классов
+          let currentCellClasses = baseTdClasses; 
           let cellStyle = {}; 
 
           if (colIndex === 0) {
-            // Первая колонка - название статьи
             cellContent = isGroup ? item.article_name.toUpperCase() : item.article_name;
             cellStyle = indentationStyle;
-            currentCellClasses += ` ${firstColTdClasses}`; // Добавляем стили для первой колонки
+            currentCellClasses += ` ${isGroup ? 'font-semibold text-gray-900' : 'font-medium text-gray-900'} pl-4 sm:pl-6`;
+            
+            // НОВОЕ: Делаем название статьи кликабельным, если это не группа
+            if (!isGroup && onArticleClick) {
+                cellContent = (
+                    <span 
+                        className="text-indigo-600 hover:text-indigo-900 cursor-pointer" 
+                        onClick={() => onArticleClick(item.article_id, item.article_name, item.type)} // Передаем ID, имя, тип
+                    >
+                        {item.article_name}
+                    </span>
+                );
+            } else if (isGroup) {
+                cellContent = item.article_name.toUpperCase();
+            } else {
+                cellContent = item.article_name;
+            }
           } else if (column.accessor === 'income') {
             cellContent = formatCurrency(income);
             currentCellClasses += ` text-right text-green-600`;
@@ -34,14 +47,12 @@ const ReportRow = ({ item, level = 0, columns, formatCurrency, baseTdClasses, fi
             cellContent = formatCurrency(netFlow);
             currentCellClasses += ` text-right ${netFlow >= 0 ? 'text-blue-600' : 'text-purple-600'}`;
           } else if (column.render) {
-            // Если для колонки есть пользовательский рендер
             cellContent = column.render(item);
             currentCellClasses += ` ${column.align ? `text-${column.align}` : 'text-left'}`;
             if (column.type === 'currency' || column.type === 'number') {
                 currentCellClasses += ' text-right';
             }
           } else {
-            // По умолчанию - отображаем значение по accessor
             cellContent = String(item[column.accessor]);
             currentCellClasses += ` ${column.align ? `text-${column.align}` : 'text-left'}`;
             if (column.type === 'currency' || column.type === 'number') {
@@ -67,8 +78,9 @@ const ReportRow = ({ item, level = 0, columns, formatCurrency, baseTdClasses, fi
           level={level + 1} 
           columns={columns} 
           formatCurrency={formatCurrency} 
-          baseTdClasses={baseTdClasses} // Передаем базовые классы дальше
-          firstColTdClasses={firstColTdClasses} // Передаем базовые классы дальше
+          baseTdClasses={baseTdClasses} 
+          firstColTdClasses={firstColTdClasses}
+          onArticleClick={onArticleClick} // <--- ПЕРЕДАЕМ ДАЛЬШЕ
         />
       ))}
     </>

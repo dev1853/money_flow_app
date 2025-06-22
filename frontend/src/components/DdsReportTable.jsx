@@ -4,7 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import UniversalTable from './UniversalTable'; 
 import ReportRow from './ReportRow'; 
 
-const DdsReportTable = ({ data }) => {
+// ДОБАВЛЕН onArticleClick в пропсы DdsReportTable
+const DdsReportTable = ({ data, onArticleClick }) => { 
   const { activeWorkspace } = useAuth();
 
   const formatCurrency = (value) => {
@@ -54,10 +55,10 @@ const DdsReportTable = ({ data }) => {
         <ReportRow 
           {...props} 
           formatCurrency={formatCurrency} 
-          // baseTdClasses и firstColTdClasses передаются из UniversalTable
+          onArticleClick={onArticleClick} // <--- ПЕРЕДАЕМ onArticleClick
         />
       )} 
-      footer={tableFooter}
+      footer={tableFooter} 
     />
   );
 };

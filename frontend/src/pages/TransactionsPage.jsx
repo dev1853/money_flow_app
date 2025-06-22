@@ -128,34 +128,31 @@ function TransactionsPage() {
   }, [fetchTransactions, currentPage, currentFilters]);
 
 
-  // НОВАЯ ФУНКЦИЯ: ОБРАБОТКА ОТПРАВКИ ФОРМЫ ТРАНЗАКЦИИ
-  const handleTransactionSubmit = useCallback(async (formData) => {
-    setLoading(true); // Устанавливаем загрузку для формы
-    setError(''); // Очищаем ошибки страницы
-    try {
-        let response;
-        if (editingTransaction) {
-            // Обновление существующей транзакции
-            response = await apiService.put(`/transactions/${editingTransaction.id}`, formData);
-            // Если вам нужно обновить owner_id и workspace_id при обновлении,
-            // добавьте их в formData здесь, но обычно они не меняются при PUT
-        } else {
-            // Создание новой транзакции
-            // FormData уже содержит owner_id и workspace_id из TransactionForm
-            response = await apiService.post('/transactions/', formData);
-        }
-        
-        console.log("Транзакция успешно сохранена:", response);
-        handleCloseFormModal(); // Закрываем модальное окно и обновляем список
+    const handleTransactionSubmit = useCallback(async (formData) => {
+      setLoading(true);
+      setError('');
+      try {
+          let response;
+          if (editingTransaction) {
+              console.log("DEBUG(TransactionsPage): Submitting PUT request with formData:", JSON.stringify(formData)); // <--- ЛОГ
+              console.log("DEBUG(TransactionsPage): Type of formData.date for PUT:", typeof formData.date, "Value:", formData.date); // <--- НОВЫЙ ЛОГ
+              response = await apiService.put(`/transactions/${editingTransaction.id}`, formData);
+          } else {
+              console.log("DEBUG(TransactionsPage): Submitting POST request with formData:", JSON.stringify(formData)); // <--- ЛОГ
+              console.log("DEBUG(TransactionsPage): Type of formData.date for POST:", typeof formData.date, "Value:", formData.date); // <--- НОВЫЙ ЛОГ
+              response = await apiService.post('/transactions/', formData);
+          }
+          
+          console.log("Транзакция успешно сохранена:", response);
+          handleCloseFormModal();
 
-    } catch (err) {
-        setError(err.message || "Не удалось сохранить транзакцию.");
-        console.error("Ошибка сохранения транзакции:", err);
-    } finally {
-        setLoading(false); // Снимаем загрузку
-    }
-  }, [editingTransaction, handleCloseFormModal]);
-
+      } catch (err) {
+          setError(err.message || "Не удалось сохранить транзакцию.");
+          console.error("Ошибка сохранения транзакции:", err);
+      } finally {
+          setLoading(false);
+      }
+    }, [editingTransaction, handleCloseFormModal]);
 
   // Обработчики для фильтров
   const handleDateRangeChange = (startDate, endDate) => {
