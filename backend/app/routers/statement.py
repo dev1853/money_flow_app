@@ -2,15 +2,16 @@
 
 from __future__ import annotations
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status, File, Form, Request 
-from starlette.datastructures import UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Query, status, File, UploadFile, Form, Request 
+from starlette.datastructures import UploadFile 
 from sqlalchemy.orm import Session
 import pandas as pd 
 import io 
-from datetime import date as date_type, datetime
+from datetime import date as date_type, datetime 
 from pydantic import ValidationError 
 import csv 
 from sqlalchemy.exc import IntegrityError 
+
 from app import crud, schemas, models, auth_utils 
 from app.database import get_db
 from app.schemas import TransactionType 
@@ -19,6 +20,8 @@ router = APIRouter(
     tags=["statement"],
     responses={404: {"description": "Not found"}},
 )
+
+# ... (другие эндпоинты) ...
 
 @router.post("/upload", response_model=schemas.StatementUploadResponse)
 async def upload_bank_statement(
@@ -144,36 +147,28 @@ async def upload_bank_statement(
         
         print("DEBUG(StatementUpload - API): File decoded. Starting CSV parsing.")
         
-        # ИСПРАВЛЕНО ЗДЕСЬ: Ручное чтение заголовков и строк данных
-        lines = decoded_contents.splitlines() # Разделяем на строки
+        lines = decoded_contents.splitlines() 
         if not lines:
             raise ValueError("Файл пуст или содержит только заголовки.")
         
-        # Первая строка - это заголовки
         raw_header_line = lines[0]
-        fieldnames = [h.strip() for h in raw_header_line.split(';')] # Явно разделяем по ';'
+        fieldnames = [h.strip() for h in raw_header_line.split(';')] 
         
         print(f"DEBUG(StatementUpload - API): Raw header line: '{raw_header_line}'")
         print(f"DEBUG(StatementUpload - API): Manually parsed fieldnames: {fieldnames}")
 
-        # Создаем csv.reader для строк данных (начиная со второй строки)
-        # и затем вручную формируем словари
-        csv_data_lines_io = io.StringIO('\n'.join(lines[1:]), newline='') # <--- Данные без заголовка
-        csv_reader = csv.reader(csv_data_lines_io, delimiter=';') # <--- Используем csv.reader
+        csv_file_data = io.StringIO('\n'.join(lines[1:]), newline='') 
+        reader = csv.DictReader(csv_file_data, delimiter=';', fieldnames=fieldnames) 
+        
+        print(f"DEBUG(StatementUpload - API): DictReader's fieldnames: {reader.fieldnames}")
 
-        # <--- НОВЫЕ ЛОГИ
-        print(f"DEBUG(StatementUpload - API): csv_reader dialect delimiter: {csv_reader.dialect.delimiter if csv_reader.dialect else 'N/A'}")
+        # <--- ИСПРАВЛЕНО ЗДЕСЬ: Обновлены списки заголовков
+        DATE_HEADERS = ['Дата проведения'] # <--- Точное название из эталона
+        AMOUNT_HEADERS = ['Сумма в валюте счёта'] # <--- Точное название из эталона
+        DESCRIPTION_HEADERS = ['Описание операции', 'Назначение платежа', 'Описание'] # <--- Оба из эталона
+        TYPE_HEADERS = ['Тип операции (пополнение/списание)'] # <--- Точное название из эталона
+        ACCOUNT_ID_HEADERS = ['Номер счёта', 'Счет контрагента'] # <--- Точные названия из эталона
         # >>>>
-
-        if not fieldnames:
-            print("WARNING(StatementUpload - API): No CSV Headers found or file is empty.")
-            raise ValueError("CSV файл не содержит заголовков.")
-
-        DATE_HEADERS = ['Дата', 'Date', 'Дата операции', 'Дата проводки', 'Дата проведения'] 
-        AMOUNT_HEADERS = ['Сумма', 'Amount', 'Сумма операции']
-        DESCRIPTION_HEADERS = ['Описание', 'Description', 'Назначение платежа']
-        TYPE_HEADERS = ['Тип', 'Type', 'Вид операции', 'Тип операции (пополнение/списание)'] 
-        ACCOUNT_ID_HEADERS = ['ID Счета', 'Account ID', 'Номер счета', 'Счет контрагента', 'Номер счёта'] 
         
         def find_csv_column(row_dict, possible_headers):
             for header in possible_headers:
@@ -181,48 +176,60 @@ async def upload_bank_statement(
                     return row_dict[header]
             return None
 
-        # Итерируем по данным, используя csv_reader
-        for i, row_values in enumerate(csv_reader): # row_values теперь список значений
-            # Создаем словарь для строки вручную
-            if len(row_values) != len(fieldnames):
-                print(f"WARNING (Statement Upload - Row): Row {i+1} has {len(row_values)} columns, but expected {len(fieldnames)}. Skipping.")
-                failed_rows += 1
-                failed_row_details.append(schemas.FailedRowDetail(
-                    row={f"Row {i+1} raw values": row_values},
-                    error=f"Несоответствие количества колонок: найдено {len(row_values)}, ожидалось {len(fieldnames)}."
-                ))
-                continue
+        for i, row_dict in enumerate(reader):
+            print(f"DEBUG (Statement Upload): Processing row {i+1}: {row_dict}")
+            csv_date_str = None
+            csv_amount_str = None
+            csv_description = None
+            csv_type_str = None
+            csv_file_account_id = None
+            transaction_date = None
+            transaction_amount = 0.0 
+            transaction_type = None
 
-            row = dict(zip(fieldnames, row_values)) # <--- ВРУЧНУЮ ФОРМИРУЕМ СЛОВАРЬ ИЗ СТРОКИ
-            print(f"DEBUG (Statement Upload): Processing row {i+1}: {row}")
             try:
-                csv_date_str = find_csv_column(row, DATE_HEADERS)
-                csv_amount_str = find_csv_column(row, AMOUNT_HEADERS)
-                csv_description = find_csv_column(row, DESCRIPTION_HEADERS)
-                csv_type_str = find_csv_column(row, TYPE_HEADERS) 
-                csv_file_account_id = find_csv_column(row, ACCOUNT_ID_HEADERS) 
+                csv_date_str = find_csv_column(row_dict, DATE_HEADERS)
+                csv_amount_str = find_csv_column(row_dict, AMOUNT_HEADERS)
+                csv_description = find_csv_column(row_dict, DESCRIPTION_HEADERS)
+                if not csv_description: # Если Описание пустое, попробуем Назначение платежа
+                    csv_description = find_csv_column(row_dict, ['Назначение платежа'])
+                csv_type_str = find_csv_column(row_dict, TYPE_HEADERS) 
+                csv_file_account_id = find_csv_column(row_dict, ACCOUNT_ID_HEADERS) 
 
                 print(f"DEBUG (Statement Upload - Row): Parsed CSV data - Date: '{csv_date_str}', Amount: '{csv_amount_str}', Desc: '{csv_description}', Type: '{csv_type_str}', AccountID: '{csv_file_account_id}'")
 
                 # ИСПРАВЛЕНО: Парсинг даты с использованием strptime
-                transaction_date = None
                 if csv_date_str:
                     try:
-                        # Поддерживаем форматы DD.MM.YYYY, DD.MM.YY, YYYY-MM-DD
-                        if '-' in csv_date_str: # Предполагаем ISO
-                            transaction_date = date_type.fromisoformat(csv_date_str)
-                        else: # Предполагаем DD.MM.YYYY
-                            transaction_date = datetime.strptime(csv_date_str, '%d.%m.%Y').date() # <--- ИСПРАВЛЕНО
+                        # Пробуем несколько форматов даты из выписки
+                        parsed_date = None
+                        date_formats = ['%d.%m.%Y', '%Y-%m-%d'] # DD.MM.YYYY и YYYY-MM-DD
+                        for fmt in date_formats:
+                            try:
+                                parsed_date = datetime.strptime(csv_date_str, fmt).date()
+                                break
+                            except ValueError:
+                                continue
+                        if parsed_date:
+                            transaction_date = parsed_date
+                        else:
+                            raise ValueError(f"Некорректный формат даты: '{csv_date_str}'. Ожидается ДД.ММ.ГГГГ или ГГГГ-ММ-ДД.")
                     except ValueError:
                         raise ValueError(f"Некорректный формат даты: '{csv_date_str}'. Ожидается ДД.ММ.ГГГГ или ГГГГ-ММ-ДД.")
                 
+                if csv_amount_str:
+                    try:
+                        cleaned_amount_str = csv_amount_str.replace(',', '.').strip() 
+                        transaction_amount = float(cleaned_amount_str)
+                    except ValueError:
+                        raise ValueError(f"Некорректный формат суммы: '{csv_amount_str}'")
 
-                transaction_type = None
                 if csv_type_str:
                     csv_type_lower = csv_type_str.lower()
-                    if any(s in csv_type_lower for s in ['доход', 'income', 'поступление']):
+                    # ИСПРАВЛЕНО: Более точное сопоставление типов из выписки
+                    if any(s in csv_type_lower for s in ['кредит', 'пополнение', 'доход', 'income', 'поступление']):
                         transaction_type = 'income'
-                    elif any(s in csv_type_lower for s in ['расход', 'expense', 'выплата', 'списание']):
+                    elif any(s in csv_type_lower for s in ['дебет', 'списание', 'расход', 'expense', 'выплата']):
                         transaction_type = 'expense'
                 
                 final_account_id = account_id 
@@ -256,7 +263,7 @@ async def upload_bank_statement(
 
                 if existing_transaction:
                     skipped_duplicates_count += 1
-                    print(f"DEBUG (Statement Upload): Skipped duplicate transaction: {row}")
+                    print(f"DEBUG (Statement Upload): Skipped duplicate transaction: {row_dict}") 
                     continue
 
                 transaction_in_data = {
@@ -296,28 +303,28 @@ async def upload_bank_statement(
                 failed_rows += 1
                 error_msg = str(e.detail) if isinstance(e, HTTPException) else str(e)
                 failed_row_details.append(schemas.FailedRowDetail(
-                    row=row,
+                    row=row_dict, 
                     error=f"Ошибка обработки строки: {error_msg}"
                 ))
-                print(f"ERROR (Statement Upload): Failed to process row: {row}. Error: {e}")
+                print(f"ERROR (Statement Upload): Failed to process row: {row_dict}. Error: {e}")
                 db.rollback() 
             except IntegrityError as e:
                 db.rollback() 
                 failed_rows += 1
                 error_msg = str(e.orig) if e.orig else str(e)
                 failed_row_details.append(schemas.FailedRowDetail(
-                    row=row,
+                    row=row_dict, 
                     error=f"Ошибка целостности данных: {error_msg}"
                 ))
-                print(f"ERROR (Statement Upload): IntegrityError for row: {row}. Error: {e}")
+                print(f"ERROR (Statement Upload): IntegrityError for row: {row_dict}. Error: {e}")
             except Exception as e:
                 db.rollback() 
                 failed_rows += 1
                 failed_row_details.append(schemas.FailedRowDetail(
-                    row=row,
+                    row=row_dict, 
                     error=f"Неизвестная ошибка: {e}"
                 ))
-                print(f"ERROR (Statement Upload): Unknown error for row: {row}. Error: {e}")
+                print(f"ERROR (Statement Upload): Unknown error for row: {row_dict}. Error: {e}")
 
     except Exception as e:
         print(f"ERROR (Statement Upload - Main Block): Unhandled error during file processing: {e}") 
