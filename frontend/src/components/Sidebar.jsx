@@ -7,12 +7,10 @@ import {
   CurrencyDollarIcon,
   ChartBarIcon,
   Cog6ToothIcon, 
-  UsersIcon,
   ChevronRightIcon, 
-  ReceiptPercentIcon, 
-  BellIcon,
+  ReceiptPercentIcon,
   ArrowTrendingUpIcon,
-  XMarkIcon,
+  BookOpenIcon,
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Menu, Transition } from '@headlessui/react'; 
@@ -43,6 +41,7 @@ const navigation = [
     type: 'parent',
     children: [
       { name: 'Правила разнесения', href: '/mapping-rules' },
+      { name: 'Помощь', href: '/help' },
     ],
   },
 ];
@@ -58,6 +57,12 @@ export default function Sidebar({ setSidebarOpen }) {
   // Вспомогательная функция для определения, активен ли родительский пункт
   const isParentActive = useCallback((item) => {
     if (!item.children) return false;
+    if (item.name === 'Настройки') {
+        return location.pathname.startsWith('/settings') || 
+               location.pathname.startsWith('/mapping-rules') || 
+               location.pathname.startsWith('/admin') ||
+               location.pathname.startsWith('/help'); // <--- ДОБАВЛЕНО /help
+    }
     return item.children.some(child => location.pathname.startsWith(child.href));
   }, [location.pathname]);
 
@@ -109,16 +114,16 @@ export default function Sidebar({ setSidebarOpen }) {
                       <div
                         onClick={() => toggleParentMenu(item.name)} 
                         className={classNames(
-                          isParentActive(item) // <--- ИСПОЛЬЗУЕМ isParentActive
+                          isParentActive(item)
                             ? 'bg-gray-50 text-indigo-600'
                             : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
-                          baseNavLinkClasses, // Используем общие классы
+                          baseNavLinkClasses, 
                           'cursor-pointer'
                         )}
                       >
                         <item.icon
                           className={classNames(
-                            isParentActive(item) // <--- ИСПОЛЬЗУЕМ isParentActive
+                            isParentActive(item)
                               ? 'text-indigo-600'
                               : 'text-gray-400 group-hover:text-indigo-600',
                             'h-6 w-6 shrink-0'
