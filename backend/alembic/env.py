@@ -10,47 +10,34 @@ from alembic import context
 import os
 import sys
 
-naming_convention = {
-    "ix": "ix_%(column_0_label)s",
-    "uq": "uq_%(table_name)s_%(column_0_name)s",
-    "ck": "ck_%(table_name)s_%(constraint_name)s",
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    "pk": "pk_%(table_name)s"
-}
-
-# Определяем абсолютный путь к директории 'backend' (на один уровень выше 'alembic')
-# и добавляем его в sys.path, чтобы Python мог найти 'app'
-current_dir = os.path.dirname(__file__)
-project_root = os.path.abspath(os.path.join(current_dir, '..'))
-sys.path.insert(0, project_root) # Используем insert(0) для приоритета
-
-# Теперь импортируем Base и models, зная, что 'app' в sys.path
-# Убедись, что 'app.database' и 'app.models' это правильные пути к твоим файлам.
+# 1. Добавляем путь к нашему приложению, чтобы Alembic "видел" модели
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 try:
-    from app.database import Base
-    from app import models # Импортируем, чтобы все модели были известны Base.metadata
-except ImportError as e:
-    print(f"Ошибка импорта Base или models: {e}")
-    print(f"Текущий sys.path: {sys.path}")
-    raise
+    from app.models import Base
+except ImportError:
+    # Обработка ошибки, если модели не найдены
+    raise ImportError("Не удалось импортировать 'Base' из app.models. Убедитесь, что структура проекта верна.")
 
-target_metadata = Base.metadata # ЭТА СТРОКА ОЧЕНЬ ВАЖНА!
-# --- НОВЫЕ ИЗМЕНЕНИЯ ЗАКАНЧИВАЮТСЯ ТУТ ---
-
-
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+# 2. Получаем объект конфигурации Alembic
 config = context.config
 
+# 3. САМЫЙ ГЛАВНЫЙ ФИКС:
+#    Программно устанавливаем URL базы данных из переменной окружения,
+#    игнорируя значение в alembic.ini.
+db_url = os.environ.get("DATABASE_URL")
+if db_url is None:
+    raise ValueError("Alembic не может найти переменную окружения DATABASE_URL!")
+config.set_main_option("sqlalchemy.url", db_url)
+
+# 4. Устанавливаем target_metadata для автогенерации миграций
+target_metadata = Base.metadata
+
+# --- КОНЕЦ ВАЖНЫХ ИЗМЕНЕНИЙ ---
+
+
 # Interpret the config file for Python logging.
-# This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
