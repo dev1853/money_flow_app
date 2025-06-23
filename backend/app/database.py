@@ -1,31 +1,27 @@
-# app/database.py
+# backend/app/database.py
+
 import os
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
 
-# ДОБАВЬТЕ ЭТОТ БЛОК С ПРАВИЛАМИ
-naming_convention = {
-    "ix": "ix_%(column_0_label)s",
-    "uq": "uq_%(table_name)s_%(column_0_name)s",
-    "ck": "ck_%(table_name)s_%(constraint_name)s",
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    "pk": "pk_%(table_name)s"
-}
+# 1. Получаем URL для подключения к базе данных из переменной окружения.
+# Эту переменную мы задаем в docker-compose.yml.
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-load_dotenv()
+# 2. Проверяем, что переменная окружения действительно установлена.
+if DATABASE_URL is None:
+    raise Exception("Переменная окружения DATABASE_URL не установлена!")
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+# 3. Создаем "движок" SQLAlchemy с правильным URL.
+engine = create_engine(DATABASE_URL)
 
-print(f"--- DEBUG: Пытаюсь подключиться с URL: {SQLALCHEMY_DATABASE_URL} ---")
-
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-metadata = MetaData(naming_convention=naming_convention)
+
 Base = declarative_base()
 
-# Dependency для получения сессии БД
+
+# Зависимость для получения сессии базы данных в эндпоинтах
 def get_db():
     db = SessionLocal()
     try:
