@@ -4,9 +4,9 @@ services:
   postgres:
     image: postgres:13-alpine
     environment:
-      POSTGRES_USER: postgres       # замените на свои данные
-      POSTGRES_PASSWORD: FcEnP0H4+  # замените на свои данные
-      POSTGRES_DB: money_flow             # замените на свою базу данных
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Ghbdtnjvktn+
+      POSTGRES_DB: money_flow_db
     ports:
       - "5432:5432"
     volumes:
@@ -17,21 +17,21 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8001:8001"
     environment:
       # Передайте переменные окружения через файл или прямо здесь.
-      DATABASE_URL: postgresql://your_user:your_password@postgres:5432/your_db
-      SECRET_KEY: your_secret_key        # замените на свой секретный ключ
-      ALGORITHM: HS256                     # или другой алгоритм по необходимости
+      DATABASE_URL: postgresql://postgres:Ghbdtnjvktn@postgres:5432/money_flow_db
+      SECRET_KEY: your_secret_key
+      ALGORITHM: HS256 
     depends_on:
       - postgres
 
   frontend:
     build: ./frontend
     ports:
-      - "5173:5173"
+      - "3000:3000"
     environment:
-      VITE_API_BASE_URL: http://localhost:8000  # или http://backend:8000, если использовать внутри сети Docker
+      VITE_API_BASE_URL: http://localhost:8001 
     depends_on:
       - backend
 
