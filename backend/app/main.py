@@ -25,6 +25,8 @@ app = FastAPI(
 )
 
 origins = [
+    "https://money.dev1853.ru",
+    "http://money.dev1853.ru",
     "http://localhost",
     "http://localhost:3000",
     "http://127.0.0.1",
