@@ -1,24 +1,37 @@
-# money_flow_app/backend/Dockerfile
+# frontend/Dockerfile
 
-# Используем официальный образ Python как базовый
-FROM python:3.9-slim-buster
+# --- СТАДИЯ 1: Сборка приложения ---
+# Используем образ Node.js для установки зависимостей и сборки проекта
+FROM node:20-alpine AS build-stage
 
-# Устанавливаем рабочую директорию внутри контейнера
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем файл зависимостей Python
-# Сначала копируем только requirements.txt для эффективного кеширования слоев Docker
-COPY requirements.txt .
+# Копируем package.json и package-lock.json для установки зависимостей
+COPY package*.json ./
 
-# Устанавливаем зависимости Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Устанавливаем зависимости
+RUN npm install
 
-# Копируем остальной код приложения в рабочую директорию
+# Копируем весь остальной код приложения
 COPY . .
 
-# Открываем порт, который использует ваше FastAPI-приложение (по умолчанию 8001)
-EXPOSE 8001
+# Запускаем команду сборки, которая создаст папку /app/dist
+RUN npm run build
 
-# Команда для запуска приложения с Uvicorn
-# --host 0.0.0.0 делает приложение доступным извне контейнера
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+# --- СТАДИЯ 2: Рабочий образ ---
+# Используем легковесный образ Nginx
+FROM nginx:stable-alpine
+
+# Копируем собранные файлы из стадии сборки в публичную папку Nginx
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# Копируем кастомную конфигурацию Nginx для корректной работы React Router
+# Этот файл мы создадим следующим шагом
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Указываем, что контейнер будет слушать на порту 80
+EXPOSE 80
+
+# Команда для запуска Nginx
+CMD ["nginx", "-g", "daemon off;"]

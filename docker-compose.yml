@@ -27,13 +27,21 @@ services:
       - postgres
 
   frontend:
-    build: ./frontend
+    container_name: money_flow_frontend
+    # Теперь мы собираем образ из Dockerfile, который создали в папке frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-    environment:
-      VITE_API_BASE_URL: http://localhost:8001 
+      # Nginx внутри контейнера слушает порт 80.
+      # Мы по-прежнему пробрасываем его на порт 3000 хоста,
+      # чтобы ваш основной Nginx на сервере мог с ним связаться.
+      - "3000:80"
     depends_on:
       - backend
+    networks:
+      - money_flow_network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
