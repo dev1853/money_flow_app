@@ -5,7 +5,7 @@ services:
     image: postgres:13-alpine
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Ghbdtnjvktn+
+      POSTGRES_PASSWORD: Ghbdtnjvktn
       POSTGRES_DB: money_flow_db
     ports:
       - "5432:5432"
@@ -21,7 +21,7 @@ services:
     environment:
       # Передайте переменные окружения через файл или прямо здесь.
       DATABASE_URL: postgresql://postgres:Ghbdtnjvktn@postgres:5432/money_flow_db
-      SECRET_KEY: your_secret_key
+      SECRET_KEY: 15b07f9af1e3f85afc6cd40ea4d6471b427ebe796d65ae2c043b23dae3a71c82
       ALGORITHM: HS256 
     depends_on:
       - postgres
