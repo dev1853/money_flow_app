@@ -1,19 +1,23 @@
-# frontend/Dockerfile
+# backend/Dockerfile
 
-# --- СТАДИЯ 1: Сборка приложения ---
-# Используем образ Node.js для установки зависимостей и сборки проекта
-FROM node:20-alpine AS build-stage
+# Используем официальный легковесный образ Python
+FROM python:3.9-slim
 
-# Устанавливаем рабочую директорию
+# Устанавливаем рабочую директорию в контейнере
 WORKDIR /app
 
-# Копируем package.json и package-lock.json для установки зависимостей
-COPY package*.json ./
+# Устанавливаем переменные окружения, чтобы Python не буферизовал вывод
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# Устанавливаем зависимости
-RUN npm install
+# Копируем файл с зависимостями
+COPY requirements.txt .
 
-# Копируем весь остальной код приложения
+# Обновляем pip и устанавливаем зависимости из requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Копируем весь код бэкенда в рабочую директорию
 COPY . .
 
 # Запускаем команду сборки, которая создаст папку /app/dist
