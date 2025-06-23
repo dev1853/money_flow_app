@@ -32,7 +32,7 @@ function RegisterPage() {
     setLoading(true);
     setError('');
     try {
-      await apiService.post('/users/', {
+      await apiService.post('/api/users/', {
         username: formData.username,
         email: formData.email,
         password: formData.password,

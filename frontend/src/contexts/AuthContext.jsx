@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       apiService.setToken(token);
       try {
-        const userData = await apiService.get('/users/me');
+        const userData = await apiService.get('/api/users/me');
         setUser(userData);
         await fetchWorkspaces();
       } catch (error) {
