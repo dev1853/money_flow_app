@@ -27,8 +27,8 @@ def upgrade() -> None:
     # Если столбец уже NOT NULL, этот шаг не нужен.
 
     # 2. Обновляем все NULL значения в is_superuser на FALSE
-    op.execute("UPDATE users SET is_superuser = FALSE WHERE is_superuser IS NULL")
-    print("Updated NULL 'is_superuser' values to FALSE in 'users' table.")
+    # op.execute("UPDATE users SET is_superuser = FALSE WHERE is_superuser IS NULL")
+    # print("Updated NULL 'is_superuser' values to FALSE in 'users' table.")
 
     # 3. (Опционально) Если столбец еще не NOT NULL, делаем его таковым.
     # Это можно сделать через alter_column, если в models.py он уже отмечен как nullable=False.
