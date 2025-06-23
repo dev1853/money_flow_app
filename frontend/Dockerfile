@@ -1,4 +1,4 @@
- frontend/Dockerfile
+#  frontend/Dockerfile
 
 # --- СТАДИЯ 1: Сборка приложения ---
 FROM node:20-alpine AS build-stage
