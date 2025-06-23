@@ -1,332 +1,201 @@
 // frontend/src/components/StatementUploadModal.jsx
-import { useState, useEffect, useCallback, Fragment } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { ArrowUpTrayIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
-import { format, parseISO } from 'date-fns';
-
+import React, { useState, useEffect, useRef } from 'react';
+import Modal from './Modal';
 import Button from './Button';
 import Alert from './Alert';
-import Modal from './Modal';
-import Loader from './Loader';
-import Label from './forms/Label';
-import Select from './forms/Select';
-import Input from './forms/Input'; // Возможно понадобится, если file input будет заменен на Input
-
 import { apiService } from '../services/apiService';
+import { useAuth } from '../contexts/AuthContext';
+import Select from './forms/Select'; 
+import Label from './forms/Label'; 
 
-function StatementUploadModal({ isOpen, onClose, onUploadSuccess, formId }) {
-  const { isAuthenticated, activeWorkspace } = useAuth();
-
-  const [selectedAccountId, setSelectedAccountId] = useState('');
-  const [defaultIncomeArticleId, setDefaultIncomeArticleId] = useState('');
-  const [defaultExpenseArticleId, setDefaultExpenseArticleId] = useState('');
+const StatementUploadModal = ({ isOpen, onClose, onSuccess }) => {
+  console.log("DEBUG(StatementUploadModal): Component Rendered. isOpen:", isOpen); // <--- ЛОГ РЕНДЕРА
+  const { activeWorkspace } = useAuth();
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [uploadResult, setUploadResult] = useState(null);
 
-  const [availableAccounts, setAvailableAccounts] = useState([]);
-  const [allFlatArticles, setAllFlatArticles] = useState([]);
+  const [accounts, setAccounts] = useState([]); 
+  const [selectedAccountId, setSelectedAccountId] = useState(''); 
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDropdownLoading, setIsDropdownLoading] = useState(false);
+  const fileInputRef = useRef(null); 
 
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-
-  const [step, setStep] = useState(1);
-  const [transactionsToReview, setTransactionsToReview] = useState([]);
-
-  // commonLabelClasses и commonInputClasses можно удалить, так как они теперь в Label/Input/Select
-  // const commonLabelClasses = "block text-sm font-medium text-gray-700 mb-1 text-left";
-  // const commonInputClasses = "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10";
-
-  const resetFormState = useCallback(() => {
-    setSelectedAccountId('');
-    setDefaultIncomeArticleId('');
-    setDefaultExpenseArticleId('');
-    setSelectedFile(null);
-    setError(null);
-    setSuccessMessage(null);
-    setTransactionsToReview([]);
-    setStep(1);
-  }, []);
-
-  const fetchDropdownData = useCallback(async () => {
-    if (!isAuthenticated || !activeWorkspace) {
-        setError("Рабочее пространство не выбрано или необходима аутентификация для загрузки справочников.");
-        setIsDropdownLoading(false);
-        return;
-    }
-    setIsDropdownLoading(true);
-    setError(null);
-    try {
-      const accountsData = await apiService.get(`/accounts/?workspace_id=${activeWorkspace.id}&limit=500&is_active=true`);
-      setAvailableAccounts(accountsData);
-
-      const articlesDataRaw = await apiService.get(`/dds_articles?workspace_id=${activeWorkspace.id}`);
-      const articlesData = Array.isArray(articlesDataRaw) ? articlesDataRaw : [];
-      const flattenArticles = (articles, level = 0) => {
-          let flatList = [];
-          articles.forEach(article => {
-            if (!article.is_archived && !(article.children && article.children.length > 0)) {
-              flatList.push({ ...article, displayName: `${'—'.repeat(level)} ${article.name}` });
-            }
-            if (article.children && article.children.length > 0) {
-              flatList = flatList.concat(flattenArticles(article.children, level + 1));
-            }
-          });
-          return flatList;
-      };
-      const flatArticles = flattenArticles(articlesData);
-      setAllFlatArticles(flatArticles);
-
-    } catch (err) {
-      console.error("StatementUploadModal: Ошибка загрузки справочников:", err);
-      setError(`Не удалось загрузить справочники: ${err.message}`);
-    } finally {
-      setIsDropdownLoading(false);
-    }
-  }, [isAuthenticated, activeWorkspace]);
 
   useEffect(() => {
-    if (isOpen) {
-      resetFormState();
-      fetchDropdownData();
+    console.log("DEBUG(StatementUploadModal): useEffect for accounts mounted/updated. isOpen:", isOpen, "activeWorkspace:", activeWorkspace); // <--- ЛОГ useEffect
+    const fetchAccounts = async () => {
+      console.log("DEBUG(StatementUploadModal): fetchAccounts called."); // <--- ЛОГ
+      if (!activeWorkspace || !activeWorkspace.id) {
+        console.warn("DEBUG(StatementUploadModal): No activeWorkspace to fetch accounts."); // <--- ЛОГ
+        return;
+      }
+      try {
+        console.log(`DEBUG(StatementUploadModal): Fetching accounts for workspace: ${activeWorkspace.id}`); // <--- ЛОГ
+        const fetchedAccounts = await apiService.get(`/accounts/?workspace_id=${activeWorkspace.id}`);
+        
+        console.log("DEBUG(StatementUploadModal): Fetched accounts raw:", fetchedAccounts); // <--- ЛОГ
+        const bankAccounts = fetchedAccounts.filter(acc => acc.account_type === 'bank_account');
+        setAccounts(bankAccounts || []);
+        console.log("DEBUG(StatementUploadModal): Filtered bank accounts:", bankAccounts); // <--- ЛОГ
+        
+        if (selectedAccountId && bankAccounts.some(acc => acc.id === parseInt(selectedAccountId))) {
+            console.log("DEBUG(StatementUploadModal): Retaining selected account:", selectedAccountId); // <--- ЛОГ
+        } else if (bankAccounts.length > 0) {
+            setSelectedAccountId(bankAccounts[0].id.toString());
+            console.log("DEBUG(StatementModal): Setting default account to first bank account:", bankAccounts[0].id); // <--- ЛОГ
+        } else {
+            setSelectedAccountId('');
+            console.log("DEBUG(StatementModal): No bank accounts found, selectedAccountId cleared."); // <--- ЛОГ
+        }
+      } catch (err) {
+        console.error("DEBUG(StatementUploadModal): Error fetching accounts:", err); // <--- ЛОГ
+        setError("Не удалось загрузить список счетов.");
+      }
+    };
+    
+    if (isOpen && activeWorkspace) {
+        fetchAccounts();
     }
-  }, [isOpen, fetchDropdownData, resetFormState]);
+    return () => console.log("DEBUG(StatementUploadModal): useEffect for accounts cleanup."); // <--- ЛОГ
+  }, [isOpen, activeWorkspace]);
 
-  const availableIncomeArticles = allFlatArticles.filter(a => a.type === 'income');
-  const availableExpenseArticles = allFlatArticles.filter(a => a.type === 'expense');
+  // Сброс состояния при закрытии модального окна
+  useEffect(() => {
+    console.log("DEBUG(StatementUploadModal): useEffect for modal close/reset. isOpen:", isOpen); // <--- ЛОГ
+    if (!isOpen) {
+      setSelectedFile(null);
+      setUploadResult(null);
+      setError('');
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+        console.log("DEBUG(StatementUploadModal): File input cleared via ref."); // <--- ЛОГ
+      }
+      console.log("DEBUG(StatementUploadModal): Modal state reset."); // <--- ЛОГ
+    }
+  }, [isOpen]);
 
-  const handleFileChange = (event) => { setSelectedFile(event.target.files[0]); };
 
-  const handleInitialUploadSubmit = async (event) => {
-    event.preventDefault();
-    if (!selectedFile || !selectedAccountId || !defaultIncomeArticleId || !defaultExpenseArticleId ) {
-        setError("Пожалуйста, заполните все поля и выберите файл.");
+  const handleFileChange = (event) => {
+    console.log("DEBUG(StatementUploadModal): handleFileChange called. Event target files:", event.target.files); // <--- ЛОГ
+    setSelectedFile(event.target.files[0]);
+    setUploadResult(null); 
+    setError('');
+    console.log("DEBUG(StatementUploadModal): selectedFile set to:", event.target.files[0] ? event.target.files[0].name : 'null'); // <--- ЛОГ
+  };
+
+  const handleUpload = async () => {
+    console.log("DEBUG(StatementUploadModal): handleUpload called."); // <--- ЛОГ
+    if (!selectedFile) {
+      setError('Пожалуйста, выберите файл.');
+      console.warn("DEBUG(StatementUploadModal): No file selected."); // <--- ЛОГ
+      return;
+    }
+    if (!selectedAccountId) { 
+        setError('Пожалуйста, выберите счет, к которому относится выписка.');
+        console.warn("DEBUG(StatementUploadModal): No account selected."); // <--- ЛОГ
         return;
     }
-    if (!isAuthenticated || !activeWorkspace) { setError("Ошибка аутентификации или рабочее пространство не выбрано."); return; }
+    setLoading(true);
+    setError('');
+    setUploadResult(null);
 
-    setIsLoading(true); setError(null); setSuccessMessage(null); setTransactionsToReview([]);
+    console.log("DEBUG(Upload): selectedFile before FormData:", selectedFile); 
+    console.log("DEBUG(Upload): Type of selectedFile:", typeof selectedFile); 
+    if (selectedFile) { 
+        console.log("DEBUG(Upload): selectedFile name:", selectedFile.name); 
+        console.log("DEBUG(Upload): selectedFile size:", selectedFile.size); 
+        console.log("DEBUG(Upload): selectedFile type:", selectedFile.type); 
+    }
 
     const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('account_id', selectedAccountId);
-    formData.append('default_income_article_id', defaultIncomeArticleId);
-    formData.append('default_expense_article_id', defaultExpenseArticleId);
-    formData.append('workspace_id', activeWorkspace.id);
+    formData.append('file', selectedFile); 
+    formData.append('account_id', selectedAccountId); 
+
+    // Проверка содержимого FormData
+    for (let [key, value] of formData.entries()) {
+        console.log(`DEBUG(Upload): FormData entry: ${key}: ${value}`);
+    }
+    console.log("DEBUG(Upload): FormData prepared. Sending request..."); // <--- ЛОГ
+
+    const uploadUrl = `/statement/upload`; 
 
     try {
-      const result = await apiService.post('/statements/upload/tinkoff-csv/', formData, {
-        headers: { 'Content-Type': undefined }
-      });
-
-      let baseMessage = `Выписка передана на обработку. Автоматически создано: ${result.created_transactions_auto}. Пропущено дубликатов: ${result.skipped_duplicates_count}. Ошибочных строк: ${result.failed_rows}.`;
-      if (result.transactions_for_review && result.transactions_for_review.length > 0) {
-        setTransactionsToReview(
-          result.transactions_for_review.map(t => ({
-            ...t,
-            selected_dds_article_id: t.suggested_dds_article_id?.toString() || ''
-          }))
-        );
-        setSuccessMessage(`${baseMessage} Обнаружены транзакции для уточнения категории.`);
-        setStep(2);
-      } else {
-        setSuccessMessage(`${baseMessage} Все транзакции классифицированы или пропущены.`);
-        if (onUploadSuccess) onUploadSuccess();
+      // ИЗМЕНЕНО: Удален параметр headers полностью!
+      const result = await apiService.post(uploadUrl, formData); // <--- ИСПРАВЛЕНО ЗДЕСЬ!
+      setUploadResult(result);
+      if (onSuccess) {
+        onSuccess(); 
       }
+      console.log("DEBUG(Upload): File uploaded successfully. Result:", result);
     } catch (err) {
-        console.error("StatementUploadModal: Ошибка загрузки выписки:", err);
-        setError(err.message || 'Произошла ошибка при загрузке выписки.');
+      setError(err.message || 'Ошибка загрузки файла.');
+      console.error('DEBUG(Upload): Error during file upload:', err);
     } finally {
-        setIsLoading(false);
+      setLoading(false);
+      console.log("DEBUG(Upload): handleUpload finished. Loading set to false.");
     }
   };
 
-  const handleReviewArticleChange = (index, newArticleId) => {
-    const updatedTransactions = [...transactionsToReview];
-    updatedTransactions[index].selected_dds_article_id = parseInt(newArticleId, 10);
-    setTransactionsToReview(updatedTransactions);
-  };
+  const accountOptions = accounts.map(acc => ({ value: acc.id.toString(), label: `${acc.name} (${acc.currency})` }));
 
-  const handleSaveReviewedTransactions = async () => {
-    setIsLoading(true); setError(null); setSuccessMessage(null);
-    if (!isAuthenticated || !activeWorkspace) { setError("Ошибка аутентификации или рабочее пространство не выбрано."); setIsLoading(false); return; }
-
-    const transactionsToSave = transactionsToReview.filter(t => t.selected_dds_article_id && t.selected_dds_article_id !== 0);
-    if (transactionsToSave.length === 0 && transactionsToReview.length > 0) {
-        setSuccessMessage("Нет выбранных транзакций для сохранения после ревью.");
-        setIsLoading(false);
-        if (onUploadSuccess) onUploadSuccess();
-        return;
-    }
-    if (transactionsToSave.length === 0 && transactionsToReview.length === 0) {
-        setIsLoading(false);
-        return;
-    }
-
-    const payload = {
-      workspace_id: activeWorkspace.id,
-      transactions: transactionsToSave.map(t => ({
-        transaction_date: t.transaction_date,
-        amount: t.amount,
-        description: t.description,
-        contractor: t.contractor,
-        account_id: parseInt(selectedAccountId),
-        dds_article_id: t.selected_dds_article_id,
-      }))
-    };
-
-    try {
-      const result = await apiService.post('/transactions/batch-categorize/', payload);
-      setSuccessMessage(`Классификация сохранена! Успешно создано: ${result.successfully_created}. Ошибки: ${result.failed_to_create}.`);
-      if (onUploadSuccess) onUploadSuccess();
-      setStep(1);
-      setTransactionsToReview([]);
-    } catch (err) {
-      console.error("StatementUploadModal: Ошибка сохранения классифицированных транзакций:", err);
-      setError(err.message || 'Произошла ошибка при сохранении классифицированных транзакций.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const footerStep1 = (
-    <div className="flex justify-end space-x-3">
-      <Button variant="secondary" size="md" onClick={onClose} disabled={isLoading}>
-        Отмена
-      </Button>
-      <Button
-        type="submit"
-        variant="primary"
-        size="md"
-        form={`${formId}-step1`}
-        disabled={isLoading || !selectedFile}
-        iconLeft={!isLoading ? <ArrowUpTrayIcon className="h-5 w-5" /> : null}
-      >
-        {isLoading ? 'Обработка...' : 'Загрузить и обработать'}
-      </Button>
-    </div>
-  );
-
-  const footerStep2 = (
-    <div className="flex justify-end space-x-3">
-      <Button variant="secondary" size="md" onClick={onClose} disabled={isLoading }>
-        Отмена
-      </Button>
-      <Button
-        type="submit"
-        variant="success"
-        size="md"
-        form={`${formId}-step2`}
-        onClick={handleSaveReviewedTransactions}
-        disabled={isLoading || transactionsToReview.every(t => !t.selected_dds_article_id || t.selected_dds_article_id === 0)}
-        iconLeft={!isLoading ? <CheckCircleIcon className="h-5 w-5" /> : null}
-      >
-        {isLoading ? 'Сохранение...' : 'Сохранить классифицированные'}
-      </Button>
-    </div>
-  );
-
-  if (!isOpen) return null;
-
-  const modalTitle = step === 1 ? "Загрузка выписки (Т-Банк CSV)" : "Уточнение категорий транзакций";
-  const customMaxWidth = "max-w-3xl";
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} maxWidth={customMaxWidth} footer={step === 1 ? footerStep1 : footerStep2}>
-      {error && !isDropdownLoading && <Alert type="error" title="Ошибка" message={error} className="mb-4" />}
+    <Modal isOpen={isOpen} onClose={onClose} title="Загрузить банковскую выписку">
+      <div className="space-y-4">
+        {error && <Alert type="error">{error}</Alert>}
+        {uploadResult && (
+          <Alert type="success">
+            Файл успешно загружен. Создано транзакций: {uploadResult.created_transactions_auto} / Пропущено дубликатов: {uploadResult.skipped_duplicates_count} / Ошибок: {uploadResult.failed_rows}
+            {uploadResult.failed_row_details && uploadResult.failed_row_details.length > 0 && (
+              <div className="mt-2 text-sm">
+                Подробнее об ошибках:
+                <ul className="list-disc pl-5">
+                  {uploadResult.failed_row_details.map((detail, index) => (
+                    <li key={index}>{detail.error} (Строка: {JSON.stringify(detail.row)})</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </Alert>
+        )}
+        
+        <div>
+            <Label htmlFor="account_for_statement">Счет для выписки</Label>
+            <Select
+                id="account_for_statement"
+                name="account_id"
+                value={selectedAccountId}
+                onChange={(e) => setSelectedAccountId(e.target.value)}
+                required
+                className="w-full"
+            >
+                <option value="">Выберите счет</option>
+                {accountOptions.map(option => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+            </Select>
+        </div>
 
-      {isDropdownLoading && (
-          <div className="py-8">
-              <Loader message="Загрузка данных для формы..." />
-          </div>
-      )}
-
-      {!isDropdownLoading && !error && (
-        <>
-          {step === 1 && (
-            <form id={`${formId}-step1`} onSubmit={handleInitialUploadSubmit} className="mt-2 space-y-5">
-              <div>
-                <Label htmlFor={`${formId}-upload-account-id`}>Счет зачисления/списания</Label>
-                <Select id={`${formId}-upload-account-id`} value={selectedAccountId} onChange={(e) => setSelectedAccountId(e.target.value)} required disabled={isLoading || isDropdownLoading}> {/* Убраны дублирующиеся классы */}
-                  <option value="" disabled>-- Выберите счет --</option>
-                  {availableAccounts.map(acc => <option key={acc.id} value={acc.id}>{acc.name} ({acc.currency})</option>)}
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor={`${formId}-upload-default-income`}>Статья ДДС для доходов по умолчанию</Label>
-                <Select id={`${formId}-upload-default-income`} value={defaultIncomeArticleId} onChange={(e) => setDefaultIncomeArticleId(e.target.value)} required disabled={isLoading || isDropdownLoading}> {/* Убраны дублирующиеся классы */}
-                  <option value="" disabled>-- Выберите статью дохода --</option>
-                  {availableIncomeArticles.map(art => <option key={art.id} value={art.id}>{art.displayName}</option>)}
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor={`${formId}-upload-default-expense`}>Статья ДДС для расходов по умолчанию</Label>
-                <Select id={`${formId}-upload-default-expense`} value={defaultExpenseArticleId} onChange={(e) => setDefaultExpenseArticleId(e.target.value)} required disabled={isLoading || isDropdownLoading}> {/* Убраны дублирующиеся классы */}
-                  <option value="" disabled>-- Выберите статью расхода --</option>
-                  {availableExpenseArticles.map(art => <option key={art.id} value={art.id}>{art.displayName}</option>)}
-                </Select>
-              </div>
-              <div>
-                  <Label htmlFor={`${formId}-csv-file`}>CSV файл выписки</Label>
-                  <input type="file" id={`${formId}-csv-file`} accept=".csv" onChange={handleFileChange} required
-                    className="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
-                    disabled={isLoading || isDropdownLoading}
-                  />
-              </div>
-
-              {successMessage && !transactionsToReview.length && <Alert type="success" message={successMessage} className="my-2" />}
-            </form>
-          )}
-
-          {step === 2 && transactionsToReview.length > 0 && (
-            <form id={`${formId}-step2`} onSubmit={(e) => { e.preventDefault(); handleSaveReviewedTransactions(); }} className="mt-2">
-              {successMessage && !error && <Alert type="info" message={successMessage} className="mb-4" />}
-              <p className="text-sm text-gray-700 mb-3">Пожалуйста, проверьте и при необходимости скорректируйте статьи ДДС для следующих операций:</p>
-              <div className="max-h-[50vh] overflow-y-auto border border-gray-300 rounded-md">
-                <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
-                  <thead className="bg-gray-100 sticky top-0 z-10">
-                    <tr>
-                      <th className="px-3 py-2.5 text-left font-semibold text-gray-600">Дата</th>
-                      <th className="px-3 py-2.5 text-left font-semibold text-gray-600">Описание</th>
-                      <th className="px-3 py-2.5 text-left font-semibold text-gray-600">Контрагент</th>
-                      <th className="px-3 py-2.5 text-right font-semibold text-gray-600">Сумма</th>
-                      <th className="px-3 py-2.5 text-left font-semibold text-gray-600 min-w-[200px]">Статья ДДС</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {transactionsToReview.map((t, index) => (
-                      <tr key={t.original_row_index || index} className="hover:bg-gray-50">
-                        <td className="px-3 py-2 whitespace-nowrap text-gray-700">{format(parseISO(t.transaction_date), 'dd.MM.yyyy')}</td>
-                        <td className="px-3 py-2 text-gray-700"><div className="w-32 sm:w-40 md:w-56 truncate" title={t.description}>{t.description}</div></td>
-                        <td className="px-3 py-2 text-gray-700"><div className="w-24 sm:w-32 md:w-40 truncate" title={t.contractor}>{t.contractor || '-'}</div></td>
-                        <td className={`px-3 py-2 text-right whitespace-nowrap font-medium ${t.is_income ? 'text-green-600' : 'text-red-600'}`}>
-                          {t.is_income ? '+' : '-'}{parseFloat(t.amount).toLocaleString('ru-RU')}
-                        </td>
-                        <td className="px-3 py-2">
-                          <Select
-                            value={t.selected_dds_article_id || ''}
-                            onChange={(e) => handleReviewArticleChange(index, e.target.value)}
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-xs sm:text-sm h-9 py-1" // Здесь оставляем все классы, т.к. этот Select специфичен для таблицы
-                          >
-                            <option value="" disabled>-- Выберите статью --</option>
-                            {(t.is_income ? availableIncomeArticles : availableExpenseArticles).map(art => (
-                              <option key={art.id} value={art.id}>{art.displayName}</option>
-                            ))}
-                          </Select>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {error && step === 2 && <Alert type="error" message={error} className="mt-3" />}
-            </form>
-          )}
-        </>
-      )}
+        <div>
+          <Label htmlFor="file_upload">Выберите файл выписки (.csv)</Label> 
+          <input 
+            type="file" 
+            id="file_upload" 
+            ref={fileInputRef} 
+            accept=".csv" 
+            onChange={handleFileChange} 
+            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" 
+          /> 
+          {selectedFile && <p className="mt-2 text-sm text-gray-500">Выбран файл: {selectedFile.name} ({Math.round(selectedFile.size / 1024)} KB)</p>}
+        </div>
+        <div className="flex justify-end pt-4">
+          <Button onClick={onClose} variant="secondary" className="mr-2">Отмена</Button>
+          <Button onClick={handleUpload} disabled={loading}>{loading ? 'Загрузка...' : 'Загрузить'}</Button>
+        </div>
+      </div>
     </Modal>
   );
-}
+};
 
 export default StatementUploadModal;

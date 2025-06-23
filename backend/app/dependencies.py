@@ -5,10 +5,10 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 
-from . import crud, models, schemas, security # <--- Убедитесь, что security здесь
+from . import crud, models, schemas, security
 from .database import SessionLocal
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
 def get_db():
     db = SessionLocal()

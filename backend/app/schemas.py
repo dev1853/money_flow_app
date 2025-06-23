@@ -1,10 +1,10 @@
 # backend/app/schemas.py
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import List, Optional, Literal, Dict, Any, Union
 from datetime import date, datetime
 
-TransactionType = Literal["income", "expense"] 
+TransactionType = Literal["income", "expense"]
 
 # --- User Schemas ---
 class UserBase(BaseModel):
@@ -24,9 +24,8 @@ class UserUpdate(UserBase):
 
 class User(UserBase):
     id: int
-
-    class Config:
-        orm_mode = True
+    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    model_config = ConfigDict(from_attributes=True)
 
 # --- Token Schema ---
 class Token(BaseModel):
@@ -49,9 +48,8 @@ class WorkspaceUpdate(WorkspaceBase):
 class Workspace(WorkspaceBase):
     id: int
     owner_id: int
-
-    class Config:
-        orm_mode = True
+    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    model_config = ConfigDict(from_attributes=True)
 
 # --- Account Schemas ---
 class AccountBase(BaseModel):
@@ -60,10 +58,7 @@ class AccountBase(BaseModel):
     currency: str
     is_active: bool = True
     initial_balance: float = 0.0
-    current_balance: float = 0.0    
-
-    class Config:
-        orm_mode = True # Changed from from_attributes=True to match existing codebase (assuming Pydantic V1)
+    current_balance: float = 0.0
 
 class AccountCreate(AccountBase):
     workspace_id: int
@@ -80,9 +75,8 @@ class Account(AccountBase):
     id: int
     owner_id: int
     workspace_id: int
-    
-    class Config:
-        orm_mode = True # Changed from from_attributes=True to match existing codebase (assuming Pydantic V1)
+    # ИСПРАВЛЕНО: Удален дублирующий Config, оставлен только model_config
+    model_config = ConfigDict(from_attributes=True)
 
 # --- DDS Article Schemas ---
 class DdsArticleBase(BaseModel):
@@ -105,21 +99,20 @@ class DdsArticle(DdsArticleBase):
     id: int
     workspace_id: int
     owner_id: int
-    children: List['DdsArticle'] # Если нужна рекурсивная связь, раскомментируйте
-    
-    class Config:
-        orm_mode = True
-        
-DdsArticle.update_forward_refs()
+    children: List['DdsArticle'] = []
+    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    model_config = ConfigDict(from_attributes=True)
 
 # --- Transaction Schemas ---
 class TransactionBase(BaseModel):
-    date: date
+    date: datetime
     amount: float
-    description: Optional[str] = None
+    transaction_type: str
     account_id: int
+    description: Optional[str] = None
     dds_article_id: Optional[int] = None
-    transaction_type: TransactionType
+    # Эта конфигурация верна
+    model_config = ConfigDict(from_attributes=True)
 
 class TransactionCreate(TransactionBase):
     workspace_id: int
@@ -141,9 +134,8 @@ class Transaction(TransactionBase):
     owner_id: int
     account: Account
     dds_article: Optional[DdsArticle] = None
-
-    class Config:
-        orm_mode = True
+    # ИСПРАВЛЕНО: Удален дублирующий Config, оставлен только model_config
+    model_config = ConfigDict(from_attributes=True)
 
 class TransactionPage(BaseModel):
     items: List[Transaction]
@@ -160,6 +152,7 @@ class StatementUploadResponse(BaseModel):
     skipped_duplicates_count: int
     failed_row_details: List[FailedRowDetail]
 
+# --- Report Schemas ---
 class DdsReportItem(BaseModel):
     article_id: int
     article_name: str
@@ -169,45 +162,38 @@ class DdsReportItem(BaseModel):
     initial_balance: float
     final_balance: float
     children: List['DdsReportItem'] = []
+    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True # Changed from from_attributes=True to match existing codebase (assuming Pydantic V1)
-DdsReportItem.update_forward_refs()
-
-# Схема для отчета по балансам
 class AccountBalance(BaseModel):
     account_id: int
     account_name: str
     balance: float
-
-    class Config:
-        orm_mode = True
+    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    model_config = ConfigDict(from_attributes=True)
 
 class DashboardCashflowTrendData(BaseModel):
-    event_date: date = Field(..., description="Дата для точки данных тренда")
-    income: float = Field(..., description="Сумма доходов за эту дату")
-    expense: float = Field(..., description="Сумма расходов за эту дату")
+    event_date: date
+    income: float
+    expense: float
 
 class DashboardSummaryData(BaseModel):
     total_income: float
     total_expense: float
     net_profit: float
 
-# --- НОВАЯ СХЕМА ДЛЯ ОТЧЕТА О ПРИБЫЛЯХ И УБЫТКАХ ---
 class ProfitLossReport(BaseModel):
     total_income: float
     total_expense: float
     net_profit: float
-    # Можно добавить детализацию, если ОПиУ будет иметь статьи
-    # например, by_article_type: Dict[str, float] = {}
 
-# --- СХЕМЫ ДЛЯ MappingRule ---
+# --- MappingRule Schemas ---
 class MappingRuleBase(BaseModel):
-    keyword: str = Field(..., min_length=1, max_length=255, description="Ключевое слово для автоматического разнесения")
-    dds_article_id: int = Field(..., description="ID статьи ДДС, к которой относится правило")
-    transaction_type: Optional[TransactionType] = Field(None, description="Тип транзакции (income/expense), к которому применяется правило. Null для обоих.")
-    priority: int = Field(0, description="Приоритет правила (чем выше, тем раньше применяется)")
-    is_active: bool = Field(True, description="Активно ли правило")
+    keyword: str = Field(..., min_length=1, max_length=255)
+    dds_article_id: int
+    transaction_type: Optional[TransactionType] = None
+    priority: int = 0
+    is_active: bool = True
 
 class MappingRuleCreate(MappingRuleBase):
     owner_id: int
@@ -227,12 +213,13 @@ class MappingRule(MappingRuleBase):
     created_at: datetime
     updated_at: datetime
     dds_article: DdsArticle
-    
-    class Config:
-        orm_mode = True
-        
+    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    model_config = ConfigDict(from_attributes=True)
+
 class MappingRulePage(BaseModel):
     items: List[MappingRule]
     total_count: int
 
+# Обновляем ссылки для рекурсивных моделей в одном месте в конце файла
+DdsArticle.update_forward_refs()
 DdsReportItem.update_forward_refs()

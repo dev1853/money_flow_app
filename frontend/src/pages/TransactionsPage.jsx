@@ -252,7 +252,7 @@ function TransactionsPage() {
               <option value="">Все</option>
               {/* Тут нужно будет загрузить список счетов */}
               {/* Пока заглушка */}
-              <option value="1">Счет 1</option>
+              <option value="1" >Счет 1</option>
               <option value="2">Счет 2</option>
             </Select>
           </div>

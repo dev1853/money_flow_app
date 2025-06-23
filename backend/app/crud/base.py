@@ -28,7 +28,6 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.refresh(db_obj)
         return db_obj
         
-    # --- ДОБАВЬТЕ ЭТОТ МЕТОД ---
     def update(
         self,
         db: Session,

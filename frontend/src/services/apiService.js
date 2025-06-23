@@ -1,124 +1,131 @@
 // frontend/src/services/apiService.js
+
 import API_BASE_URL from '../apiConfig';
 
-// Определяем класс для кастомных ошибок API
-export class ApiError extends Error {
-  constructor(message, status) {
+class ApiError extends Error {
+  constructor(statusCode, message) {
     super(message);
     this.name = 'ApiError';
-    this.status = status;
+    this.statusCode = statusCode;
   }
 }
 
-const request = async (endpoint, options = {}) => {
-  const url = `${API_BASE_URL}${endpoint}`;
-  
-  const headers = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
+const request = async (method, url, data = null, headers = {}) => {
+    const defaultHeaders = {
+        'Content-Type': 'application/json',
+    };
 
-  const token = localStorage.getItem('accessToken');
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+        defaultHeaders['Authorization'] = `Bearer ${token}`;
+    }
 
-  const config = {
-    ...options,
-    headers,
-  };
+    const config = {
+        method: method,
+        headers: { ...defaultHeaders, ...headers },
+    };
 
-  try {
-    const response = await fetch(url, config);
-    if (!response.ok) {
-        let errorMessage = `HTTP-ошибка! Статус: ${response.status}`;
-        try {
-            const errorData = await response.json();
-            if (errorData.detail) {
-                // FastAPI часто возвращает массив ошибок валидации в поле 'detail'
+    if (data && method !== 'GET') {
+        // НОВОЕ: Проверяем, является ли тело запроса FormData
+        if (data instanceof FormData) { // <--- ИСПРАВЛЕНО ЗДЕСЬ!
+            // Для FormData браузер сам установит Content-Type, включая boundary.
+            // Нам нужно убедиться, что Content-Type не установлен вручную, чтобы он не конфликтовал.
+            delete config.headers['Content-Type']; // Удаляем заголовок Content-Type, если отправляем FormData
+            config.body = data; // Тело запроса - сам объект FormData
+        } else {
+            // Для обычных JSON-запросов
+            config.body = JSON.stringify(data);
+        }
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}${url}`, config);
+        
+        if (!response.ok) {
+            let errorData = null;
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                errorData = await response.json();
+            } else {
+                errorData = await response.text();
+            }
+            
+            let errorMessage = "Неизвестная ошибка API.";
+            if (errorData && typeof errorData === 'object' && errorData.detail) {
+                // ИСПРАВЛЕНО: Форматируем массив ошибок в читаемую строку
                 if (Array.isArray(errorData.detail)) {
                     errorMessage = errorData.detail.map(err => {
-                        // Превращаем путь к полю в строку, например "body -> name"
-                        const field = err.loc.join(' → ');
-                        return `${field}: ${err.msg}`; // Собираем сообщение, например "body → name: field required"
+                        // Ошибки Pydantic имеют loc, msg, type
+                        if (err.loc && err.msg) {
+                            return `${err.loc.join(' -> ')}: ${err.msg}`;
+                        }
+                        return err.msg || JSON.stringify(err);
                     }).join('; ');
-                } else {
-                    // Если detail - это просто строка
+                } else if (typeof errorData.detail === 'string') {
                     errorMessage = errorData.detail;
                 }
+            } else if (typeof errorData === 'string') {
+                errorMessage = errorData;
+            } else {
+                errorMessage = response.statusText;
             }
-        } catch (e) {
-            // Если тело ответа не в формате JSON, просто используем текст
-            errorMessage = await response.text();
+            
+            throw new ApiError(response.status, errorMessage); 
         }
-        throw new ApiError(errorMessage);
-    }
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
+
+        if (response.status === 204) {
+            return null;
+        }
+
         return await response.json();
+    } catch (error) {
+        if (error instanceof ApiError) {
+            throw error;
+        } else if (error.message === 'Failed to fetch') {
+            throw new Error('Сетевая ошибка или сервер недоступен.');
+        } else {
+            throw new Error(error.message || 'Произошла неизвестная ошибка.');
+        }
     }
-    return; 
-  } catch (error) {
-    console.error('Ошибка API запроса:', error);
-    if (error instanceof ApiError) {
-      throw error;
-    }
-    throw new Error('Сетевая ошибка или сервер недоступен');
-  }
 };
 
-export const apiService = {
-  get(endpoint, params) {
-    let url = endpoint;
-    if (params) {
-      const query = new URLSearchParams(params);
-      url += `?${query.toString()}`;
+const apiService = {
+    // Вспомогательные методы для HTTP-запросов
+    get: (url, headers) => request('GET', url, null, headers),
+    post: (url, data, headers) => request('POST', url, data, headers),
+    put: (url, data, headers) => request('PUT', url, data, headers),
+    delete: (url, headers) => request('DELETE', url, null, headers),
+    patch: (url, data, headers) => request('PATCH', url, data, headers),
+
+    // --- Изменение здесь ---
+    login: async ({ username, password }) => {
+        // ИСПРАВЛЕНО: URL для логина изменен с '/auth/token' на '/token'
+        const formData = new URLSearchParams();
+        formData.append('username', username);
+        formData.append('password', password);
+
+        // Для запросов на /token нужно отправлять 'application/x-www-form-urlencoded'
+        // fetch API автоматически установит его при отправке URLSearchParams
+        const response = await fetch(`${API_BASE_URL}/token`, { // <--- ИСПРАВЛЕНО ЗДЕСЬ!
+            method: 'POST',
+            body: formData, // URLSearchParams автоматически устанавливает нужный Content-Type
+        });
+
+        if (!response.ok) {
+            let errorData = await response.json(); // Ошибки логина обычно в JSON
+            throw new ApiError(response.status, errorData.detail || response.statusText);
+        }
+        return await response.json();
+    },
+    // --->
+
+    setToken: (token) => {
+        localStorage.setItem('accessToken', token);
+    },
+
+    clearToken: () => {
+        localStorage.removeItem('accessToken');
     }
-    return request(url);
-  },
-
-  post(endpoint, body) {
-    return request(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(body),
-    });
-  },
-
-  put(endpoint, body) {
-    return request(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(body),
-    });
-  },
-
-  delete(endpoint) {
-    return request(endpoint, { method: 'DELETE' });
-  },
-
-  // ДОБАВЛЯЕМ НОВЫЙ МЕТОД LOGIN
-  login: (credentials) => {
-    // Для OAuth2, FastAPI ожидает данные в формате x-www-form-urlencoded
-    const body = new URLSearchParams();
-    body.append('username', credentials.username);
-    body.append('password', credentials.password);
-
-    // Вызываем базовый метод request с правильным путем и параметрами
-    return request('/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body,
-    });
-  },
-
-  setToken: (token) => {
-    localStorage.setItem('accessToken', token);
-  },
-
-  getToken: () => {
-    return localStorage.getItem('accessToken');
-  },
-
-  clearToken: () => {
-    localStorage.removeItem('accessToken');
-  },
 };
+
+export { apiService, ApiError };

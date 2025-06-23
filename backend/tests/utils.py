@@ -14,7 +14,7 @@ def create_user(client: TestClient, email: str, password: str) -> schemas.User:
 
 def get_auth_token(client: TestClient, email: str, password: str) -> str:
     response = client.post(
-        "/api/auth/token",
+        "/api/token",
         data={"username": email, "password": password},
     )
     assert response.status_code == 200, response.json()

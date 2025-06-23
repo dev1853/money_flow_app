@@ -27,8 +27,8 @@ app = FastAPI(
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "http://127.0.0.1", # <--- ДОБАВЛЕНО
-    "http://127.0.0.1:3000", # <--- ДОБАВЛЕНО
+    "http://127.0.0.1",
+    "http://127.0.0.1:3000",
 ]
 
 app.add_middleware(
@@ -40,7 +40,6 @@ app.add_middleware(
 )
 
 api_prefix = "/api"
-
 
 app.include_router(auth.router, prefix=api_prefix, tags=["auth"])
 app.include_router(users.router, prefix=f"{api_prefix}/users", tags=["users"]) 

@@ -9,6 +9,12 @@ from app.security import get_password_hash
 class CRUDUser(CRUDBase[models.User, schemas.UserCreate, schemas.UserUpdate]):
     def get_by_email(self, db: Session, *, email: str) -> Optional[models.User]:
         return db.query(self.model).filter(self.model.email == email).first()
+    
+    def get_by_username(self, db: Session, *, username: str) -> Optional[models.User]:
+        """
+        Получает пользователя по его имени пользователя.
+        """
+        return db.query(models.User).filter(models.User.username == username).first()
 
     # Метод create теперь переопределен только для хэширования пароля
     def create(self, db: Session, *, obj_in: schemas.UserCreate) -> models.User:
