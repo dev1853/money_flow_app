@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 
       // 2. Вызываем универсальный метод post из нашего apiService
       const data = await apiService.post(
-            '/auth/token',  // <-- Указываем эндпоинт без /api
+            '/token',  // <-- Указываем эндпоинт без /api
             formData,         // <-- Передаем подготовленные данные
             { 'Content-Type': 'application/x-www-form-urlencoded' } // <-- Явно указываем заголовок
         );
