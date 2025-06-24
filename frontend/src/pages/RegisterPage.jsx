@@ -46,27 +46,19 @@ function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <div>
       <div className="w-full max-w-md space-y-8">
         <div>
-          {/* Здесь вы можете разместить свой логотип */}
-          {/* <img className="mx-auto h-12 w-auto" src="path/to/your/logo.svg" alt="Your Company" /> */}
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Создайте свой аккаунт
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Или{' '}
-            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-              войдите в существующий
-            </Link>
-          </p>
+          <h3 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+            Регистрация
+          </h3>
         </div>
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && <Alert type="error">{error}</Alert>}
-          <div className="space-y-4 rounded-md shadow-sm">
+          <div className="space-y-2">
             <div>
-              <Label htmlFor="username" className="sr-only">Имя пользователя</Label>
+              <Label htmlFor="username">Имя пользователя</Label>
               <Input
                 id="username"
                 name="username"
@@ -80,7 +72,7 @@ function RegisterPage() {
               />
             </div>
             <div>
-              <Label htmlFor="email" className="sr-only">Email</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -94,7 +86,7 @@ function RegisterPage() {
               />
             </div>
             <div>
-              <Label htmlFor="password" className="sr-only">Пароль</Label>
+              <Label htmlFor="password">Пароль</Label>
               <Input
                 id="password"
                 name="password"
@@ -108,7 +100,7 @@ function RegisterPage() {
               />
             </div>
             <div>
-              <Label htmlFor="confirmPassword" className="sr-only">Подтвердите пароль</Label>
+              <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -122,10 +114,16 @@ function RegisterPage() {
               />
             </div>
           </div>
+          <p className="mt-10 text-center text-sm text-gray-500">
+            Есть аккаунт?{' '}
+            <Link to="/login" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+              Войти
+            </Link>
+          </p>
 
           <div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Создание аккаунта...' : 'Создать аккаунт'}
+              {loading ? 'Создание аккаунта...' : 'Зарегистрироваться'}
             </Button>
           </div>
         </form>
