@@ -7,7 +7,7 @@ import { ArrowTrendingUpIcon } from '@heroicons/react/24/outline';
 // Принимаем title как пропс, чтобы показывать "Вход" или "Регистрация"
 const AuthLayout = ({ title, children }) => {
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center bg-gray-50 px-6 py-12 lg:px-8">
+    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div>
         {/* Общий логотип и название */}
         <div className="flex justify-center">

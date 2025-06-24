@@ -65,7 +65,7 @@ function RegisterPage() {
                 type="text"
                 autoComplete="username"
                 required
-                className="rounded-t-md"
+                className="rounded-b-md"
                 placeholder="Имя пользователя"
                 value={formData.username}
                 onChange={handleChange}
@@ -79,7 +79,7 @@ function RegisterPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="rounded-none"
+                className="rounded-b-md"
                 placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
@@ -93,7 +93,7 @@ function RegisterPage() {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="rounded-none"
+                className="rounded-b-md"
                 placeholder="Пароль"
                 value={formData.password}
                 onChange={handleChange}
