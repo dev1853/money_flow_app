@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
   const fetchWorkspaces = useCallback(async () => {
     if (!token) return;
     try {
-      const data = await apiService.get('/workspaces');
+      const data = await apiService.get('/workspaces/');
       setWorkspaces(data);
       if (data.length > 0) {
         const savedId = localStorage.getItem('activeWorkspaceId');
