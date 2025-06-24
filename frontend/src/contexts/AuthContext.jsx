@@ -86,15 +86,15 @@ export const AuthProvider = ({ children }) => {
     try {
       // 1. Готовим данные в формате x-www-form-urlencoded, как требует OAuth2
       const formData = new URLSearchParams();
-      formData.append('username', email); // FastAPI ожидает поле 'username' для логина
+      formData.append('username', email);
       formData.append('password', password);
 
       // 2. Вызываем универсальный метод post из нашего apiService
       const data = await apiService.post(
-        '/auth/token',  // Указываем эндпоинт для получения токена (с префиксом /api из .env)
-        formData,         // Передаем подготовленные данные
-        { 'Content-Type': 'application/x-www-form-urlencoded' } // Явно указываем заголовок
-      );
+            '/auth/token',  // <-- Указываем эндпоинт без /api
+            formData,         // <-- Передаем подготовленные данные
+            { 'Content-Type': 'application/x-www-form-urlencoded' } // <-- Явно указываем заголовок
+        );
       
       // 3. Сохраняем токен и обновляем состояние
       const { access_token } = data;
