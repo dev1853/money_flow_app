@@ -118,5 +118,4 @@ function ArticleForm({ articleToEdit, parentId, onSuccess }) {
     </form>
   );
 }
-
 export default ArticleForm;

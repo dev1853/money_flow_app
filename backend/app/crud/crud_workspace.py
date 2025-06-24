@@ -16,6 +16,19 @@ class CRUDWorkspace(CRUDBase[models.Workspace, schemas.WorkspaceCreate, schemas.
         db.commit()
         db.refresh(db_obj)
         return db_obj
+    
+    def is_owner_or_member(self, db: Session, *, workspace_id: int, user_id: int) -> bool:
+        """
+        Проверяет, является ли пользователь владельцем рабочего пространства.
+        (В будущем можно расширить для проверки членства в команде).
+        """
+        # Получаем рабочее пространство по его ID
+        workspace = self.get(db=db, id=workspace_id)
+        # Если воркспейс не найден, доступа нет
+        if not workspace:
+            return False
+        # Возвращаем True, если ID пользователя совпадает с ID владельца воркспейса
+        return workspace.owner_id == user_id
 
     def create_with_owner(
         self, db: Session, *, obj_in: schemas.WorkspaceCreate, owner_id: int

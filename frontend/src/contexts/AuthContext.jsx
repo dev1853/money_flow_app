@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
   const fetchWorkspaces = useCallback(async () => {
     if (!token) return;
     try {
-      const data = await apiService.get('/workspaces');
+      const data = await apiService.get('/workspaces/');
       setWorkspaces(data);
       if (data.length > 0) {
         const savedId = localStorage.getItem('activeWorkspaceId');
@@ -81,21 +81,39 @@ export const AuthProvider = ({ children }) => {
     initializeUser();
   }, [initializeUser]);
 
-  const login = async (username, password) => {
+   const login = async (email, password) => {
     setIsLoading(true);
     try {
-      const data = await apiService.login({ username, password });
+      // 1. Готовим данные в формате x-www-form-urlencoded, как требует OAuth2
+      const formData = new URLSearchParams();
+      formData.append('username', email);
+      formData.append('password', password);
+
+      // 2. Вызываем универсальный метод post из нашего apiService
+      const data = await apiService.post(
+            '/auth/token', 
+            formData, 
+            { 'Content-Type': 'application/x-www-form-urlencoded' } // <-- Явно указываем заголовок
+        );
       
+      // 3. Сохраняем токен и обновляем состояние
       const { access_token } = data;
-      localStorage.setItem('accessToken', access_token);
+      apiService.setToken(access_token); // Используем метод из сервиса
       setToken(access_token);
       
+      // После успешного логина и установки токена,
+      // можно сразу инициализировать пользователя, не дожидаясь useEffect
       await initializeUser(); 
       navigate('/dashboard');
 
     } catch (error) {
-      setIsLoading(false);
-      throw error;
+      console.error("Login failed:", error);
+      // Важно! Сбрасываем токен и пользователя в случае ошибки логина
+      apiService.clearToken();
+      setToken(null);
+      setUser(null);
+      setIsLoading(false); // Не забываем выключить загрузку в catch
+      throw error; // Пробрасываем ошибку дальше, чтобы компонент мог ее показать
     }
   };
   

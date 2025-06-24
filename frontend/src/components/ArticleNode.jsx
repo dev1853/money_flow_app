@@ -6,9 +6,10 @@ import {
   DocumentTextIcon,
   ChevronRightIcon,
   ChevronDownIcon,
-  PlusCircleIcon
+  PlusCircleIcon,
+  PencilIcon,
+  EllipsisVerticalIcon
 } from '@heroicons/react/24/outline';
-import Button from './Button';
 
 // --- Создаем объект для стилей и названий меток ---
 const ARTICLE_TYPE_INFO = {

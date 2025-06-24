@@ -1,157 +1,201 @@
-// src/components/Sidebar.jsx
-import { Link, useLocation } from 'react-router-dom';
+// frontend/src/components/Sidebar.jsx
+import React, { useState, useEffect, Fragment, useCallback } from 'react'; // Добавлен useCallback
+import { NavLink, useLocation, Link } from 'react-router-dom';
 import {
-  ChartBarIcon, // Для Дашборда
-  DocumentDuplicateIcon,
-  CreditCardIcon,
-  ArrowsRightLeftIcon,
-  Cog6ToothIcon,
-  ArrowTrendingUpIcon, // Использовали для лого "Финансы"
-  ChartPieIcon,      // Для Отчета ДДС
-  ScaleIcon          // Для Отчета Остатки ДС
+  HomeIcon,
+  NewspaperIcon,
+  CurrencyDollarIcon,
+  ChartBarIcon,
+  Cog6ToothIcon, 
+  ChevronRightIcon, 
+  ReceiptPercentIcon,
+  ArrowTrendingUpIcon,
+  BookOpenIcon,
 } from '@heroicons/react/24/outline';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { Menu, Transition } from '@headlessui/react'; 
+import { useAuth } from '../contexts/AuthContext';
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+import QuickCashExpenseForm from './QuickCashExpenseForm';
+
+
+const navigation = [
+  { name: 'Дашборд', href: '/dashboard', icon: HomeIcon, type: 'link' },
+  { name: 'Транзакции', href: '/transactions', icon: NewspaperIcon, type: 'link' },
+  { name: 'Счета', href: '/accounts', icon: CurrencyDollarIcon, type: 'link' },
+  { name: 'Статьи ДДС', href: '/articles', icon: ReceiptPercentIcon, type: 'link' },
+
+  {
+    name: 'Отчеты',
+    icon: ChartBarIcon,
+    type: 'parent',
+    children: [
+      { name: 'Движение ДС', href: '/reports/dds' },
+      { name: 'Прибыли и Убытки', href: '/reports/pnl' },
+    ],
+  },
+
+  {
+    name: 'Настройки',
+    icon: Cog6ToothIcon,
+    type: 'parent',
+    children: [
+      { name: 'Правила разнесения', href: '/mapping-rules' },
+      { name: 'Помощь', href: '/help' },
+    ],
+  },
+];
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
+
+export default function Sidebar({ setSidebarOpen }) { 
   const location = useLocation();
+  const [openStates, setOpenStates] = useState(new Map());
 
-  // Основное меню
-  const navigation = [
-    { name: 'Дашборд', href: '/dashboard', icon: ChartBarIcon },
-    { name: 'Транзакции', href: '/transactions', icon: ArrowsRightLeftIcon },
-  ];
-  // Справочники
-  const directories = [
-    { name: 'Статьи ДДС', href: '/articles', icon: DocumentDuplicateIcon },
-    { name: 'Счета', href: '/accounts', icon: CreditCardIcon },
-    // Сюда можно будет добавить Контрагентов
-  ];
-  // Отчеты
-  const reports = [
-    { name: 'Отчет ДДС', href: '/reports/dds', icon: ChartPieIcon },
-    { name: 'Отчет Остатки ДС', href: '/reports/account-balances', icon: ScaleIcon },
-  ];
+  // Вспомогательная функция для определения, активен ли родительский пункт
+  const isParentActive = useCallback((item) => {
+    if (!item.children) return false;
+    if (item.name === 'Настройки') {
+        return location.pathname.startsWith('/settings') || 
+               location.pathname.startsWith('/mapping-rules') || 
+               location.pathname.startsWith('/admin') ||
+               location.pathname.startsWith('/help'); // <--- ДОБАВЛЕНО /help
+    }
+    return item.children.some(child => location.pathname.startsWith(child.href));
+  }, [location.pathname]);
 
-  // Функция для рендеринга элементов навигации
-  const renderNavItems = (items) => {
-    return items.map((item) => {
-      // Для Дашборда, "/" и "/dashboard" считаем активными
-      const isActive = item.href === '/' 
-        ? location.pathname === '/' || location.pathname === '/dashboard'
-        : location.pathname.startsWith(item.href);
-      
-      // Для Статей ДДС, если текущий путь /articles или / (если /articles это главная для них)
-      // Это условие нужно будет уточнить в зависимости от вашей логики главной страницы для статей.
-      // Пока что, если location.pathname.startsWith(item.href) - это должно работать для большинства случаев.
-
-      return (
-        <li key={item.name}>
-          <Link
-            to={item.href}
-            onClick={() => sidebarOpen && setSidebarOpen(false)} // Закрывать при клике на мобильных
-            className={`
-              group flex items-center rounded-md px-3 py-2.5 text-sm font-medium
-              transition-colors duration-150 ease-in-out
-              ${isActive
-                ? 'bg-indigo-600 text-white shadow-sm' // Активная ссылка
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' // Неактивная ссылка
-              }
-            `}
-          >
-            <item.icon 
-              className={`mr-3 h-5 w-5 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-500'}`} 
-              aria-hidden="true" />
-            {item.name}
-          </Link>
-        </li>
-      );
+  // Обновляем состояние раскрытия при первой загрузке или смене маршрута
+  useEffect(() => {
+    const initialOpenStates = new Map();
+    navigation.forEach(item => {
+      if (item.type === 'parent') {
+        initialOpenStates.set(item.name, isParentActive(item));
+      }
     });
-  };
+    setOpenStates(initialOpenStates);
+  }, [location.pathname, isParentActive]); // Добавлен isParentActive в зависимости
+
+  // Универсальная функция для переключения состояния раскрытия родительских элементов
+  const toggleParentMenu = useCallback((itemName) => {
+    setOpenStates(prev => {
+      const newStates = new Map(prev);
+      newStates.set(itemName, !newStates.get(itemName));
+      return newStates;
+    });
+  }, []); // Пустой массив зависимостей, т.к. не использует внешние переменные
+
+  const { isAuthenticated, user, logout } = useAuth();
+
+  // Общие классы для ссылок навигации
+  const baseNavLinkClasses = "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6";
 
 
   return (
-    <>
-      {/* Мобильный оверлей */}
-      {sidebarOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 bg-gray-900/70 z-30" // Увеличил немного прозрачность
-          onClick={() => setSidebarOpen(false)} 
-        />
-      )}
-
-      {/* Сайдбар */}
-      <div
-        className={`fixed inset-y-0 left-0 z-40 flex w-72 flex-col 
-                    bg-white border-r border-gray-200 shadow-lg
-                    transition-transform duration-300 ease-in-out
-                    ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
-                    lg:translate-x-0 lg:static lg:inset-auto`}
-      >
-        {/* Логотип/Название */}
-        <div className="flex h-20 shrink-0 items-center justify-center px-4 border-b border-gray-200">
-          <Link to="/dashboard" className="flex items-center group text-decoration-none">
-            <ArrowTrendingUpIcon 
-              className="h-8 w-8 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
-              aria-hidden="true" 
-            />
-            <span className="ml-3 text-2xl font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">
-              Финансы
-            </span>
-          </Link>
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
+      <div className="flex h-16 shrink-0 items-center">
+        <div className="flex items-center group">
+          <ArrowTrendingUpIcon 
+            className="h-12 w-12 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
+            aria-hidden="true" 
+          />
+          <span className="ml-2 text-xl font-bold text-indigo-600">Поток денег</span>
         </div>
-
-        {/* Навигация */}
-        <nav className="flex flex-1 flex-col overflow-y-auto px-4 py-4 space-y-6">
-          <div>
-            <h3 className="px-3 text-xs font-semibold uppercase text-gray-500 tracking-wider mb-2">
-              Основное
-            </h3>
-            <ul role="list" className="space-y-1">
-              {renderNavItems(navigation)}
-            </ul>
-          </div>
-          <div>
-            <h3 className="px-3 text-xs font-semibold uppercase text-gray-500 tracking-wider mb-2">
-              Справочники
-            </h3>
-            <ul role="list" className="space-y-1">
-              {renderNavItems(directories)}
-            </ul>
-          </div>
-          <div>
-            <h3 className="px-3 text-xs font-semibold uppercase text-gray-500 tracking-wider mb-2">
-              Отчеты
-            </h3>
-            <ul role="list" className="space-y-1">
-              {renderNavItems(reports)}
-            </ul>
-          </div>
-
-          {/* Настройки внизу */}
-          <div className="mt-auto"> {/* Прижимает Настройки к низу */}
-            <ul role="list" className="space-y-1">
-                <li>
-                    <Link
-                        to="/settings" // Предполагаем, что будет страница настроек
-                        onClick={() => sidebarOpen && setSidebarOpen(false)}
-                        className={`
-                            group flex items-center rounded-md px-3 py-2.5 text-sm font-medium
-                            transition-colors duration-150 ease-in-out
-                            ${location.pathname.startsWith('/settings')
-                                ? 'bg-indigo-600 text-white shadow-sm'
-                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                            }
-                        `}
-                    >
-                        <Cog6ToothIcon className={`mr-3 h-5 w-5 flex-shrink-0 ${location.pathname.startsWith('/settings') ? 'text-white' : 'text-gray-400 group-hover:text-gray-500'}`} aria-hidden="true" />
-                        Настройки
-                    </Link>
-                </li>
-            </ul>
-          </div>
-        </nav>
       </div>
-    </>
-  );
-};
+      <nav className="flex flex-1 flex-col">
+        <ul role="list" className="flex flex-1 flex-col gap-y-7">
+          <li>
+            <ul role="list" className="-mx-2 space-y-1">
+              {navigation.map((item) => (
+                <li key={item.name}>
+                  {item.type === 'parent' ? (
+                    <>
+                      <div
+                        onClick={() => toggleParentMenu(item.name)} 
+                        className={classNames(
+                          isParentActive(item)
+                            ? 'bg-gray-50 text-indigo-600'
+                            : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                          baseNavLinkClasses, 
+                          'cursor-pointer'
+                        )}
+                      >
+                        <item.icon
+                          className={classNames(
+                            isParentActive(item)
+                              ? 'text-indigo-600'
+                              : 'text-gray-400 group-hover:text-indigo-600',
+                            'h-6 w-6 shrink-0'
+                          )}
+                          aria-hidden="true"
+                        />
+                        {item.name}
+                        <ChevronRightIcon 
+                          className={classNames(
+                            'ml-auto h-5 w-5 shrink-0 transition-transform duration-200',
+                            openStates.get(item.name) ? 'rotate-90' : '' 
+                          )} 
+                          aria-hidden="true" 
+                        />
+                      </div>
+                      <ul 
+                        className={classNames(
+                          'ml-10 mt-1 space-y-1 overflow-hidden transition-all duration-300',
+                          openStates.get(item.name) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0' 
+                        )}
+                      >
+                        {item.children.map((child) => (
+                          <li key={child.name}>
+                            <NavLink
+                              to={child.href}
+                              onClick={() => setSidebarOpen(false)} 
+                              className={({ isActive }) => classNames( // <--- ИСПОЛЬЗУЕМ isActive из NavLink
+                                isActive
+                                  ? 'bg-gray-50 text-indigo-600'
+                                  : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                                'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                              )}
+                            >
+                              {child.name}
+                            </NavLink>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : ( 
+                    <NavLink
+                      to={item.href}
+                      onClick={() => setSidebarOpen(false)} 
+                      className={({ isActive }) => classNames( // <--- ИСПОЛЬЗУЕМ isActive из NavLink
+                        isActive
+                          ? 'bg-gray-50 text-indigo-600'
+                          : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                        baseNavLinkClasses // Используем общие классы
+                      )}
+                    >
+                      <item.icon
+                        className={classNames(
+                          location.pathname === item.href ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                          'h-6 w-6 shrink-0'
+                        )}
+                        aria-hidden="true"
+                      />
+                      {item.name}
+                    </NavLink>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </li>
+        </ul>
+      </nav>
 
-export default Sidebar;
+      <div className="flex flex-col gap-y-3 border-t border-gray-200 pt-4 mt-auto">
+        <div className="flex items-center justify-between"> {/* Изменено на justify-between */}
+          <QuickCashExpenseForm />
+        </div>
+      </div>
+    </div>
+  );
+}

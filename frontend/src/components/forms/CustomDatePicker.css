@@ -1,0 +1,101 @@
+/* Общий контейнер календаря */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+.react-datepicker-popper {
+  z-index: 20; /* Чтобы календарь был поверх других элементов */
+}
+.react-datepicker {
+  border: 1px solid #e5e7eb; /* border-gray-200 */
+  border-radius: 0.5rem;   /* rounded-lg */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+  font-family: inherit;
+  background-color: white;
+  padding: 0.5rem;
+}
+
+/* Убираем стандартную стрелочку */
+.react-datepicker__triangle {
+  display: none;
+}
+
+/* Шапка календаря (где месяц и стрелки) */
+.react-datepicker__header {
+  background-color: white;
+  border-bottom: none;
+  padding: 0;
+  padding-top: 0.5rem;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+/* Кастомный контейнер для шапки */
+.custom-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem;
+}
+.custom-header-container button {
+  padding: 0.25rem;
+  border-radius: 9999px; /* rounded-full */
+}
+.custom-header-container button:hover {
+  background-color: #f3f4f6; /* bg-gray-100 */
+}
+.custom-header-container button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.custom-header-container span {
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600;  /* font-semibold */
+  color: #1f2937; /* text-gray-800 */
+}
+
+
+/* Дни недели (Пн, Вт...) */
+.react-datepicker__day-name {
+  color: #6b7280; /* text-gray-500 */
+  font-weight: 500;
+  margin: 0.25rem;
+  width: 2rem;
+}
+
+/* Ячейка дня */
+.react-datepicker__day {
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  border-radius: 9999px; /* rounded-full */
+  color: #111827; /* text-gray-900 */
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  margin: 0.25rem;
+}
+
+.react-datepicker__day:hover {
+  background-color: #f3f4f6; /* bg-gray-100 */
+}
+
+/* Состояния дня */
+.react-datepicker__day--today {
+  font-weight: bold;
+}
+.react-datepicker__day--selected, .react-datepicker__day--in-selecting-range, .react-datepicker__day--in-range {
+  background-color: #4f46e5; /* bg-indigo-600 */
+  color: white;
+}
+.react-datepicker__day--selected:hover, .react-datepicker__day--in-range:hover {
+  background-color: #4338ca; /* bg-indigo-700 */
+}
+.react-datepicker__day--keyboard-selected {
+    background-color: #6366f1; /* bg-indigo-500 */
+    color: white;
+}
+.react-datepicker__day--outside-month {
+  color: #9ca3af; /* text-gray-400 */
+}
+.react-datepicker__day--disabled {
+  color: #d1d5db; /* text-gray-300 */
+  cursor: not-allowed;
+}

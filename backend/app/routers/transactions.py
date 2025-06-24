@@ -1,143 +1,208 @@
 # backend/app/routers/transactions.py
 
-from typing import List, Optional # Добавлен Optional для параметров запроса
-from fastapi import APIRouter, Depends, HTTPException, status, Query # Добавлен Query
+from typing import Any, List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, status, Request 
 from sqlalchemy.orm import Session
+from pydantic import ValidationError 
 
-from .. import crud, models, schemas
-from ..dependencies import get_db, get_current_active_user
+from app import crud, schemas, models
+from app.dependencies import get_db, get_current_active_user, get_transaction_for_user
+from app.schemas import TransactionType
+from datetime import date 
+from fastapi.encoders import jsonable_encoder
 
-router = APIRouter(
-    prefix="/transactions",
-    tags=["transactions"],
-    responses={404: {"description": "Not found"}},
-)
+router = APIRouter(tags=["transactions"], dependencies=[Depends(get_current_active_user)])
 
-@router.post("/", response_model=schemas.Transaction)
+@router.post("/", response_model=schemas.Transaction, status_code=status.HTTP_201_CREATED)
 def create_transaction(
-    transaction: schemas.TransactionCreate,
+    *,
     db: Session = Depends(get_db),
+    transaction_in: schemas.TransactionCreate,
     current_user: models.User = Depends(get_current_active_user),
-):
-    db_account = crud.account.get(db, id=transaction.account_id)
-    if not db_account:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Account not found")
+) -> Any:
+    """
+    Создать новую транзакцию.
+    """
+    # Проверка принадлежности счета
+    account = crud.account.get(db, id=transaction_in.account_id)
+    if not account or account.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Указанный счет не существует или не принадлежит текущему пользователю.",
+        )
     
-    # ИСПРАВЛЕНО: Если счет найден, но пользователь не владелец - 403
-    if not crud.workspace.is_owner(db, workspace_id=db_account.workspace_id, user_id=current_user.id):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions to add transaction to this account/workspace")
-    
-    created_transaction = crud.transaction.create(db=db, obj_in=transaction, owner_id=current_user.id, workspace_id=db_account.workspace_id) # Убедитесь, что crud.transaction.create принимает owner_id и workspace_id
-    
-    # Используем надежный пересчет баланса
-    # Эта функция должна быть в crud.account и быть публичной
-    crud.account.recalculate_balance(db, account_id=transaction.account_id)
-    return created_transaction
+    # Проверка принадлежности статьи ДДС, если она указана
+    if transaction_in.dds_article_id:
+        dds_article = crud.dds_article.get(db, id=transaction_in.dds_article_id)
+        if not dds_article or dds_article.owner_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Указанная статья ДДС не существует или не принадлежит текущему пользователю.",
+            )
+
+    # НОВОЕ: Автоматическое определение dds_article_id, если оно не указано
+    if transaction_in.dds_article_id is None:
+        if transaction_in.description and transaction_in.transaction_type:
+            print("DEBUG (Auto-categorization - Router): Attempting to auto-categorize transaction.") # <--- ЛОГ
+            # Используем функцию поиска правила
+            matched_dds_article_id = crud.mapping_rule.find_matching_dds_article_id(
+                db=db,
+                workspace_id=current_user.active_workspace_id,
+                description=transaction_in.description,
+                transaction_type=transaction_in.transaction_type
+            )
+            if matched_dds_article_id:
+                # Если правило найдено, присваиваем ID статьи ДДС
+                transaction_in.dds_article_id = matched_dds_article_id
+                print(f"DEBUG (Auto-categorization - Router): DDS Article ID {matched_dds_article_id} assigned automatically for description: '{transaction_in.description}'.") # <--- ЛОГ
+            else:
+                print(f"DEBUG (Auto-categorization - Router): No matching rule found for description: '{transaction_in.description}'. DDS Article ID remains None.") # <--- ЛОГ
+        else:
+            print("DEBUG (Auto-categorization - Router): Description or Transaction Type missing, skipping auto-categorization.") # <--- ЛОГ
 
 
-@router.get("/", response_model=List[schemas.Transaction])
+    # Создание транзакции
+    transaction = crud.transaction.create_with_owner_and_workspace(
+        db=db, obj_in=transaction_in, owner_id=current_user.id, workspace_id=current_user.active_workspace_id
+    )
+    
+    # Пересчет баланса счета после создания транзакции
+    crud.account.recalculate_balance(db=db, account_id=transaction.account_id)
+    
+    return transaction
+
+@router.get("/", response_model=schemas.TransactionPage)
 def read_transactions(
-    # ИСПРАВЛЕНО: account_id стал Optional (если вы хотите фильтрацию)
-    # Если account_id всегда должен быть, удалите Optional и default=None
-    account_id: Optional[int] = Query(None, description="ID счета для фильтрации"), 
-    skip: int = Query(0, ge=0), # Добавлены ограничения для skip и limit
-    limit: int = Query(20, ge=1, le=100),
+    request: Request,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
-    # Добавьте параметры фильтрации, если они нужны, например:
-    # start_date: Optional[date] = Query(None),
-    # end_date: Optional[date] = Query(None),
-    # transaction_type: Optional[schemas.TransactionType] = Query(None),
-    # dds_article_id: Optional[int] = Query(None),
-):
-    # ИСПРАВЛЕНО: Валидация рабочего пространства и account_id
-    if not current_user.active_workspace_id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Рабочее пространство не выбрано.")
+    workspace_id: int = Query(..., description="ID рабочего пространства"),
+    page: int = Query(1, ge=1, description="Номер страницы"),
+    size: int = Query(20, ge=1, le=100, description="Количество элементов на странице"),
+    start_date: Optional[date] = Query(None, description="Дата начала периода (ГГГГ-ММ-ДД)"),
+    end_date: Optional[date] = Query(None, description="Дата окончания периода (ГГГГ-ММ-ДД)"),
+    transaction_type: Optional[schemas.TransactionType] = Query(None, description="Тип транзакции (income/expense)"),
+    account_id: Optional[int] = Query(None, description="ID счета"),
+    dds_article_id: Optional[int] = Query(None, description="ID статьи ДДС")
+) -> Any:
+    """
+    Получает пагинированный список транзакций с фильтрами.
+    """
+    print(f"DEBUG (Transaction Router - GET): Request received for workspace_id={workspace_id}, dds_article_id={dds_article_id}") 
+    print(f"DEBUG (Transaction Router - GET): Raw query parameters from Request: {request.query_params}") 
+    print(f"DEBUG (Transaction Router - GET): Type of dds_article_id received: {type(dds_article_id)}, Value: {dds_article_id}") 
 
-    # Проверяем, что workspace_id соответствует активному рабочему пространству пользователя
-    # Если active_workspace_id есть, но не совпадает с workspace_id из запроса
-    # (если workspace_id был бы параметром запроса)
-    # Здесь мы используем active_workspace_id напрямую
-    workspace_id = current_user.active_workspace_id
-
-    # Если account_id передан, нужно проверить, что он принадлежит текущему пользователю и рабочему пространству
-    if account_id:
-        db_account = crud.account.get(db, id=account_id)
-        if not db_account or db_account.workspace_id != workspace_id or db_account.owner_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ к счету запрещен или счет не найден.")
-    else:
-        # Если account_id не передан, то нужно получить все счета пользователя в текущем workspace
-        # и получить транзакции для всех этих счетов.
-        # Для простоты, если account_id необязателен, но фильтрации нет, может быть слишком много данных.
-        # Сейчас мы сделаем его обязательным, так как frontend его не передает
-        # Если вы хотите, чтобы account_id был необязательным и возвращал ВСЕ транзакции в workspace,
-        # тогда удалите эту проверку и измените crud.transaction.get_multi_by_account
-        # на get_multi_by_workspace.
-        # raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Параметр account_id обязателен.")
-        pass # Оставим его необязательным для отладки
-
-    transactions = crud.transaction.get_transactions(
-        db,
+    transactions_data_from_crud = crud.transaction.get_multi_paginated_by_workspace_and_filters(
+        db=db,
         workspace_id=workspace_id,
-        owner_id=current_user.id,
-        account_id=account_id, # Передаем account_id
-        skip=skip,
-        limit=limit,
-        # ... другие параметры фильтрации
+        page=page,
+        size=size,
+        start_date=start_date,
+        end_date=end_date,
+        transaction_type=transaction_type,
+        account_id=account_id,
+        dds_article_id=dds_article_id
     )
     
-    # Для пагинации нужен total_count
-    total_transactions = crud.transaction.get_transactions_count(
-        db,
-        workspace_id=workspace_id,
-        owner_id=current_user.id,
-        account_id=account_id,
-        # ... другие параметры фильтрации
-    )
+    print(f"DEBUG (Transaction Router - GET): Data returned from CRUD: {transactions_data_from_crud}") 
+    print(f"DEBUG (Transaction Router - GET): Type of data returned from CRUD: {type(transactions_data_from_crud)}") 
 
-    return {"items": transactions, "total_count": total_transactions} # Возвращаем объект для пагинации
+    # <--- НОВЫЙ ЛОГ: Показываем, как FastAPI будет сериализовать данные
+    try:
+        # Пытаемся вручную сериализовать данные в Pydantic модель для отладки
+        validated_response = schemas.TransactionPage.parse_obj(transactions_data_from_crud) # Для Pydantic V1
+        # Для Pydantic V2 используйте schemas.TransactionPage.model_validate(transactions_data_from_crud)
+        
+        serialized_data = jsonable_encoder(validated_response)
+        print(f"DEBUG (Transaction Router - GET): Successfully serialized data to Pydantic model. Type: {type(validated_response)}, JSON: {serialized_data}")
+    except ValidationError as e:
+        print(f"ERROR (Transaction Router - GET): Pydantic ValidationError during manual serialization check: {e.errors()}")
+    except Exception as e:
+        print(f"ERROR (Transaction Router - GET): Unexpected error during manual serialization check: {e}")
+    # >>>>
 
+    return transactions_data_from_crud
 
 @router.put("/{transaction_id}", response_model=schemas.Transaction)
 def update_transaction(
+    *,
+    db: Session = Depends(get_db),
     transaction_id: int,
     transaction_in: schemas.TransactionUpdate,
-    db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
-):
-    db_transaction = crud.transaction.get(db, id=transaction_id)
-    if not db_transaction:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Транзакция не найдена")
+) -> Any:
+    """
+    Обновить существующую транзакцию.
+    """
+    print(f"DEBUG (Transaction Router - PUT): Received request to update transaction ID: {transaction_id}") # <--- ЛОГ
+    print(f"DEBUG (Transaction Router - PUT): transaction_in data: {transaction_in.dict()}") # <--- ЛОГ: Проверяем входящие данные
+    print(f"DEBUG (Transaction Router - PUT): Type of transaction_in.date: {type(transaction_in.date)}, Value: {transaction_in.date}") # <--- ЛОГ: Детали даты
 
-    db_account = crud.account.get(db, id=db_transaction.account_id)
-    # ИСПРАВЛЕНО: Если транзакция или счет не принадлежат пользователю/воркспейсу - 403
-    if not db_account or db_account.workspace_id != db_transaction.workspace_id or db_account.owner_id != current_user.id:
-         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Недостаточно прав для изменения этой транзакции.")
+    transaction = crud.transaction.get(db, id=transaction_id)
+    if not transaction:
+        print(f"DEBUG (Transaction Router - PUT): Transaction ID {transaction_id} not found.") # <--- ЛОГ
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Транзакция не найдена.")
+    if transaction.owner_id != current_user.id:
+        print(f"DEBUG (Transaction Router - PUT): User {current_user.id} tried to update transaction {transaction_id} not owned by them.") # <--- ЛОГ
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="У вас нет прав для изменения этой транзакции.")
 
-    updated_transaction = crud.transaction.update(db, db_obj=db_transaction, obj_in=transaction_in)
+    # Проверка принадлежности статьи ДДС, если она указана
+    if transaction_in.dds_article_id is not None and transaction_in.dds_article_id != transaction.dds_article_id:
+        dds_article = crud.dds_article.get(db, id=transaction_in.dds_article_id)
+        if not dds_article or dds_article.owner_id != current_user.id:
+            print(f"DEBUG (Transaction Router - PUT): Invalid dds_article_id {transaction_in.dds_article_id}.") # <--- ЛОГ
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Указанная статья ДДС не существует или не принадлежит текущему пользователю.",
+            )
     
-    crud.account.recalculate_balance(db, account_id=db_transaction.account_id)
-    
-    return updated_transaction
+    # НОВОЕ: Автоматическое определение dds_article_id, если оно не указано и не было ранее
+    # Это важно, т.к. при PUT запросе dds_article_id может быть None,
+    # и мы должны его заполнить, только если он явно не был изменен или задан
+    if transaction_in.dds_article_id is None and transaction.dds_article_id is None: # Если и в запросе None, и в БД None
+        if transaction_in.description and transaction_in.transaction_type:
+            print("DEBUG (Auto-categorization - Router PUT): Attempting to auto-categorize transaction during update.") # <--- ЛОГ
+            matched_dds_article_id = crud.mapping_rule.find_matching_dds_article_id(
+                db=db,
+                workspace_id=current_user.active_workspace_id,
+                description=transaction_in.description,
+                transaction_type=transaction_in.transaction_type
+            )
+            if matched_dds_article_id:
+                transaction_in.dds_article_id = matched_dds_article_id
+                print(f"DEBUG (Auto-categorization - Router PUT): DDS Article ID {matched_dds_article_id} assigned automatically.") # <--- ЛОГ
+            else:
+                print(f"DEBUG (Auto-categorization - Router PUT): No matching rule found for description: '{transaction_in.description}'. DDS Article ID remains None.") # <--- ЛОГ
+        else:
+            print("DEBUG (Auto-categorization - Router PUT): Description or Transaction Type missing for auto-categorization during update.") # <--- ЛОГ
+
+
+    try:
+        updated_transaction = crud.transaction.update(db=db, db_obj=transaction, obj_in=transaction_in)
+        # Пересчет баланса счета после обновления транзакции
+        crud.account.recalculate_balance(db=db, account_id=updated_transaction.account_id)
+        print(f"DEBUG (Transaction Router - PUT): Transaction ID {transaction_id} updated successfully.") # <--- ЛОГ
+        return updated_transaction
+    except ValidationError as e: # <--- Отлавливаем ошибки Pydantic явно
+        print(f"ERROR (Transaction Router - PUT): Pydantic Validation Error during update: {e.errors()}") # <--- ЛОГ ОШИБКИ ВАЛИДАЦИИ
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=e.errors()
+        )
+    except Exception as e:
+        print(f"ERROR (Transaction Router - PUT): Unexpected error during transaction update: {e}") # <--- ЛОГ
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Внутренняя ошибка сервера при обновлении транзакции."
+        )
 
 @router.delete("/{transaction_id}", response_model=schemas.Transaction)
 def delete_transaction(
-    transaction_id: int,
+    *,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_active_user),
+    transaction: models.Transaction = Depends(get_transaction_for_user),
 ):
-    db_transaction = crud.transaction.get(db, id=transaction_id)
-    if not db_transaction:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Транзакция не найдена")
-
-    db_account = crud.account.get(db, id=db_transaction.account_id)
-    # ИСПРАВЛЕНО: Если транзакция или счет не принадлежат пользователю/воркспейсу - 403
-    if not db_account or db_account.workspace_id != db_transaction.workspace_id or db_account.owner_id != current_user.id:
-         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Недостаточно прав для удаления этой транзакции.")
-    
-    account_id_to_recalculate = db_transaction.account_id
-    deleted_transaction = crud.transaction.remove(db, id=transaction_id)
-    
+    account_id_to_recalculate = transaction.account_id
+    deleted_transaction = crud.transaction.remove(db=db, id=transaction.id)
     crud.account.recalculate_balance(db, account_id=account_id_to_recalculate)
-    
     return deleted_transaction

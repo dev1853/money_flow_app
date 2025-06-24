@@ -12,20 +12,22 @@ class CRUDDashboard:
     def get_dashboard_data(self, db: Session, *, owner_id: int, workspace_id: int) -> Dict[str, Any]:
         today = date.today()
         start_of_month = today.replace(day=1)
-        end_of_month = (start_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        # Убедимся, что end_of_month правильно рассчитывается
+        next_month = start_of_month.replace(day=28) + timedelta(days=4)
+        end_of_month = next_month - timedelta(days=next_month.day)
 
-        # Общий баланс
+        # Общий баланс (этот запрос был правильным)
         total_balance = db.query(func.sum(models.Account.current_balance)).filter(
             models.Account.owner_id == owner_id,
-            models.Account.workspace_id == workspace_id
+            models.Account.workspace_id == workspace_id,
+            models.Account.is_active == True
         ).scalar() or 0
 
-        # Доходы и расходы за текущий месяц
+        # --- ИСПРАВЛЕНИЕ ЗДЕСЬ: используем transaction_type вместо amount > 0 ---
         income_vs_expense = db.query(
-            func.sum(case((models.Transaction.amount > 0, models.Transaction.amount), else_=0)).label('income'),
-            func.sum(case((models.Transaction.amount < 0, models.Transaction.amount), else_=0)).label('expense')
+            func.sum(case((models.Transaction.transaction_type == 'income', models.Transaction.amount), else_=0)).label('income'),
+            func.sum(case((models.Transaction.transaction_type == 'expense', models.Transaction.amount), else_=0)).label('expense')
         ).join(models.Account).filter(
-            models.Account.owner_id == owner_id,
             models.Account.workspace_id == workspace_id,
             models.Transaction.date >= start_of_month,
             models.Transaction.date <= end_of_month
@@ -37,5 +39,32 @@ class CRUDDashboard:
             "monthly_expense": income_vs_expense.expense or 0
         }
 
-# Создание экземпляра — просто и без аргументов
+    # В этой функции также была ошибка, исправляем и ее
+    def get_cashflow_trend_data(self, db: Session, *, workspace_id: int) -> list:
+        end_date = date.today()
+        start_date = end_date - timedelta(days=30)
+        trend_data = db.query(
+            func.date_trunc('day', models.Transaction.date).label('date'),
+            func.sum(case((models.Transaction.transaction_type == 'income', models.Transaction.amount), else_=0)).label("income"),
+            func.sum(case((models.Transaction.transaction_type == 'expense', models.Transaction.amount), else_=0)).label("expense")
+        ).join(models.Account).filter(
+            models.Account.workspace_id == workspace_id,
+            models.Transaction.date.between(start_date, end_date)
+        ).group_by(
+            func.date_trunc('day', models.Transaction.date)
+        ).order_by(
+            func.date_trunc('day', models.Transaction.date)
+        ).all()
+
+        # Форматируем данные для фронтенда
+        return [
+            {
+                "date": item.date.strftime("%Y-%m-%d"),
+                "income": item.income or 0,
+                "expense": item.expense or 0,
+            }
+            for item in trend_data
+        ]
+
+
 dashboard = CRUDDashboard()

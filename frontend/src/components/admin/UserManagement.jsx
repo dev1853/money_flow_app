@@ -50,7 +50,7 @@ const UserManagement = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await apiService.get('/users/?limit=100');
+      const data = await apiService.get('/api/users/?limit=100');
       setUsers(data.results || data);
     } catch (err) {
       console.error("UserManagement: Ошибка загрузки пользователей:", err);
@@ -83,7 +83,7 @@ const UserManagement = () => {
     setError(null);
 
     try {
-        await apiService.put(`/users/${userToToggle.id}`, payload);
+        await apiService.put(`/api/users/${userToToggle.id}`, payload);
         setUsers(prevUsers => prevUsers.map(u => u.id === userToToggle.id ? {...u, is_active: newActiveState} : u));
     } catch (err) {
         console.error("UserManagement: Ошибка обновления статуса:", err);
@@ -94,7 +94,7 @@ const UserManagement = () => {
   const handleDeleteUserRequest = async (userIdToDelete) => {
     setError(null);
     try {
-        await apiService.delete(`/users/${userIdToDelete}`); // Здесь может быть деактивация, а не удаление
+        await apiService.delete(`/api/users/${userIdToDelete}`); // Здесь может быть деактивация, а не удаление
         fetchUsers();
     } catch (err) {
         console.error("UserManagement: Ошибка деактивации/удаления пользователя:", err);

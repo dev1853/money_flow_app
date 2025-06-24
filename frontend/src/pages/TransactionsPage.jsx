@@ -82,6 +82,7 @@ function TransactionsPage() {
     }
   }, [activeWorkspace]);
 
+  // Effect для загрузки транзакций при изменении страницы или фильтров
   useEffect(() => {
     fetchTransactions(currentPage, filters);
   }, [currentPage, filters, fetchTransactions]);
@@ -279,5 +280,4 @@ function TransactionsPage() {
     </Fragment>
   );
 }
-
 export default TransactionsPage;
