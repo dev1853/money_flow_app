@@ -13,7 +13,7 @@ from app.database import get_db
 from app.security import verify_password 
 from app.config import settings 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 

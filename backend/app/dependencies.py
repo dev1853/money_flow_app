@@ -8,7 +8,7 @@ from jose import jwt, JWTError
 from . import crud, models, schemas, security
 from .database import SessionLocal
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 def get_db():
     db = SessionLocal()

@@ -8,7 +8,7 @@ from app.dependencies import get_db
 
 router = APIRouter(tags=["auth"])
 
-@router.post("/api/token", response_model=schemas.Token)
+@router.post("/auth/token", response_model=schemas.Token)
 def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     # Используем правильный метод аутентификации
     user = crud.user.authenticate(db, email=form_data.username, password=form_data.password)
