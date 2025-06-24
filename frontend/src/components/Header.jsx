@@ -1,7 +1,7 @@
 // src/components/Header.jsx
 import { Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BellIcon, Bars3Icon, PlusIcon, ArrowTrendingUpIcon } from '@heroicons/react/24/outline'; // PlusIcon для "Добавить компанию"
+import { BellIcon, Bars3Icon, PlusIcon, CircleStackIcon } from '@heroicons/react/24/outline'; // PlusIcon для "Добавить компанию"
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useAuth } from '../contexts/AuthContext';
 import { Menu, Transition } from '@headlessui/react'; 
@@ -65,11 +65,11 @@ const Header = ({ setSidebarOpen }) => {
 
       {/* Мобильное название приложения - только для мобильных, с отступом от кнопки */}
       <div className="flex items-center group">
-        <ArrowTrendingUpIcon 
-          className="h-12 w-12 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
+        <CircleStackIcon 
+          className="h-6 w-6 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
           aria-hidden="true" 
         />
-        <span className="ml-2 text-xl font-bold text-indigo-600">Поток денег</span>
+        <span className="ml-2 text-xl font-bold text-indigo-600">Казна</span>
       </div>
       {/* Контент Header (отображается справа) */}
       <div className="flex-1 flex justify-end gap-x-4 sm:gap-x-6">

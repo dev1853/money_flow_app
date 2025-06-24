@@ -9,7 +9,7 @@ import {
   Cog6ToothIcon, 
   ChevronRightIcon, 
   ReceiptPercentIcon,
-  ArrowTrendingUpIcon,
+  CircleStackIcon,
   BookOpenIcon,
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
@@ -96,11 +96,11 @@ export default function Sidebar({ setSidebarOpen }) {
     <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
       <div className="flex h-16 shrink-0 items-center">
         <div className="flex items-center group">
-          <ArrowTrendingUpIcon 
-            className="h-12 w-12 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
+          <CircleStackIcon 
+            className="h- w-6 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
             aria-hidden="true" 
           />
-          <span className="ml-2 text-xl font-bold text-indigo-600">Поток денег</span>
+          <span className="ml-2 text-xl font-bold text-indigo-600">Казна</span>
         </div>
       </div>
       <nav className="flex flex-1 flex-col">

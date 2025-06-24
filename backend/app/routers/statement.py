@@ -21,8 +21,6 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# ... (другие эндпоинты) ...
-
 @router.post("/upload", response_model=schemas.StatementUploadResponse)
 async def upload_bank_statement(
     request: Request, 
@@ -100,7 +98,6 @@ async def upload_bank_statement(
     
     active_workspace_obj = crud.workspace.get(db, id=current_user.active_workspace_id)
     if not active_workspace_obj:
-        print("ERROR(StatementUpload - API): Active workspace not found.")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Активное рабочее пространство не найдено."
@@ -162,13 +159,11 @@ async def upload_bank_statement(
         
         print(f"DEBUG(StatementUpload - API): DictReader's fieldnames: {reader.fieldnames}")
 
-        # <--- ИСПРАВЛЕНО ЗДЕСЬ: Обновлены списки заголовков
-        DATE_HEADERS = ['Дата проведения'] # <--- Точное название из эталона
-        AMOUNT_HEADERS = ['Сумма в валюте счёта'] # <--- Точное название из эталона
-        DESCRIPTION_HEADERS = ['Описание операции', 'Назначение платежа', 'Описание'] # <--- Оба из эталона
-        TYPE_HEADERS = ['Тип операции (пополнение/списание)'] # <--- Точное название из эталона
-        ACCOUNT_ID_HEADERS = ['Номер счёта', 'Счет контрагента'] # <--- Точные названия из эталона
-        # >>>>
+        DATE_HEADERS = ['Дата проведения', 'Дата'] 
+        AMOUNT_HEADERS = ['Сумма в валюте счёта', 'Сумма'] 
+        DESCRIPTION_HEADERS = ['Описание операции', 'Назначение платежа'] 
+        TYPE_HEADERS = ['Тип операции (пополнение/списание)', 'Тип'] 
+        ACCOUNT_ID_HEADERS = ['Номер счёта', 'Счет контрагента', 'ID Счета', 'Account ID', 'Номер счета'] 
         
         def find_csv_column(row_dict, possible_headers):
             for header in possible_headers:
@@ -191,19 +186,17 @@ async def upload_bank_statement(
                 csv_date_str = find_csv_column(row_dict, DATE_HEADERS)
                 csv_amount_str = find_csv_column(row_dict, AMOUNT_HEADERS)
                 csv_description = find_csv_column(row_dict, DESCRIPTION_HEADERS)
-                if not csv_description: # Если Описание пустое, попробуем Назначение платежа
+                if not csv_description: 
                     csv_description = find_csv_column(row_dict, ['Назначение платежа'])
                 csv_type_str = find_csv_column(row_dict, TYPE_HEADERS) 
                 csv_file_account_id = find_csv_column(row_dict, ACCOUNT_ID_HEADERS) 
 
                 print(f"DEBUG (Statement Upload - Row): Parsed CSV data - Date: '{csv_date_str}', Amount: '{csv_amount_str}', Desc: '{csv_description}', Type: '{csv_type_str}', AccountID: '{csv_file_account_id}'")
 
-                # ИСПРАВЛЕНО: Парсинг даты с использованием strptime
                 if csv_date_str:
                     try:
-                        # Пробуем несколько форматов даты из выписки
                         parsed_date = None
-                        date_formats = ['%d.%m.%Y', '%Y-%m-%d'] # DD.MM.YYYY и YYYY-MM-DD
+                        date_formats = ['%d.%m.%Y', '%Y-%m-%d', '%d.%m.%y'] 
                         for fmt in date_formats:
                             try:
                                 parsed_date = datetime.strptime(csv_date_str, fmt).date()
@@ -213,20 +206,19 @@ async def upload_bank_statement(
                         if parsed_date:
                             transaction_date = parsed_date
                         else:
-                            raise ValueError(f"Некорректный формат даты: '{csv_date_str}'. Ожидается ДД.ММ.ГГГГ или ГГГГ-ММ-ДД.")
+                            raise ValueError(f"Некорректный формат даты: '{csv_date_str}'. Ожидается ДД.ММ.ГГГГ, ГГГГ-ММ-ДД или ДД.ММ.ГГ.")
                     except ValueError:
-                        raise ValueError(f"Некорректный формат даты: '{csv_date_str}'. Ожидается ДД.ММ.ГГГГ или ГГГГ-ММ-ДД.")
+                        raise ValueError(f"Некорректный формат даты: '{csv_date_str}'. Ожидается ДД.ММ.ГГГГ, ГГГГ-ММ-ДД или ДД.ММ.ГГ.")
                 
                 if csv_amount_str:
                     try:
-                        cleaned_amount_str = csv_amount_str.replace(',', '.').strip() 
+                        cleaned_amount_str = csv_amount_str.replace(',', '.').replace('\u00A0', '').strip() 
                         transaction_amount = float(cleaned_amount_str)
                     except ValueError:
                         raise ValueError(f"Некорректный формат суммы: '{csv_amount_str}'")
 
                 if csv_type_str:
                     csv_type_lower = csv_type_str.lower()
-                    # ИСПРАВЛЕНО: Более точное сопоставление типов из выписки
                     if any(s in csv_type_lower for s in ['кредит', 'пополнение', 'доход', 'income', 'поступление']):
                         transaction_type = 'income'
                     elif any(s in csv_type_lower for s in ['дебет', 'списание', 'расход', 'expense', 'выплата']):

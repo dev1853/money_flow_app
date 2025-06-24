@@ -71,13 +71,15 @@ export default function MainLayout() {
         <Sidebar setSidebarOpen={setSidebarOpen} />
       </div>
 
+      {/* Header (для десктопа) - отображается здесь */}
+        <Header setSidebarOpen={setSidebarOpen} />
+
 
       {/* Основной контент (Main content area) */}
       <div className="lg:pl-72"> 
         
 
-        {/* Header (для десктопа) - отображается здесь */}
-        <Header setSidebarOpen={setSidebarOpen} />
+        
 
         <main className="py-10">
           <div className="px-4 sm:px-6 lg:px-8"> 
