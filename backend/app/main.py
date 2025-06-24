@@ -43,7 +43,7 @@ app.add_middleware(
 
 api_prefix = "/api"
 
-app.include_router(auth.router, prefix=f"{api_prefix}/auth", tags=["auth"])
+app.include_router(auth.router, prefix=api_prefix, tags=["auth"])
 app.include_router(users.router, prefix=f"{api_prefix}/users", tags=["users"]) 
 app.include_router(workspaces.router, prefix=f"{api_prefix}/workspaces", tags=["workspaces"]) 
 app.include_router(accounts.router, prefix=f"{api_prefix}/accounts", tags=["accounts"]) 
