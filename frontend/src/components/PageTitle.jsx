@@ -1,85 +1,41 @@
-// frontend/src/components/Modal.jsx (после правок)
-import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+// frontend/src/components/PageTitle.jsx
+import React from 'react';
 
-export default function Modal({
-  isOpen,
-  onClose,
+const PageTitle = ({
   title,
-  children, // Основное содержимое модального окна (сама форма)
-  footer,   // Новый проп для кнопок или другого содержимого футера
-  maxWidth = 'max-w-2xl',
-  formId // Добавляем formId
-}) {
-  const showModal = typeof isOpen === 'boolean' ? isOpen : false;
-
+  icon: IconComponent,
+  actions,
+  className = '', // className для внешнего div
+  titleClassName = 'text-2xl md:text-3xl font-bold text-gray-900 leading-tight', // Классы для самого h1
+}) => {
   return (
-    <Transition appear show={showModal} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-50"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black bg-opacity-30" />
-        </Transition.Child>
-
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className={`w-full transform overflow-hidden rounded-lg bg-white text-left align-middle shadow-xl transition-all ${maxWidth}`}>
-                {/* Хедер модального окна */}
-                {(title || onClose) && (
-                  <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-                    {title && (
-                      <Dialog.Title as="h3" className="text-lg font-semibold text-gray-800">
-                        {title}
-                      </Dialog.Title>
-                    )}
-                    <button
-                        type="button"
-                        className={`p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${!title ? 'ml-auto' : ''}`}
-                        onClick={onClose}
-                        aria-label="Закрыть"
-                    >
-                        <XMarkIcon className="h-5 w-5" />
-                    </button>
-                  </div>
-                )}
-
-                {/* Тело модального окна */}
-                <div className="p-6 text-sm text-gray-700">
-                  {/* Здесь будет рендериться ArticleForm, AccountForm, TransactionForm и т.д. */}
-                  {/* Они будут иметь свой собственный formId */}
-                  {children}
-                </div>
-
-                {/* Футер модального окна (если передан) */}
-                {footer && (
-                  <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
-                    {/* Этот footer должен содержать кнопки, которые будут использовать form={formId} */}
-                    {/* Например: <Button type="submit" form={formId}>Сохранить</Button> */}
-                    {footer}
-                  </div>
-                )}
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
+    // ИЗМЕНЕНО: Удален жесткий mb-6. Теперь отступ управляется извне через 'className'.
+    // flex-wrap добавлен для адаптивности заголовка и кнопок
+    <div
+      className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-y-3 gap-x-4 ${className}`} // <--- ИСПРАВЛЕНО ЗДЕСЬ!
+    >
+      <div className="flex items-center min-w-0 flex-auto"> {/* <--- Добавлен flex-auto */}
+        {IconComponent && (
+          React.isValidElement(IconComponent) ? (
+            <span className="mr-3 flex-shrink-0">{IconComponent}</span>
+          ) : typeof IconComponent === 'function' || (typeof IconComponent === 'object' && IconComponent.displayName) ? (
+            <IconComponent
+              className="h-7 w-7 md:h-8 md:w-8 text-indigo-600 mr-2 sm:mr-3 flex-shrink-0"
+              aria-hidden="true"
+            />
+          ) : null
+        )}
+        <h1 className={`${titleClassName} truncate min-w-0`}> {/* <--- Добавлен min-w-0 к h1 */}
+          {title}
+        </h1>
+      </div>
+      {actions && (
+        <div className="flex-shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          {actions}
         </div>
-      </Dialog>
-    </Transition>
+      )}
+    </div>
   );
-}
+};
+
+export default PageTitle;

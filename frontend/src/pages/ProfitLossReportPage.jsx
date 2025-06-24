@@ -90,7 +90,7 @@ function ProfitLossReportPage() {
       {/* Секция заголовка и фильтров (аналогично DdsReportPage) */}
       <div className="sm:flex sm:items-center sm:flex-wrap"> 
         <div className="sm:flex-auto sm:min-w-0"> 
-          <PageTitle title="Отчет о Прибылях и Убытках (ОПиУ)" className="mb-6" />
+          <PageTitle title="Отчет ОПиУ" className="mb-6" />
         </div>
         <div className="mt-4 w-full sm:w-auto sm:mt-0 sm:ml-auto sm:flex-none"> 
             <div className="p-4 bg-white rounded-xl shadow-sm">

@@ -1,9 +1,9 @@
 // frontend/src/pages/TransactionsPage.jsx
 
-import React, { useState, useEffect, useCallback, useReducer, Fragment } from 'react';
+import React, { useState, useEffect, useCallback, useReducer, useMemo, Fragment } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, endOfMonth, startOfMonth } from 'date-fns'; 
 import { ru } from 'date-fns/locale';
 import { Menu, Transition } from '@headlessui/react';
 
@@ -14,13 +14,14 @@ import Loader from '../components/Loader';
 import Alert from '../components/Alert';
 import EmptyState from '../components/EmptyState';
 import Pagination from '../components/Pagination';
-import Label from '../components/forms/Label';
 import Modal from '../components/Modal';
 import TransactionForm from '../components/TransactionForm';
 import ConfirmationModal from '../components/ConfirmationModal';
-import StatementUploadModal from '../components/StatementUploadModal';
+import StatementUploadModal from '../components/StatementUploadModal'; 
 import Select from '../components/forms/Select';
-import DateRangePicker from '../components/forms/DateRangePicker';
+import DateRangePicker from '../components/forms/DateRangePicker'; 
+import Label from '../components/forms/Label'; 
+
 import { 
   ChevronDownIcon, 
   PlusIcon, 
@@ -38,8 +39,8 @@ const ITEMS_PER_PAGE = 20;
 
 // --- Логика для управления фильтрами (Reducer) ---
 const initialFilters = {
-  start_date: null,
-  end_date: null,
+  start_date: null, 
+  end_date: null,   
   transaction_type: '',
   account_id: '',
 };
@@ -53,25 +54,57 @@ function filtersReducer(state, action) {
     case 'SET_ACCOUNT':
       return { ...state, account_id: action.payload };
     case 'RESET_FILTERS':
-      return initialFilters;
+      const { startDate: currentQStart, endDate: currentQEnd } = getCurrentQuarterDates();
+      return { ...initialFilters, start_date: currentQStart, end_date: currentQEnd };
     default:
       return state;
   }
 }
 
+// Вспомогательная функция для получения начала и конца текущего квартала
+const getCurrentQuarterDates = () => {
+  const now = new Date();
+  const currentMonth = now.getMonth(); 
+  const currentYear = now.getFullYear();
+
+  let quarterStartMonth;
+  if (currentMonth >= 0 && currentMonth <= 2) { 
+    quarterStartMonth = 0;
+  } else if (currentMonth >= 3 && currentMonth <= 5) { 
+    quarterStartMonth = 3;
+  } else if (currentMonth >= 6 && currentMonth <= 8) { 
+    quarterStartMonth = 6;
+  } else { 
+    quarterStartMonth = 9;
+  }
+
+  const startDate = new Date(currentYear, quarterStartMonth, 1);
+  const endDate = endOfMonth(new Date(currentYear, quarterStartMonth + 2)); 
+
+  return { startDate, endDate };
+};
+
 
 function TransactionsPage() {
-  const { activeWorkspace, current_user } = useAuth();
+  const { activeWorkspace } = useAuth();
   const [transactionsData, setTransactionsData] = useState({ items: [], total_count: 0 });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
-  const [defaultTransactionType, setDefaultTransactionType] = useState('expense'); // Для кнопки "новая транзакция"
-  const [currentFilters, dispatchFilters] = useReducer(filtersReducer, initialFilters);
+  const [defaultTransactionType, setDefaultTransactionType] = useState('expense'); 
+  const [currentFilters, dispatchFilters] = useReducer(filtersReducer, initialFilters); 
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState(null);
+
+  const [accounts, setAccounts] = useState([]); 
+  const [ddsArticles, setDdsArticles] = useState([]); 
+  
+  useEffect(() => {
+    const { startDate: currentQStart, endDate: currentQEnd } = getCurrentQuarterDates();
+    dispatchFilters({ type: 'SET_DATE_RANGE', payload: { startDate: currentQStart, endDate: currentQEnd } });
+  }, []); 
 
 
   const fetchTransactions = useCallback(async (page, filters) => {
@@ -106,14 +139,33 @@ function TransactionsPage() {
   }, [activeWorkspace]);
 
 
-  // Effect для загрузки транзакций при изменении страницы или фильтров
   useEffect(() => {
-    if (activeWorkspace) {
+    if (activeWorkspace && currentFilters.start_date && currentFilters.end_date) { 
       fetchTransactions(currentPage, currentFilters);
     }
   }, [currentPage, currentFilters, activeWorkspace, fetchTransactions]);
 
-  // Обработчики открытия/закрытия модальных окон
+
+  useEffect(() => {
+    const fetchSelectData = async () => {
+      if (!activeWorkspace || !activeWorkspace.id) return;
+      try {
+        const fetchedAccounts = await apiService.get(`/accounts/?workspace_id=${activeWorkspace.id}`);
+        setAccounts(fetchedAccounts || []);
+
+        const fetchedDdsArticles = await apiService.get(`/dds-articles/?workspace_id=${activeWorkspace.id}`);
+        setDdsArticles(fetchedDdsArticles || []);
+
+      } catch (err) {
+        console.error("Ошибка загрузки данных для фильтров:", err);
+      }
+    };
+    if (activeWorkspace) {
+      fetchSelectData();
+    }
+  }, [activeWorkspace]);
+
+
   const handleOpenFormModal = (type = 'expense', transaction = null) => {
     setEditingTransaction(transaction);
     setDefaultTransactionType(type);
@@ -123,41 +175,37 @@ function TransactionsPage() {
   const handleCloseFormModal = useCallback(() => {
     setIsFormModalOpen(false);
     setEditingTransaction(null);
-    setDefaultTransactionType('expense'); // Сброс на расход по умолчанию
-    fetchTransactions(currentPage, currentFilters); // Обновляем список транзакций
+    setDefaultTransactionType('expense'); 
+    fetchTransactions(currentPage, currentFilters); 
   }, [fetchTransactions, currentPage, currentFilters]);
 
 
-    const handleTransactionSubmit = useCallback(async (formData) => {
-      setLoading(true);
-      setError('');
-      try {
-          let response;
-          if (editingTransaction) {
-              console.log("DEBUG(TransactionsPage): Submitting PUT request with formData:", JSON.stringify(formData)); // <--- ЛОГ
-              console.log("DEBUG(TransactionsPage): Type of formData.date for PUT:", typeof formData.date, "Value:", formData.date); // <--- НОВЫЙ ЛОГ
-              response = await apiService.put(`/transactions/${editingTransaction.id}`, formData);
-          } else {
-              console.log("DEBUG(TransactionsPage): Submitting POST request with formData:", JSON.stringify(formData)); // <--- ЛОГ
-              console.log("DEBUG(TransactionsPage): Type of formData.date for POST:", typeof formData.date, "Value:", formData.date); // <--- НОВЫЙ ЛОГ
-              response = await apiService.post('/transactions/', formData);
-          }
-          
-          console.log("Транзакция успешно сохранена:", response);
-          handleCloseFormModal();
+  const handleTransactionSubmit = useCallback(async (formData) => {
+    setLoading(true); 
+    setError(''); 
+    try {
+        let response;
+        if (editingTransaction) {
+            response = await apiService.put(`/transactions/${editingTransaction.id}`, formData);
+        } else {
+            response = await apiService.post('/transactions/', formData);
+        }
+        
+        console.log("Транзакция успешно сохранена:", response);
+        handleCloseFormModal(); 
 
-      } catch (err) {
-          setError(err.message || "Не удалось сохранить транзакцию.");
-          console.error("Ошибка сохранения транзакции:", err);
-      } finally {
-          setLoading(false);
-      }
-    }, [editingTransaction, handleCloseFormModal]);
+    } catch (err) {
+        setError(err.message || "Не удалось сохранить транзакцию.");
+        console.error("Ошибка сохранения транзакции:", err);
+    } finally {
+        setLoading(false); 
+    }
+  }, [editingTransaction, handleCloseFormModal]);
 
-  // Обработчики для фильтров
+
   const handleDateRangeChange = (startDate, endDate) => {
     dispatchFilters({ type: 'SET_DATE_RANGE', payload: { startDate, endDate } });
-    setCurrentPage(1); // Сбросить на первую страницу при изменении фильтров
+    setCurrentPage(1); 
   };
 
   const handleTypeFilterChange = (e) => {
@@ -175,19 +223,18 @@ function TransactionsPage() {
     setCurrentPage(1);
   };
 
-  // Удаление транзакций
   const handleDeleteRequest = (transaction) => {
     setTransactionToDelete(transaction);
   };
 
-  const handleDeleteConfirm = useCallback(async () => {
+  const handleConfirmDelete = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
       if (!transactionToDelete) return;
       await apiService.delete(`/transactions/${transactionToDelete.id}`);
-      setTransactionToDelete(null); // Сброс транзакции для удаления
-      fetchTransactions(currentPage, currentFilters); // Обновляем список
+      fetchTransactions(currentPage, currentFilters); 
+      setTransactionToDelete(null); 
     } catch (err) {
       setError(err.message || "Не удалось удалить транзакцию.");
       console.error("Ошибка удаления транзакции:", err);
@@ -196,70 +243,75 @@ function TransactionsPage() {
     }
   }, [transactionToDelete, fetchTransactions, currentPage, currentFilters]);
 
+  // Опции для select счетов
+  const accountOptions = useMemo(() => {
+    return accounts.map(acc => ({ value: acc.id, label: `${acc.name} (${acc.currency})` }));
+  }, [accounts]);
+
 
   return (
-    <Fragment>
-      <PageTitle title="Транзакции" />
-
-      {/* Кнопки действий и фильтры */}
-      <div className="mb-4 flex justify-between items-center">
-        <div className="flex space-x-2">
-          <Button onClick={() => handleOpenFormModal('income')} variant="success"><ArrowUpCircleIcon className="h-5 w-5 mr-2"/> Доход</Button>
-          <Button onClick={() => handleOpenFormModal('expense')} variant="danger"><ArrowDownCircleIcon className="h-5 w-5 mr-2"/> Расход</Button>
-          <Button onClick={() => setUploadModalOpen(true)} variant="secondary"><ArrowUpOnSquareIcon className="h-5 w-5 mr-2"/> Выписка</Button>
-        </div>
-        <div className="relative">
-          <Button onClick={() => {}} variant="outline" className="flex items-center">
-            <FunnelIcon className="h-5 w-5 mr-2"/> Фильтры
-            <ChevronDownIcon className="-mr-1 h-5 w-5" />
-          </Button>
-          {/* Здесь будет выпадающее меню фильтров */}
+    <React.Fragment>
+      {/* ИЗМЕНЕНО: Объединенный блок заголовка и фильтров */}
+      <div className="px-4 sm:px-6 lg:px-8 py-6">
+        <div className="sm:flex sm:items-center sm:flex-wrap sm:justify-between"> 
+          <div className="sm:flex-auto sm:min-w-0"> 
+            <PageTitle title="Транзакции" className="mb-6 sm:mb-0" />
+          </div>
+          
+          {/* Правый блок с кнопками действий и компактными фильтрами */}
+          <div className="mt-4 w-full sm:w-auto sm:mt-0 sm:ml-auto sm:flex-none"> 
+            {/* ИЗМЕНЕНО: уменьшен padding до p-2 */}
+            <div className="bg-white p-2 rounded-xl shadow-sm"> {/* <--- ИЗМЕНЕНО: p-2 вместо p-3 */}
+                {/* Кнопки действий */}
+                <div className="flex space-x-2 mb-3 justify-end"> {/* <--- ИЗМЕНЕНО: mb-3 вместо mb-4 */}
+                    <Button onClick={() => handleOpenFormModal('income')} variant="success"><ArrowUpCircleIcon className="h-5 w-5 mr-2"/> Доход</Button>
+                    <Button onClick={() => handleOpenFormModal('expense')} variant="danger"><ArrowDownCircleIcon className="h-5 w-5 mr-2"/> Расход</Button>
+                    <Button onClick={() => setUploadModalOpen(true)} variant="secondary"><ArrowUpOnSquareIcon className="h-5 w-5 mr-2"/> Выписка</Button>
+                </div>
+                {/* Фильтры */}
+                <div className="sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-2 items-end"> {/* <--- ИЗМЕНЕНО */}
+                    <div>
+                        <DateRangePicker
+                            startDate={currentFilters.start_date}
+                            endDate={currentFilters.end_date}
+                            onChange={handleDateRangeChange}
+                            placeholder="Период" // <--- НОВЫЙ ПРОПС, если DateRangePicker его поддерживает
+                        />
+                    </div>
+                    <div>
+                        <Select
+                            id="transactionType"
+                            name="transaction_type"
+                            value={currentFilters.transaction_type}
+                            onChange={handleTypeFilterChange}
+                        >
+                            <option value="">Тип</option> {/* <--- Изменен текст опции */}
+                            <option value="income">Доход</option>
+                            <option value="expense">Расход</option>
+                        </Select>
+                    </div>
+                    <div>
+                        {/* ИЗМЕНЕНО: Удален Label */}
+                        <Select
+                            id="accountId"
+                            name="account_id"
+                            value={currentFilters.account_id}
+                            onChange={handleAccountFilterChange}
+                        >
+                            <option value="">Счет</option>
+                            {accountOptions.map(option => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                        </Select>
+                    </div>
+                    <div> 
+                        <Button onClick={handleResetFilters} variant="primary" className="w-full">Сбросить</Button> {/* <--- Добавлен w-full */}
+                    </div>
+                </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Панель фильтров */}
-      <div className="bg-white p-4 rounded-xl shadow-sm my-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-          <div>
-            <Label htmlFor="dateRange">Период</Label>
-            <DateRangePicker
-              startDate={currentFilters.start_date}
-              endDate={currentFilters.end_date}
-              onChange={handleDateRangeChange}
-            />
-          </div>
-          <div>
-            <Label htmlFor="transactionType">Тип транзакции</Label>
-            <Select
-              id="transactionType"
-              name="transaction_type"
-              value={currentFilters.transaction_type}
-              onChange={handleTypeFilterChange}
-            >
-              <option value="">Все</option>
-              <option value="income">Доход</option>
-              <option value="expense">Расход</option>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="accountId">Счет</Label>
-            <Select
-              id="accountId"
-              name="account_id"
-              value={currentFilters.account_id}
-              onChange={handleAccountFilterChange}
-            >
-              <option value="">Все</option>
-              {/* Тут нужно будет загрузить список счетов */}
-              {/* Пока заглушка */}
-              <option value="1" >Счет 1</option>
-              <option value="2">Счет 2</option>
-            </Select>
-          </div>
-          <Button onClick={handleResetFilters} variant="secondary">Сбросить фильтры</Button>
-        </div>
-      </div>
-
       {error && <Alert type="error" className="my-4">{error}</Alert>}
       {loading && <Loader text="Загрузка транзакций..." />}
 
@@ -311,11 +363,13 @@ function TransactionsPage() {
       )}
       
       <Modal isOpen={isFormModalOpen} onClose={handleCloseFormModal} title={editingTransaction ? 'Редактировать транзакцию' : 'Новая транзакция'}>
-        <TransactionForm transaction={editingTransaction} defaultType={defaultTransactionType} onSubmit={handleTransactionSubmit} onCancel={handleCloseFormModal}/> {/* <--- ИСПРАВЛЕНО ЗДЕСЬ! */}
+        <TransactionForm transaction={editingTransaction} defaultType={defaultTransactionType} onSubmit={handleTransactionSubmit} onCancel={handleCloseFormModal} ddsArticles={ddsArticles} />
       </Modal>
       <StatementUploadModal isOpen={isUploadModalOpen} onClose={() => setUploadModalOpen(false)} onSuccess={() => fetchTransactions(1, initialFilters)} />
-      <ConfirmationModal isOpen={Boolean(transactionToDelete)} onClose={() => setTransactionToDelete(null)} onConfirm={handleDeleteConfirm} title="Удалить транзакцию" message={`Вы уверены?`} />
-    </Fragment>
+      <ConfirmationModal isOpen={Boolean(transactionToDelete)} onClose={() => setTransactionToDelete(null)} onConfirm={handleConfirmDelete} title="Удалить транзакцию" message={`Выверены?`} />
+    </React.Fragment>
   );
 }
+
+
 export default TransactionsPage;

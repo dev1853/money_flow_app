@@ -3,7 +3,7 @@ import ReactDatePicker, { registerLocale } from 'react-datepicker';
 import { ru } from 'date-fns/locale';
 import { format } from 'date-fns';
 import { ChevronLeftIcon, ChevronRightIcon, CalendarIcon } from '@heroicons/react/24/solid';
-import "./CustomDatePicker.css"; // Подключаем наши стили
+import "./CustomDatePicker.css";
 
 import Label from './Label';
 import Input from './Input';

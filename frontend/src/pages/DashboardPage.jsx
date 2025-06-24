@@ -12,6 +12,7 @@ import DatePicker from '../components/forms/DatePicker';
 import Loader from '../components/Loader';
 import Alert from '../components/Alert';
 import DdsStatsCard from '../components/DdsStatsCard'; 
+
 // Импорт компонентов Recharts
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
@@ -127,12 +128,11 @@ function DashboardPage() {
     <div className="px-4 sm:px-6 lg:px-8 py-6"> 
       {/* Секция заголовка и фильтров */}
       <div className="sm:flex sm:items-center sm:flex-wrap"> 
-        <div className="sm:flex-auto sm:min-w-0 mb-4 sm:mb-0"> 
-          <PageTitle title="Дашборд" className="mb-6" />
-        </div>
+          <PageTitle title="Дашборд" className="mb-6 sm:mb-0" /> 
+        {/* ИЗМЕНЕНО: Отступы и отступы сетки для компактности */}
         <div className="mt-4 w-full sm:w-auto sm:mt-0 sm:ml-auto sm:flex-none"> 
-            <div className="p-4 bg-white rounded-xl shadow-sm">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="p-3 bg-white rounded-xl shadow-sm"> {/* <--- ИЗМЕНЕНО: p-3 вместо p-4 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-3 gap-y-2 items-end"> {/* <--- ИЗМЕНЕНО: gap-x-3 gap-y-2 вместо gap-4 */}
                     <DatePicker label="Начало периода" selected={startDate} onChange={date => setStartDate(date)} />
                     <DatePicker label="Конец периода" selected={endDate} onChange={date => setEndDate(date)} />
                     <Button onClick={handleGenerateReport} disabled={loading}>

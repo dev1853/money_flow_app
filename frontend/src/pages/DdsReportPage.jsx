@@ -115,20 +115,22 @@ function DdsReportPage() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-6"> 
-      {/* Заголовок страницы - теперь отдельный блок */}
-      <PageTitle title="Отчет о Движении Денежных Средств (ДДС)" className="mb-6" /> {/* Добавляем нижний отступ */}
 
       {/* Блок фильтров - теперь отдельный блок, всегда на всю ширину */}
-      <div className="w-full"> {/* <--- ИЗМЕНЕНО: всегда 100% ширина */}
-          <div className="p-4 bg-white rounded-xl shadow-sm">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                  <DatePicker label="Начало периода" selected={startDate} onChange={date => setStartDate(date)} />
-                  <DatePicker label="Конец периода" selected={endDate} onChange={date => setEndDate(date)} />
-                  <Button onClick={handleGenerateReport} disabled={loading}>
-                      {loading ? 'Формирование...' : 'Сформировать отчет'}
-                  </Button>
-              </div>
-          </div>
+      <div className="sm:flex sm:items-center sm:flex-wrap"> 
+          <PageTitle title="Отчет ДДС" className="mb-6" />
+        {/* ИЗМЕНЕНО: Отступы и отступы сетки для компактности */}
+        <div className="mt-4 w-full sm:w-auto sm:mt-0 sm:ml-auto sm:flex-none"> 
+            <div className="p-3 bg-white rounded-xl shadow-sm"> {/* <--- ИЗМЕНЕНО: p-3 вместо p-4 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-3 gap-y-2 items-end"> {/* <--- ИЗМЕНЕНО: gap-x-3 gap-y-2 вместо gap-4 */}
+                    <DatePicker label="Начало периода" selected={startDate} onChange={date => setStartDate(date)} />
+                    <DatePicker label="Конец периода" selected={endDate} onChange={date => setEndDate(date)} />
+                    <Button onClick={handleGenerateReport} disabled={loading}>
+                        {loading ? 'Загрузка...' : 'Обновить'}
+                    </Button>
+                </div>
+            </div>
+        </div>
       </div>
 
       {error && <Alert type="error" className="my-4">{error}</Alert>}
