@@ -15,6 +15,7 @@ from app.config import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 
 
 
@@ -39,7 +40,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     try:
         print(f"DEBUG(Auth): Attempting to decode token with SECRET_KEY[:5]: {settings.SECRET_KEY[:5]} and ALGORITHM: {settings.ALGORITHM}")
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        username_or_email: str = payload.get("sub") # <--- Переименовано для ясности
+        username_or_email: str = payload.get("sub") 
         print(f"DEBUG(Auth): Token decoded. Subject (sub): {username_or_email}")
         if username_or_email is None:
             print("ERROR(Auth): Subject (sub) is None in token payload.")
