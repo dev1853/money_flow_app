@@ -106,7 +106,7 @@ const apiService = {
 
         // Для запросов на /token нужно отправлять 'application/x-www-form-urlencoded'
         // fetch API автоматически установит его при отправке URLSearchParams
-        const response = await fetch(`${API_BASE_URL}/token`, { // <--- ИСПРАВЛЕНО ЗДЕСЬ!
+        const response = await fetch(`${API_BASE_URL}/api/token`, { // <--- ИСПРАВЛЕНО ЗДЕСЬ!
             method: 'POST',
             body: formData, // URLSearchParams автоматически устанавливает нужный Content-Type
         });
