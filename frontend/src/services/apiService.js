@@ -1,5 +1,6 @@
 // frontend/src/services/apiService.js
 
+// Класс для структурированных ошибок
 export class ApiError extends Error {
   constructor(statusCode, message) {
     super(message);
@@ -36,22 +37,22 @@ const request = async (method, url, data = null, headers = {}) => {
     }
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}${url}`, config);
+        // ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ ОКРУЖЕНИЯ VITE
+        // Она сама подставит префикс /api
+        const fullUrl = `${import.meta.env.VITE_API_BASE_URL}${url}`;
+        const response = await fetch(fullUrl, config);
 
         if (!response.ok) {
             let errorData;
             try {
                 errorData = await response.json();
             } catch (e) {
-                errorData = { detail: response.statusText };
+                errorData = { detail: response.statusText || 'Error' };
             }
-            throw new ApiError(response.status, errorData.detail || 'An unknown error occurred');
+            throw new ApiError(response.status, errorData.detail);
         }
 
-        if (response.status === 204) {
-            return null;
-        }
-        
+        if (response.status === 204) return null;
         return await response.json();
 
     } catch (error) {
@@ -60,18 +61,13 @@ const request = async (method, url, data = null, headers = {}) => {
     }
 };
 
-// Экспортируем объект с методами
+// Экспортируем объект с методами для использования в приложении
 export const apiService = {
     get: (url, headers) => request('GET', url, null, headers),
     post: (url, data, headers) => request('POST', url, data, headers),
     put: (url, data, headers) => request('PUT', url, data, headers),
     delete: (url, headers) => request('DELETE', url, null, headers),
     patch: (url, data, headers) => request('PATCH', url, data, headers),
-    
-    setToken: (token) => {
-        localStorage.setItem('token', token);
-    },
-    clearToken: () => {
-        localStorage.removeItem('token');
-    },
+    setToken: (token) => localStorage.setItem('token', token),
+    clearToken: () => localStorage.removeItem('token'),
 };
