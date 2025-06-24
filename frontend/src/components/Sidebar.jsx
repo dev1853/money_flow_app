@@ -97,10 +97,10 @@ export default function Sidebar({ setSidebarOpen }) {
       <div className="flex h-16 shrink-0 items-center">
         <div className="flex items-center group">
           <CircleStackIcon 
-            className="h- w-6 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
+            className="h-8 w-8 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
             aria-hidden="true" 
           />
-          <span className="ml-2 text-xl font-bold text-indigo-600">Казна</span>
+          <span className="ml-3 text-2xl font-extrabold text-gray-900">Казна</span>
         </div>
       </div>
       <nav className="flex flex-1 flex-col">

@@ -66,10 +66,10 @@ const Header = ({ setSidebarOpen }) => {
       {/* Мобильное название приложения - только для мобильных, с отступом от кнопки */}
       <div className="flex items-center group">
         <CircleStackIcon 
-          className="h-6 w-6 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
+          className="h-8 w-8 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
           aria-hidden="true" 
         />
-        <span className="ml-2 text-xl font-bold text-indigo-600">Казна</span>
+        <span className="ml-3 text-2xl font-extrabold text-gray-900">Казна</span>
       </div>
       {/* Контент Header (отображается справа) */}
       <div className="flex-1 flex justify-end gap-x-4 sm:gap-x-6">
