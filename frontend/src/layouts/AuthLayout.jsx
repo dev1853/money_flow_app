@@ -14,7 +14,7 @@ const AuthLayout = ({ title, children }) => {
             className="h-10 w-10 text-indigo-600 group-hover:text-indigo-500 transition-colors" // Увеличены h и w
             aria-hidden="true" 
           />
-          <span className="ml-3 text-3xl font-extrabold text-gray-900">Казна</span> {/* Увеличен размер текста */}
+          <span className="ml-3 text-3xl font-extrabold text-gray-900">БизнесПоток</span> {/* Увеличен размер текста */}
         </div>
         <p className="mt-1 text-center text-sm text-gray-600"> {/* Отдельный P для слогана, центрирован */}
           Система учета финансов для бизнеса.

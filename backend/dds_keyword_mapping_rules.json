@@ -1,250 +1,197 @@
-{
-  "income": [
-    {
-      "keywords": ["аванс по договору", "оплата услуг", "счет на оплату", "разработку програмного обеспечения", "услуга консультирования"],
-      "article_id": 5
-    },
-    {
-      "keywords": ["проценты на остаток по счету", "выплата процентов на остаток"],
-      "article_id": 7
-    },
-    {
-      "keywords": ["отмена операции оплаты"],
-      "article_id": 6 
-    },
-    {
-      "keywords": ["предоставление овердрафта"],
-      "article_id": 6 
-    }
-  ],
-  "expense": [
-    {
-      "keywords": ["решению о взыскании", "ст.46 нк рф"],
-      "article_id": 37
-    },
-    {
-      "keywords": ["плата за обслуживание счета"],
-      "article_id": 36 
-    },
-    {
-      "keywords": ["оповещение об операциях"],
-      "article_id": 36 
-    },
-    {
-      "keywords": ["комиссия за внешний банковский перевод"],
-      "article_id": 36 
-    },
-    {
-      "keywords": ["комиссия за вывод средств", "комиссия за вывод средств на физ. лицо"],
-      "article_id": 36 
-    },
-    {
-      "keywords": ["комиссия за перевод по номеру карты"],
-      "article_id": 36 
-    },
-    {
-      "keywords": ["комиссия за пользование овердрафтом", "плата за активный овердрафт", "плата за использованный лимит овердрафта"],
-      "article_id": 35 
-    },
-    {
-      "keywords": ["magazin galamart"],
-      "article_id": 15 
-    },
-    {
-      "keywords": ["reso"],
-      "article_id": 26 
-    },
-    {
-      "keywords": ["leroymerlin"],
-      "article_id": 15
-    },
-    {
-      "keywords": ["электронная подарочная карта"],
-      "article_id": 33
-    },
-    {
-      "keywords": ["firstvds"],
-      "article_id": 23
-    },
-    {
-      "keywords": ["qsr"],
-      "article_id": 33 
-    },
-    {
-      "keywords": ["задолженность по договору кредита"],
-      "article_id": 35 
-    },
-    {
-      "keywords": ["eirc spb", "еирц спб"],
-      "article_id": 22 
-    },
-    {
-      "keywords": ["предоставление вычислительной среды"],
-      "article_id": 23
-    },
-    {
-      "keywords": ["megamarket.ru"],
-      "article_id": 34
-    },
-    {
-      "keywords": ["sdek", "сдэк"],
-      "article_id": 30
-    },
-    {
-      "keywords": ["автопрофайлинг"],
-      "article_id": 27
-    },
-    {
-      "keywords": ["yandexgo", "яндекс.go"],
-      "article_id": 30
-    },
-    {
-      "keywords": ["ooo_33_bumagi"],
-      "article_id": 24
-    },
-    {
-      "keywords": ["popolnenie ls"], 
-      "article_id": 23
-    },
-    {
-      "keywords": ["moskvarium"],
-      "article_id": 33
-    },
-    {
-      "keywords": ["restoran lepota", "restoran chajka", "sp_restoran chajka", "restoran sad", "restoran petrushka"],
-      "article_id": 33
-    },
-    {
-      "keywords": ["pyaterochka", "пятерочка", "perekrestok", "перекресток", "vkusvill", "вкусвилл", "magnit", "магнит", "auchan", "ашан", "globus"],
-      "article_id": 15
-    },
-    {
-      "keywords": ["ozon"],
-      "article_id": 34
-    },
-    {
-      "keywords": ["cerkov pokrova na nerl", "церковь"],
-      "article_id": 39
-    },
-    {
-      "keywords": ["yandex.plus", "яндекс.плюс"],
-      "article_id": 23
-    },
-    {
-      "keywords": ["комиссия за снятие наличных"],
-      "article_id": 36
-    },
-    {
-      "keywords": ["azs", "gazpromneft", "lukoil.azs"],
-      "article_id": 30
-    },
-    {
-      "keywords": ["muzej prirody"],
-      "article_id": 33
-    },
-    {
-      "keywords": ["bar 22a"],
-      "article_id": 33
-    },
-    {
-      "keywords": ["officemag"],
-      "article_id": 24
-    },
-    {
-      "keywords": ["ooo vektor"],
-      "article_id": 34
-    },
-    {
-      "keywords": ["parking"],
-      "article_id": 30
-    },
-    {
-      "keywords": ["aktiviti-park"],
-      "article_id": 33
-    },
-    {
-      "keywords": ["unikum _25"],
-      "article_id": 34
-    },
-    {
-      "keywords": ["ip kuzmin i.a."], 
-      "article_id": 34 
-    },
-    {
-      "keywords": ["spas magazin galereya"],
-      "article_id": 34 
-    },
-    {
-      "keywords": ["ooo profit"], 
-      "article_id": 34
-    },
-    {
-      "keywords": ["shkolnoe pitanie"],
-      "article_id": 34 
-    },
-    {
-      "keywords": ["lighthousecoffee"],
-      "article_id": 33
-    },
-    {
-      "keywords": ["firma flora"], 
-      "article_id": 33
-    },
-    {
-      "keywords": ["kafe - chaynaya ladya"],
-      "article_id": 33
-    },
-    {
-      "keywords": ["obaldini"],
-      "article_id": 33
-    },
-    {
-      "keywords": ["rest torgovaya"],
-      "article_id": 33
-    },
-     {
-      "keywords": ["ip ionin v.k."],
-      "article_id": 34
-    },
-    {
-      "keywords": ["vitae"], 
-      "article_id": 34
-    },
-    {
-      "keywords": ["biznes-centr atmosfera"], 
-      "article_id": 21
-    },
-    {
-      "keywords": ["ao vzpo tekhnika"],
-      "article_id": 34
-    },
-    {
-      "keywords": ["sp_sova b.k."],
-      "article_id": 33
-    },
-    {
-      "keywords": ["ip shashaeva e.s."],
-      "article_id": 34
-    },
-    {
-      "keywords":["физлицам — без комиссии"],
-      "article_id": 36
-    },
-    {
-      "keywords":["подписка"],
-      "article_id": 23 
-    },
-    {
-      "keywords": ["оплата по договору"],
-      "article_id": 34
-    },
-    {
-      "keywords": ["перевод собственных средств", "перевод себе", "перевод на свой счет", "снятие наличных"], 
-      "article_id": 0
-    },
-    {
-      "keywords": ["погашение разрешенного овердрафта"], 
-      "article_id": 0
-    }
-  ]
-}
+[
+  {
+    "keyword": "Поступления от клиентов",
+    "dds_article_name": "Поступления от клиентов",
+    "transaction_type": "income",
+    "priority": 100
+  },
+  {
+    "keyword": "Оплата клиента",
+    "dds_article_name": "Поступления от клиентов",
+    "transaction_type": "income",
+    "priority": 95
+  },
+  {
+    "keyword": "Выручка",
+    "dds_article_name": "Поступления от клиентов",
+    "transaction_type": "income",
+    "priority": 90
+  },
+  {
+    "keyword": "Доход",
+    "dds_article_name": "Поступления от клиентов",
+    "transaction_type": "income",
+    "priority": 85
+  },
+  {
+    "keyword": "Прибыль",
+    "dds_article_name": "Поступления от клиентов",
+    "transaction_type": "income",
+    "priority": 80
+  },
+  {
+    "keyword": "Возврат от поставщика",
+    "dds_article_name": "Поступления от клиентов",
+    "transaction_type": "income",
+    "priority": 75
+  },
+  {
+    "keyword": "Продажа услуг",
+    "dds_article_name": "Поступления от клиентов",
+    "transaction_type": "income",
+    "priority": 70
+  },
+  {
+    "keyword": "Аванс полученный",
+    "dds_article_name": "Авансы от покупателей",
+    "transaction_type": "income",
+    "priority": 100
+  },
+  {
+    "keyword": "Предоплата",
+    "dds_article_name": "Авансы от покупателей",
+    "transaction_type": "income",
+    "priority": 90
+  },
+  {
+    "keyword": "Поступление от банка",
+    "dds_article_name": "Получение кредитов и займов",
+    "transaction_type": "income",
+    "priority": 100
+  },
+  {
+    "keyword": "Кредит",
+    "dds_article_name": "Получение кредитов и займов",
+    "transaction_type": "income",
+    "priority": 90
+  },
+  {
+    "keyword": "Займ",
+    "dds_article_name": "Получение кредитов и займов",
+    "transaction_type": "income",
+    "priority": 80
+  },
+  {
+    "keyword": "Продажа ОС",
+    "dds_article_name": "Продажа основных средств",
+    "transaction_type": "income",
+    "priority": 100
+  },
+  {
+    "keyword": "Дивиденды",
+    "dds_article_name": "Полученные дивиденды",
+    "transaction_type": "income",
+    "priority": 100
+  },
+  {
+    "keyword": "Продажа НМА",
+    "dds_article_name": "Продажа нематериальных активов",
+    "transaction_type": "income",
+    "priority": 100
+  },
+  
+  {
+    "keyword": "Платеж поставщику",
+    "dds_article_name": "Платежи поставщикам",
+    "transaction_type": "expense",
+    "priority": 100
+  },
+  {
+    "keyword": "Оплата услуг",
+    "dds_article_name": "Платежи поставщикам",
+    "transaction_type": "expense",
+    "priority": 95
+  },
+  {
+    "keyword": "Покупка",
+    "dds_article_name": "Платежи поставщикам",
+    "transaction_type": "expense",
+    "priority": 90
+  },
+  {
+    "keyword": "Материалы",
+    "dds_article_name": "Платежи поставщикам",
+    "transaction_type": "expense",
+    "priority": 85
+  },
+  {
+    "keyword": "Зарплата",
+    "dds_article_name": "Оплата труда",
+    "transaction_type": "expense",
+    "priority": 100
+  },
+  {
+    "keyword": "Аванс сотруднику",
+    "dds_article_name": "Оплата труда",
+    "transaction_type": "expense",
+    "priority": 90
+  },
+  {
+    "keyword": "Налоги",
+    "dds_article_name": "Налоги и взносы",
+    "transaction_type": "expense",
+    "priority": 100
+  },
+  {
+    "keyword": "Взносы",
+    "dds_article_name": "Налоги и взносы",
+    "transaction_type": "expense",
+    "priority": 90
+  },
+  {
+    "keyword": "Аренда",
+    "dds_article_name": "Аренда",
+    "transaction_type": "expense",
+    "priority": 100
+  },
+  {
+    "keyword": "Коммунальные платежи",
+    "dds_article_name": "Аренда",
+    "transaction_type": "expense",
+    "priority": 90
+  },
+  {
+    "keyword": "Канцтовары",
+    "dds_article_name": "Прочие операционные расходы",
+    "transaction_type": "expense",
+    "priority": 100
+  },
+  {
+    "keyword": "Обслуживание",
+    "dds_article_name": "Прочие операционные расходы",
+    "transaction_type": "expense",
+    "priority": 90
+  },
+  {
+    "keyword": "Реклама",
+    "dds_article_name": "Прочие операционные расходы",
+    "transaction_type": "expense",
+    "priority": 80
+  },
+  
+  {
+    "keyword": "Покупка ОС",
+    "dds_article_name": "Покупка основных средств",
+    "transaction_type": "expense",
+    "priority": 100
+  },
+  {
+    "keyword": "Покупка НМА",
+    "dds_article_name": "Покупка нематериальных активов",
+    "transaction_type": "expense",
+    "priority": 100
+  },
+
+  {
+    "keyword": "Погашение кредита",
+    "dds_article_name": "Выплаты по кредитам и займам",
+    "transaction_type": "expense",
+    "priority": 100
+  },
+  {
+    "keyword": "Проценты по займу",
+    "dds_article_name": "Выплаты по кредитам и займам",
+    "transaction_type": "expense",
+    "priority": 90
+  }
+]

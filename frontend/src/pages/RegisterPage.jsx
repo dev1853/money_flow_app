@@ -1,22 +1,39 @@
+// frontend/src/pages/RegisterPage.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
+import { useApiMutation } from '../hooks/useApiMutation';
+
+// Ваши кастомные компоненты
 import Alert from '../components/Alert';
 import Button from '../components/Button';
 import Input from '../components/forms/Input';
 import Label from '../components/forms/Label';
 
 function RegisterPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    username: '', email: '', password: '', confirmPassword: ''
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
+  const [passwordsError, setPasswordsError] = useState('');
+
+  const [handleRegister, isLoading, registerError] = useApiMutation(
+    (data) => apiService.register({
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    }), 
+    {
+      onSuccess: async () => {
+        await login(formData.email, formData.password);
+        navigate('/dashboard');
+      }
+    }
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,109 +41,115 @@ function RegisterPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setError('Пароли не совпадают.');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      await apiService.post('/users/', {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-      });
-      await login(formData.email, formData.password);
-    } catch (err) {
-      setError(err.message || 'Не удалось зарегистрироваться.');
-    } finally {
-      setLoading(false);
-    }
-  };
+        e.preventDefault();
+
+        // --- ИСПРАВЛЕНИЕ: Добавляем клиентскую валидацию ---
+        if (password.length < 8) {
+            setFormError('Пароль должен содержать не менее 8 символов.');
+            return; // Прерываем отправку формы
+        }
+        if (!email.includes('@')) {
+            setFormError('Пожалуйста, введите корректный email.');
+            return;
+        }
+
+        // Если валидация пройдена, сбрасываем ошибку и отправляем данные
+        setFormError('');
+        const userData = { email, password, username: email }; // Отправляем email как username
+        registerMutation.mutate(userData);
+    };
+
+  const error = registerError || passwordsError;
 
   return (
-    <div>
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <h3 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Регистрация
-          </h3>
-        </div>
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <Alert type="error">{error}</Alert>}
-          <div className="space-y-2">
-            <div>
-              <Label htmlFor="username">Имя пользователя</Label>
+    <div className="flex min-h-full flex-1 flex-col justify-center">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <h2 className="mt-10 text-center text-xl font-bold leading-9 tracking-tight text-gray-900">
+          Регистрация нового аккаунта
+        </h2>
+      </div>
+
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <Label htmlFor="username">Имя пользователя</Label>
+            <div className="mt-2">
               <Input
                 id="username"
                 name="username"
                 type="text"
-                autoComplete="username"
                 required
-                className="rounded-b-md"
-                placeholder="Имя пользователя"
+                autoComplete="username"
                 value={formData.username}
                 onChange={handleChange}
+                placeholder="Ваше имя пользователя"
               />
             </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
+          </div>
+
+          <div>
+            <Label htmlFor="email">Email адрес</Label>
+            <div className="mt-2">
               <Input
                 id="email"
                 name="email"
                 type="email"
-                autoComplete="email"
                 required
-                className="rounded-b-md"
-                placeholder="Email"
+                autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
+                placeholder="you@example.com"
               />
             </div>
-            <div>
-              <Label htmlFor="password">Пароль</Label>
+          </div>
+
+          <div>
+            <Label htmlFor="password">Пароль</Label>
+            <div className="mt-2">
               <Input
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="new-password"
                 required
-                className="rounded-b-md"
-                placeholder="Пароль"
+                autoComplete="new-password"
                 value={formData.password}
                 onChange={handleChange}
+                placeholder="••••••••"
               />
             </div>
-            <div>
-              <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
+          </div>
+
+          <div>
+            <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
+            <div className="mt-2">
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
-                autoComplete="new-password"
                 required
-                className="rounded-b-md"
-                placeholder="Подтвердите пароль"
+                autoComplete="new-password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                placeholder="••••••••"
               />
             </div>
           </div>
-          <p className="mt-10 text-center text-sm text-gray-500">
-            Есть аккаунт?{' '}
-            <Link to="/login" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-              Войти
-            </Link>
-          </p>
+
+          {error && <Alert type="error" message={error} />}
 
           <div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Создание аккаунта...' : 'Зарегистрироваться'}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Создание аккаунта...' : 'Зарегистрироваться'}
             </Button>
           </div>
         </form>
+
+        <p className="mt-10 text-center text-sm text-gray-500">
+          Уже есть аккаунт?{' '}
+          <Link to="/login" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+            Войти
+          </Link>
+        </p>
       </div>
     </div>
   );

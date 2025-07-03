@@ -1,31 +1,23 @@
+// frontend/src/components/forms/DatePicker.jsx
+
 import React from 'react';
 import ReactDatePicker, { registerLocale } from 'react-datepicker';
 import { ru } from 'date-fns/locale';
 import { format } from 'date-fns';
-import { ChevronLeftIcon, ChevronRightIcon, CalendarIcon } from '@heroicons/react/24/solid';
+import CustomInput from './CustomDateInput';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+
+// Импортируем стили
 import "./CustomDatePicker.css";
 
+// Импортируем компоненты
 import Label from './Label';
-import Input from './Input';
+// 1. Импортируем наш общий компонент для поля ввода
+import CustomDateInput from './CustomDateInput'; 
 
 registerLocale('ru', ru);
 
-// Кастомный input с иконкой, который мы передадим в DatePicker
-const CustomInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
-  <div className="relative w-full">
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <CalendarIcon className="h-5 w-5 text-gray-400" />
-    </div>
-    <Input
-        className="pl-10 !bg-white" // Добавляем !bg-white, чтобы readOnly не делал фон серым
-        onClick={onClick}
-        ref={ref}
-        value={value}
-        placeholder={placeholder}
-        readOnly
-    />
-  </div>
-));
+// 2. Определение const CustomInput отсюда было полностью удалено, так как мы его импортируем.
 
 const DatePicker = ({ label, id, selected, onChange, ...props }) => {
   return (
@@ -37,7 +29,10 @@ const DatePicker = ({ label, id, selected, onChange, ...props }) => {
         onChange={onChange}
         locale="ru"
         dateFormat="d MMMM yyyy г."
-        customInput={<CustomInput placeholder={props.placeholderText}/>}
+        
+        // 3. Здесь теперь используется наш общий, импортированный компонент
+        customInput={<CustomInput placeholder={props.placeholderText || 'Выберите дату'}/>}
+        
         renderCustomHeader={({
           date,
           decreaseMonth,

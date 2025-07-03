@@ -13,10 +13,11 @@ from .routers import (
     statement, 
     reports, 
     dashboard,
-    mapping_rules
+    mapping_rules,
+    budgets 
 )
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Money Flow App API",
@@ -35,10 +36,10 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=origins,  # Разрешаем запросы с этих доменов
+    allow_credentials=True, # Разрешаем куки
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_headers=["*"],    # РАЗРЕШАЕМ ВСЕ ЗАГОЛОВКИ, включая Content-Type и Authorization
 )
 
 api_prefix = "/api"
@@ -53,3 +54,4 @@ app.include_router(statement.router, prefix=f"{api_prefix}/statement", tags=["st
 app.include_router(reports.router, prefix=f"{api_prefix}/reports", tags=["reports"])
 app.include_router(dashboard.router, prefix=f"{api_prefix}/dashboard", tags=["dashboard"])
 app.include_router(mapping_rules.router, prefix=f"{api_prefix}/mapping_rules", tags=["mapping_rules"])
+app.include_router(budgets.router, prefix=f"{api_prefix}/budgets", tags=["budgets"])

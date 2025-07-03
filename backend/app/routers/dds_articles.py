@@ -1,12 +1,18 @@
-# backend/app/routers/dds_articles.py
+# /backend/app/routers/dds_articles.py
 
 from typing import List, Any
-from fastapi import APIRouter, Depends, HTTPException, Query 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-
-from app import crud, models, schemas
-from app.dependencies import get_db, get_current_active_user, get_article_for_user
+from .. import crud, models, schemas
+# --- ИСПРАВЛЕННЫЙ ИМПОРТ ---
+from ..dependencies import (
+    get_db, 
+    get_current_active_user, 
+    get_dds_article_for_user, # <-- ИСПОЛЬЗУЕМ ПРАВИЛЬНОЕ ИМЯ
+    get_workspace_from_path   # <-- Эта зависимость нам тоже понадобится
+)
+# Сервисный слой здесь пока не требуется, логика проста
 
 router = APIRouter(
     tags=["dds_articles"],
@@ -14,90 +20,76 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# --- Эндпоинт для получения дерева статей ---
-@router.get("/", response_model=List[schemas.DdsArticle]) # Остается "/"
+@router.get("/", response_model=List[schemas.DdsArticle])
 def read_dds_articles(
     *,
     db: Session = Depends(get_db),
-    workspace_id: int = Query(..., description="ID рабочего пространства"),
-    skip: int = 0,
-    limit: int = 1000,
-    current_user: models.User = Depends(get_current_active_user)
-):
+    # Используем зависимость для получения воркспейса и проверки прав
+    workspace: models.Workspace = Depends(get_workspace_from_path),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(1000, ge=1),
+) -> Any:
     """
-    Получает плоский список статей ДДС для указанного рабочего пространства.
+    Получает иерархическое дерево статей ДДС для указанного рабочего пространства.
     """
-    if not crud.workspace.is_owner_or_member(db=db, workspace_id=workspace_id, user_id=current_user.id):
-        raise HTTPException(status_code=403, detail="Not enough permissions")
+    # Теперь, когда зависимость отработала, мы уверены, что пользователь
+    # имеет доступ к этому workspace. Ручная проверка больше не нужна.
+    return crud.dds_article.get_dds_articles_tree(db=db, workspace_id=workspace.id)
 
-    articles = crud.dds_article.get_multi_by_workspace(
-        db=db, workspace_id=workspace_id, skip=skip, limit=limit
-    )
-    return articles
-
-
-# --- Эндпоинт для создания статьи ---
-@router.post("/", response_model=schemas.DdsArticle)
+@router.post("/", response_model=schemas.DdsArticle, status_code=status.HTTP_201_CREATED)
 def create_dds_article(
     *,
     db: Session = Depends(get_db),
     article_in: schemas.DdsArticleCreate,
-    current_user: models.User = Depends(get_current_active_user),
-) -> models.DdsArticle:
-    if not crud.workspace.is_owner_or_member(db=db, workspace_id=article_in.workspace_id, user_id=current_user.id):
-         raise HTTPException(status_code=403, detail="Not enough permissions for this workspace")
-    article = crud.dds_article.create(db=db, obj_in=article_in)
-    return article
+    current_user: models.User = Depends(get_current_active_user)
+) -> Any:
+    """
+    Создать новую статью ДДС.
+    """
+    # Проверяем права на родительский воркспейс
+    workspace = crud.workspace.get(db, id=article_in.workspace_id)
+    if not workspace or workspace.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Недостаточно прав для этого рабочего пространства")
+
+    db_article = crud.dds_article.create_with_owner(
+        db=db, obj_in=article_in, owner_id=current_user.id, workspace_id=article_in.workspace_id
+    )
+    db.commit()
+    db.refresh(db_article)
+    return db_article
 
 @router.put("/{article_id}", response_model=schemas.DdsArticle)
 def update_dds_article(
     *,
     db: Session = Depends(get_db),
     article_in: schemas.DdsArticleUpdate,
-    # Наша новая зависимость сама найдет статью и проверит права.
-    # Если что-то не так, она вернет ошибку 404 или 403.
-    # Если все хорошо, она вернет объект статьи в переменную `article`.
-    article: models.DdsArticle = Depends(get_article_for_user),
+    # Используем зависимость, чтобы получить статью и проверить права
+    article: models.DdsArticle = Depends(get_dds_article_for_user),
 ) -> Any:
     """
-    Обновляет статью ДДС.
+    Обновить статью ДДС.
     """
     updated_article = crud.dds_article.update(db=db, db_obj=article, obj_in=article_in)
+    db.commit()
+    db.refresh(updated_article)
     return updated_article
 
 @router.delete("/{article_id}", response_model=schemas.DdsArticle)
 def delete_dds_article(
     *,
     db: Session = Depends(get_db),
-    # Наша зависимость найдет статью и проверит права.
-    # Если что-то не так, она вернет ошибку 404 или 403.
-    article: models.DdsArticle = Depends(get_article_for_user),
+    # Используем зависимость, чтобы получить статью и проверить права
+    article: models.DdsArticle = Depends(get_dds_article_for_user),
 ) -> Any:
     """
-    Удаляет статью ДДС.
+    Удалить статью ДДС.
     """
-    # Проверяем, что у статьи нет дочерних элементов, прежде чем удалять
     if article.children:
         raise HTTPException(
-            status_code=400,
-            detail="Cannot delete an article that has children. Please delete the children first.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Нельзя удалить статью, у которой есть дочерние элементы. Сначала удалите их.",
         )
 
     deleted_article = crud.dds_article.remove(db=db, id=article.id)
+    db.commit()
     return deleted_article
-
-@router.get("/tree/", response_model=List[schemas.DdsArticle])
-def read_dds_articles_tree(
-    *,
-    db: Session = Depends(get_db),
-    workspace_id: int,
-    current_user: models.User = Depends(get_current_active_user),
-) -> Any:
-    """
-    Получает иерархическое дерево статей ДДС для заданного рабочего пространства.
-    """
-    if not crud.workspace.is_owner_or_member(db=db, workspace_id=workspace_id, user_id=current_user.id):
-        raise HTTPException(status_code=403, detail="Not enough permissions")
-    
-    tree = crud.dds_article.get_dds_articles_tree(db=db, workspace_id=workspace_id)
-    return tree

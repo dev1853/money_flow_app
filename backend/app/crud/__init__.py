@@ -7,3 +7,4 @@ from .crud_report import report_crud
 from .crud_dashboard import dashboard_crud
 from . import crud_onboarding as onboarding
 from .crud_mapping_rule import mapping_rule 
+from .crud_budget import budget

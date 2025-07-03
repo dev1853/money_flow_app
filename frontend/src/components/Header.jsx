@@ -69,7 +69,7 @@ const Header = ({ setSidebarOpen }) => {
           className="h-8 w-8 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
           aria-hidden="true" 
         />
-        <span className="ml-3 text-2xl font-extrabold text-gray-900">Казна</span>
+        <span className="ml-3 text-2xl font-extrabold text-gray-900">БизнесПоток</span>
       </div>
       {/* Контент Header (отображается справа) */}
       <div className="flex-1 flex justify-end gap-x-4 sm:gap-x-6">

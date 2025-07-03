@@ -1,69 +1,68 @@
 [
   {
     "name": "Операционная деятельность",
-    "type": "group",
+    "article_type": "group",
     "children": [
       {
         "name": "Поступления",
-        "type": "group",
+        "article_type": "group",
         "children": [
-          { "name": "Поступления от клиентов", "type": "income", "children": [] },
-          { "name": "Авансы от покупателей", "type": "income", "children": [] }
+          { "name": "Поступления от клиентов", "article_type": "income", "children": [] },
+          { "name": "Авансы от покупателей", "article_type": "income", "children": [] }
         ]
       },
       {
         "name": "Платежи",
-        "type": "group",
+        "article_type": "group",
         "children": [
-          { "name": "Платежи поставщикам", "type": "expense", "children": [] },
-          { "name": "Оплата труда", "type": "expense", "children": [] },
-          { "name": "Налоги и взносы", "type": "expense", "children": [] },
-          { "name": "Аренда", "type": "expense", "children": [] },
-          { "name": "Прочие операционные расходы", "type": "expense", "children": [] }
+          { "name": "Платежи поставщикам", "article_type": "expense", "children": [] },
+          { "name": "Оплата труда", "article_type": "expense", "children": [] },
+          { "name": "Налоги и взносы", "article_type": "expense", "children": [] },
+          { "name": "Аренда", "article_type": "expense", "children": [] },
+          { "name": "Прочие операционные расходы", "article_type": "expense", "children": [] }
         ]
       }
     ]
   },
   {
     "name": "Инвестиционная деятельность",
-    "type": "group",
+    "article_type": "group",
     "children": [
       {
         "name": "Поступления",
-        "type": "group",
+        "article_type": "group",
         "children": [
-          { "name": "Продажа основных средств", "type": "income", "children": [] },
-          { "name": "Продажа нематериальных активов", "type": "income", "children": [] },
-          { "name": "Полученные дивиденды", "type": "income", "children": [] }
+          { "name": "Продажа основных средств", "article_type": "income", "children": [] },
+          { "name": "Продажа нематериальных активов", "article_type": "income", "children": [] },
+          { "name": "Полученные дивиденды", "article_type": "income", "children": [] }
         ]
       },
       {
         "name": "Платежи",
-        "type": "group",
+        "article_type": "group",
         "children": [
-          { "name": "Покупка основных средств", "type": "expense", "children": [] },
-          { "name": "Покупка нематериальных активов", "type": "expense", "children": [] }
+          { "name": "Покупка основных средств", "article_type": "expense", "children": [] },
+          { "name": "Покупка нематериальных активов", "article_type": "expense", "children": [] }
         ]
       }
     ]
   },
   {
     "name": "Финансовая деятельность",
-    "type": "group",
+    "article_type": "group",
     "children": [
       {
         "name": "Поступления",
-        "type": "group",
+        "article_type": "group",
         "children": [
-          { "name": "Получение кредитов и займов", "type": "income", "children": [] }
+          { "name": "Получение кредитов и займов", "article_type": "income", "children": [] }
         ]
       },
       {
         "name": "Платежи",
-        "type": "group",
+        "article_type": "group",
         "children": [
-          { "name": "Погашение кредитов и займов", "type": "expense", "children": [] },
-          { "name": "Выплата дивидендов", "type": "expense", "children": [] }
+          { "name": "Выплаты по кредитам и займам", "article_type": "expense", "children": [] }
         ]
       }
     ]

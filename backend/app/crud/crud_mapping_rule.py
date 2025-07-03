@@ -5,11 +5,25 @@ from sqlalchemy.orm import Session, joinedload
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import or_ 
 
-from app.crud.base import CRUDBase
-from app import models, schemas
+from .base import CRUDBase
+from .. import models, schemas
 
 class CRUDMappingRule(CRUDBase[models.MappingRule, schemas.MappingRuleCreate, schemas.MappingRuleUpdate]):
-    
+    def create(self, db: Session, *, obj_in: schemas.MappingRuleCreate, owner_id: int, workspace_id: int) -> models.MappingRule:
+        """
+        Переопределенный метод создания, который включает owner_id и workspace_id.
+        """
+        obj_in_data = obj_in.model_dump() # Используем model_dump() для Pydantic V2
+
+        db_obj = self.model(**obj_in_data)
+        db_obj.owner_id = owner_id
+        db_obj.workspace_id = workspace_id
+        
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
     def get(self, db: Session, id: Any) -> Optional[models.MappingRule]:
         return db.query(self.model).options(
             joinedload(models.MappingRule.dds_article)
@@ -17,7 +31,7 @@ class CRUDMappingRule(CRUDBase[models.MappingRule, schemas.MappingRuleCreate, sc
 
     def get_multi_by_owner_and_workspace(
         self, db: Session, *, owner_id: int, workspace_id: int, skip: int = 0, limit: int = 100
-    ) -> Dict[str, Any]: # <--- ИЗМЕНЕН ТИП ВОЗВРАЩАЕМОГО ЗНАЧЕНИЯ
+    ) -> Dict[str, Any]:
         """
         Получает пагинированный список правил сопоставления по ID владельца и ID рабочего пространства.
         """
@@ -27,9 +41,9 @@ class CRUDMappingRule(CRUDBase[models.MappingRule, schemas.MappingRuleCreate, sc
             .options(joinedload(models.MappingRule.dds_article)) # Жадно загружаем dds_article
         )
         
-        total_count = query.count() # Получаем общее количество до применения limit/offset
+        total_count = query.count()
         
-        rules = query.offset(skip).limit(limit).all() # Получаем правила для текущей страницы
+        rules = query.offset(skip).limit(limit).all()
         
         return {
             "items": rules,
@@ -47,16 +61,13 @@ class CRUDMappingRule(CRUDBase[models.MappingRule, schemas.MappingRuleCreate, sc
         """
         query = db.query(self.model).filter(
             self.model.workspace_id == workspace_id,
-            self.model.is_active == True # Правило должно быть активно
+            self.model.is_active == True
         )
         if transaction_type:
-            # Правило применяется, если его transaction_type совпадает с запрошенным
-            # или если transaction_type правила не указан (None), т.е. оно универсально
             query = query.filter(
                 (self.model.transaction_type == transaction_type) | (self.model.transaction_type == None)
             )
         
-        # Сортируем по приоритету (сначала более высокий приоритет), затем по ID
         query = query.order_by(self.model.priority.desc(), self.model.id) 
         
         return query.all()
@@ -70,23 +81,20 @@ class CRUDMappingRule(CRUDBase[models.MappingRule, schemas.MappingRuleCreate, sc
 
         Возвращает ID статьи ДДС, если найдено совпадение, иначе None.
         """
-        print(f"DEBUG (Auto-categorization - CRUDRule): Searching for rules for workspace {workspace_id}, type '{transaction_type}', description: '{description}'") # <--- ЛОГ
-        # Получаем все активные правила для данного рабочего пространства и типа транзакции
-        # Они уже отсортированы по приоритету (начиная с более высокого)
+        print(f"DEBUG (Auto-categorization - CRUDRule): Searching for rules for workspace {workspace_id}, type '{transaction_type}', description: '{description}'")
         rules = self.get_active_rules(
             db=db, workspace_id=workspace_id, transaction_type=transaction_type
         )
-        print(f"DEBUG (Auto-categorization - CRUDRule): Found {len(rules)} active rules.") # <--- ЛОГ
+        print(f"DEBUG (Auto-categorization - CRUDRule): Found {len(rules)} active rules.")
 
         for rule in rules:
-            print(f"DEBUG (Auto-categorization - CRUDRule): Checking rule '{rule.keyword}' (Priority: {rule.priority}, Type: {rule.transaction_type})...") # <--- ЛОГ
-            # Преобразуем ключевое слово и описание в нижний регистр для регистронезависимого поиска
+            print(f"DEBUG (Auto-categorization - CRUDRule): Checking rule '{rule.keyword}' (Priority: {rule.priority}, Type: {rule.transaction_type})...")
             if rule.keyword.lower() in description.lower():
-                print(f"DEBUG (Auto-categorization - CRUDRule): Rule matched: '{rule.keyword}' -> DDS Article ID: {rule.dds_article_id} (Article Name: {rule.dds_article.name})") # <--- ЛОГ
+                print(f"DEBUG (Auto-categorization - CRUDRule): Rule matched: '{rule.keyword}' -> DDS Article ID: {rule.dds_article_id} (Article Name: {rule.dds_article.name})")
                 return rule.dds_article_id
         
-        print(f"DEBUG (Auto-categorization - CRUDRule): No rule matched for description '{description}' and type '{transaction_type}'. Returning None.") # <--- ЛОГ
-        return None # Если совпадений не найдено
+        print(f"DEBUG (Auto-categorization - CRUDRule): No rule matched for description '{description}' and type '{transaction_type}'. Returning None.")
+        return None
 
 # Создаем экземпляр CRUD-операций для MappingRule
 mapping_rule = CRUDMappingRule(models.MappingRule)

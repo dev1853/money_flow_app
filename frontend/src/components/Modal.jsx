@@ -26,7 +26,7 @@ export default function Modal({
           leaveFrom="opacity-50"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-30" />
+          <div className="fixed inset-0 bg-black/50 bg-opacity-30" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-50 overflow-y-auto">

@@ -9,7 +9,7 @@ function HelpPage() {
       <div className="bg-white p-6 rounded-lg shadow-sm space-y-6">
         <h2 className="text-xl font-semibold text-gray-900">Добро пожаловать в Руководство пользователя!</h2>
         <p className="text-gray-700">
-          Здесь вы найдете краткие инструкции по использованию основных функций приложения "Поток денег".
+          Здесь вы найдете краткие инструкции по использованию основных функций приложения "БизнесПоток".
         </p>
 
         <section>

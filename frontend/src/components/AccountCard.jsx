@@ -1,90 +1,65 @@
+// frontend/src/components/AccountCard.jsx
+
 import React from 'react';
+import { BanknotesIcon, BuildingLibraryIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Button from './Button';
-// --- Шаг 1: Импортируем иконки ---
-import { 
-  PencilSquareIcon, 
-  TrashIcon,
-  BuildingLibraryIcon, // Для банковского счета
-  BanknotesIcon,       // Для наличных
-  ArchiveBoxIcon       // Для сейфа
-} from '@heroicons/react/24/outline';
 
-const ACCOUNT_TYPE_LABELS = {
-  bank_account: 'Банковский счет',
-  cash: 'Наличные',
-  safe: 'Сейф',
+// Вспомогательная функция для форматирования валюты
+const formatCurrency = (amount, currency) => {
+  return new Intl.NumberFormat('ru-RU', {
+    style: 'currency',
+    currency: currency || 'RUB',
+    minimumFractionDigits: 2,
+  }).format(amount);
 };
 
-// --- Шаг 2: Создаем объект для сопоставления иконок ---
-// Мы передаем className, чтобы иконки были одного размера и цвета.
-const ACCOUNT_ICONS = {
-  bank_account: <BuildingLibraryIcon className="h-6 w-6 text-gray-400" />,
-  cash: <BanknotesIcon className="h-6 w-6 text-gray-400" />,
-  safe: <ArchiveBoxIcon className="h-6 w-6 text-gray-400" />,
-  default: <div className="h-6 w-6 bg-gray-300 rounded-full" /> // Иконка по умолчанию
+// Вспомогательный объект для данных по типам счетов
+const accountTypeDetails = {
+  bank_account: {
+    label: 'Банковский счет',
+    icon: <BuildingLibraryIcon className="h-5 w-5 mr-2 text-gray-500" />,
+  },
+  cash_box: {
+    label: 'Касса',
+    icon: <BanknotesIcon className="h-5 w-5 mr-2 text-gray-500" />,
+  },
 };
 
-
-function AccountCard({ account, onEdit, onDelete }) {
-  if (!account) {
-    return null;
-  }
-
-  const isActive = account.is_active;
-  const balanceColor = account.current_balance >= 0 ? 'text-gray-900' : 'text-red-600';
-  
-  // Выбираем нужную иконку или иконку по умолчанию
-  const Icon = ACCOUNT_ICONS[account.account_type] || ACCOUNT_ICONS.default;
+const AccountCard = ({ account, onEdit, onDelete }) => {
+  const details = accountTypeDetails[account.account_type] || { label: account.account_type, icon: null };
 
   return (
-    <div className={`bg-white shadow-lg rounded-xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-xl`}>
-      <div className={`p-5 border-l-4 ${isActive ? 'border-green-500' : 'border-gray-300'}`}>
-        <div className="flex justify-between items-start">
-          <div className="flex items-center space-x-4">
-            {/* --- Шаг 3: Добавляем иконку в разметку --- */}
-            <div>{Icon}</div>
-            
-            {/* Основная информация */}
-            <div>
-              <h3 className="text-lg font-bold text-gray-800 truncate" title={account.name}>
-                {account.name}
-              </h3>
-              <p className="text-sm text-gray-500">
-                {ACCOUNT_TYPE_LABELS[account.account_type] || account.account_type}
-              </p>
-            </div>
+    <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between transition-all hover:shadow-xl hover:-translate-y-1">
+      <div>
+        {/* Верхняя часть карточки: тип и действия */}
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center text-sm text-gray-500">
+            {details.icon}
+            <span>{details.label}</span>
           </div>
-          
-          {/* Кнопки действий */}
           <div className="flex space-x-2">
-            <Button variant="icon" onClick={() => onEdit(account)} title="Редактировать">
-              <PencilSquareIcon className="h-5 w-5 text-gray-500 hover:text-indigo-600" />
+            <Button variant="icon" size="sm" onClick={() => onEdit(account)}>
+              <PencilIcon className="h-4 w-4" />
             </Button>
-            <Button variant="icon" onClick={() => onDelete(account)} title="Удалить">
-              <TrashIcon className="h-5 w-5 text-gray-500 hover:text-red-600" />
+            <Button variant="icon" size="sm" onClick={() => onDelete(account)} className="text-red-500 hover:text-red-700">
+              <TrashIcon className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        {/* Баланс */}
-        <div className="mt-4 pl-10"> {/* Добавим отступ слева, чтобы баланс был под текстом */}
-          <p className={`text-2xl font-semibold tracking-tight ${balanceColor}`}>
-            {account.current_balance.toLocaleString('ru-RU', {
-              style: 'currency',
-              currency: account.currency || 'RUB',
-              minimumFractionDigits: 2,
-            })}
-          </p>
-        </div>
+        {/* Название счета */}
+        <h3 className="text-xl font-bold text-gray-800 truncate mb-4">{account.name}</h3>
       </div>
-      
-      {!isActive && (
-        <div className="bg-gray-100 px-5 py-1 text-xs text-center text-gray-500 font-semibold">
-          СЧЕТ НЕАКТИВЕН
-        </div>
-      )}
+
+      {/* Нижняя часть карточки: баланс */}
+      <div>
+        <p className="text-sm text-gray-400 mb-1">Актуальный баланс</p>
+        <p className="text-3xl font-semibold text-gray-900">
+          {formatCurrency(account.current_balance, account.currency)}
+        </p>
+      </div>
     </div>
   );
-}
+};
 
 export default AccountCard;

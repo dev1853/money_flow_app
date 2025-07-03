@@ -1,4 +1,4 @@
-# backend/app/dependencies.py
+# /backend/app/dependencies.py
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -6,87 +6,101 @@ from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 
 from . import crud, models, schemas, security
-from .database import SessionLocal
+from .database import get_db
 
+# Схема остается без изменений
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# --- СУЩЕСТВУЮЩИЕ ЗАВИСИМОСТИ С НЕБОЛЬШИМИ УЛУЧШЕНИЯМИ ---
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
+    """
+    Декодирует JWT токен, проверяет его валидность и возвращает объект пользователя из БД.
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail="Не удалось проверить учетные данные",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        # Используем security.SECRET_KEY и security.ALGORITHM
         payload = jwt.decode(token, security.SECRET_KEY, algorithms=[security.ALGORITHM])
+        # Мы используем email в качестве 'sub' в токенах, что является хорошей практикой
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
-        token_data = schemas.TokenData(username=email)
     except JWTError:
         raise credentials_exception
     
-    user = crud.user.get_by_email(db, email=token_data.username)
-    
+    user = crud.user.get_by_email(db, email=email)
     if user is None:
         raise credentials_exception
     return user
 
-def get_current_active_user(current_user: models.User = Depends(get_current_user)):
+def get_current_active_user(current_user: models.User = Depends(get_current_user)) -> models.User:
+    """
+    Зависимость, которая возвращает только активных пользователей.
+    """
     if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=403, detail="Пользователь неактивен")
     return current_user
 
-def get_current_active_superuser(current_user: models.User = Depends(get_current_active_user)):
-    if not current_user.is_superuser: 
+# --- НОВЫЕ ЗАВИСИМОСТИ ДЛЯ ПОВЫШЕНИЯ НАДЕЖНОСТИ И ЧИСТОТЫ КОДА ---
+
+def get_current_active_superuser(current_user: models.User = Depends(get_current_active_user)) -> models.User:
+    """
+    Зависимость, которая требует, чтобы пользователь был активным суперпользователем.
+    Идеально для защиты административных эндпоинтов.
+    """
+    if not crud.user.is_superuser(current_user):
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="У пользователя недостаточно прав"
+            status_code=403, detail="Эта операция требует прав администратора"
         )
     return current_user
 
-def get_article_for_user(
-    *,
-    db: Session = Depends(get_db),
-    article_id: int,
+def get_current_active_workspace(
     current_user: models.User = Depends(get_current_active_user),
-) -> models.DdsArticle:
-    """
-    Получает статью по ID и проверяет, что она принадлежит
-    рабочему пространству, к которому у пользователя есть доступ.
-    """
-    article = crud.dds_article.get(db=db, id=article_id)
-    if not article:
-        raise HTTPException(status_code=404, detail="DDS Article not found")
-    
-    # Проверяем права доступа через уже существующую CRUD-функцию
-    if not crud.workspace.is_owner_or_member(
-        db=db, workspace_id=article.workspace_id, user_id=current_user.id
-    ):
-        raise HTTPException(status_code=403, detail="Not enough permissions for this article")
-        
-    return article
-
-def get_workspace_for_user(
-    workspace_id: int,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
 ) -> models.Workspace:
     """
-    Находит рабочее пространство и проверяет, что оно принадлежит текущему пользователю.
+    Получает активное рабочее пространство для текущего пользователя из его профиля.
+    Если активное пространство не установлено, выбрасывает ошибку 400.
     """
-    workspace = crud.workspace.get(db=db, id=workspace_id)
+    if current_user.active_workspace_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Активное рабочее пространство не выбрано."
+        )
+    workspace = crud.workspace.get(db, id=current_user.active_workspace_id)
     if not workspace:
-        raise HTTPException(status_code=404, detail="Workspace not found")
-    if workspace.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Активное рабочее пространство с ID {current_user.active_workspace_id} не найдено."
+        )
     return workspace
+
+def get_workspace_from_path(
+    workspace_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_active_user)
+) -> models.Workspace:
+    """
+    Находит рабочее пространство по ID из пути URL и проверяет,
+    что оно принадлежит текущему пользователю.
+    """
+    workspace = crud.workspace.get(db, id=workspace_id)
+    if not workspace:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Рабочее пространство не найдено."
+        )
+    if workspace.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Недостаточно прав для доступа к этому рабочему пространству."
+        )
+    return workspace
+
+# --- ЗАВИСИМОСТИ ДЛЯ ДОСТУПА К РЕСУРСАМ С ОПТИМИЗАЦИЕЙ ---
 
 def get_account_for_user(
     account_id: int,
@@ -94,14 +108,14 @@ def get_account_for_user(
     current_user: models.User = Depends(get_current_active_user),
 ) -> models.Account:
     """
-    Находит счет и проверяет, что он принадлежит рабочему пространству текущего пользователя.
+    Находит счет по ID и проверяет, что он принадлежит текущему пользователю.
     """
     account = crud.account.get(db=db, id=account_id)
     if not account:
-        raise HTTPException(status_code=404, detail="Account not found")
-    # Проверяем права через родительский воркспейс
-    if account.workspace.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
+        raise HTTPException(status_code=404, detail="Счет не найден")
+    # УЛУЧШЕНИЕ: Проверяем owner_id напрямую, это эффективнее, чем через workspace
+    if account.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Недостаточно прав для доступа к этому счету")
     return account
 
 def get_dds_article_for_user(
@@ -110,13 +124,14 @@ def get_dds_article_for_user(
     current_user: models.User = Depends(get_current_active_user),
 ) -> models.DdsArticle:
     """
-    Находит статью ДДС и проверяет права доступа.
+    Находит статью ДДС и проверяет, что она принадлежит одному из воркспейсов пользователя.
     """
     article = crud.dds_article.get(db=db, id=article_id)
     if not article:
-        raise HTTPException(status_code=404, detail="Article not found")
+        raise HTTPException(status_code=404, detail="Статья ДДС не найдена")
+    # Здесь проверка через workspace оправдана, т.к. у статьи нет прямого owner_id
     if article.workspace.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
+        raise HTTPException(status_code=403, detail="Недостаточно прав для доступа к этой статье ДДС")
     return article
 
 def get_transaction_for_user(
@@ -125,11 +140,11 @@ def get_transaction_for_user(
     current_user: models.User = Depends(get_current_active_user),
 ) -> models.Transaction:
     """
-    Находит транзакцию и проверяет права доступа.
+    Находит транзакцию и проверяет, что она создана текущим пользователем.
     """
     transaction = crud.transaction.get(db=db, id=transaction_id)
     if not transaction:
-        raise HTTPException(status_code=404, detail="Transaction not found")
-    if transaction.account.workspace.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
+        raise HTTPException(status_code=404, detail="Транзакция не найдена")
+    if transaction.created_by_user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Недостаточно прав для доступа к этой транзакции")
     return transaction

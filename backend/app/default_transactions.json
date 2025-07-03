@@ -1,38 +1,38 @@
 [
   {
-    "date": "2024-01-05",
-    "amount": 1000.00,
-    "currency": "RUB",
-    "description": "Начальный баланс",
-    "type": "income",
-    "account_name": "Наличные",
-    "dds_article_name": "Начальный баланс"
+    "account_name": "Кошелек", 
+    "dds_article_name": "Поступления от клиентов",
+    "date": "2025-05-01",
+    "amount": 15000.00,
+    "description": "Оплата за услуги",
+    "contractor": "ИП Иванов",
+    "employee": null
   },
   {
-    "date": "2024-01-10",
-    "amount": 150.00,
-    "currency": "RUB",
-    "description": "Покупка продуктов",
-    "type": "expense",
-    "account_name": "Банковская карта",
-    "dds_article_name": "Продукты питания"
+    "account_name": "Карта Tinkoff", 
+    "dds_article_name": "Оплата труда",
+    "date": "2025-05-05",
+    "amount": 5000.00,
+    "description": "Зарплата менеджеру",
+    "contractor": null,
+    "employee": "Петров А.А."
   },
   {
-    "date": "2024-01-15",
-    "amount": 500.00,
-    "currency": "RUB",
-    "description": "Зарплата",
-    "type": "income",
-    "account_name": "Банковская карта",
-    "dds_article_name": "Заработная плата"
+    "account_name": "Кошелек", 
+    "dds_article_name": "Платежи поставщикам",
+    "date": "2025-05-10",
+    "amount": 3000.00,
+    "description": "Покупка канцтоваров",
+    "contractor": "ООО ОфисМаг",
+    "employee": null
   },
   {
-    "date": "2024-01-20",
-    "amount": 75.50,
-    "currency": "RUB",
-    "description": "Кофе в кафе",
-    "type": "expense",
-    "account_name": "Наличные",
-    "dds_article_name": "Развлечения"
+    "account_name": "Карта Tinkoff", 
+    "dds_article_name": "Аренда",
+    "date": "2025-05-15",
+    "amount": 10000.00,
+    "description": "Оплата аренды офиса",
+    "contractor": "Арендодатель",
+    "employee": null
   }
 ]

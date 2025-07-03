@@ -5,9 +5,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, case, and_
 from datetime import date
 
-from app.crud.base import CRUDBase
-from app import models, schemas
-from app import crud # Для доступа к другим CRUD-операциям (например, dds_article, workspace)
+from .base import CRUDBase
+from .. import models, schemas, crud
 
 # НОВЫЕ ИМПОРТЫ ИЗ report_generators
 from .report_generators import dds_report as dds_report_generator # <--- НОВЫЙ ИМПОРТ

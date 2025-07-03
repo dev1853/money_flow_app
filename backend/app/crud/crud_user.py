@@ -1,42 +1,49 @@
-# backend/app/crud/crud_user.py
+# /backend/app/crud/crud_user.py
 
-from sqlalchemy.orm import Session
 from typing import Optional
+from sqlalchemy.orm import Session
+
 from .base import CRUDBase
-from app import models, schemas, security
-from app.security import get_password_hash
+from .. import models, schemas
+from ..security import get_password_hash
 
 class CRUDUser(CRUDBase[models.User, schemas.UserCreate, schemas.UserUpdate]):
+    """
+    CRUD операции для модели User с дополнительными методами.
+    """
     def get_by_email(self, db: Session, *, email: str) -> Optional[models.User]:
-        return db.query(self.model).filter(self.model.email == email).first()
-    
-    def get_by_username(self, db: Session, *, username: str) -> Optional[models.User]:
-        """
-        Получает пользователя по его имени пользователя.
-        """
-        return db.query(models.User).filter(models.User.username == username).first()
+        """Получить пользователя по email."""
+        return db.query(self.model).filter(models.User.email == email).first()
 
-    # Метод create теперь переопределен только для хэширования пароля
-    def create(self, db: Session, *, obj_in: schemas.UserCreate) -> models.User:
-        create_data = obj_in.dict()
-        password = create_data.pop("password")
-        # Убираем поля, которых нет в модели User
-        create_data.pop("role_id", None) 
-        
+    def create(self, db: Session, *, obj_in: schemas.UserCreate, hashed_password: str) -> models.User:
+        """
+        Создает объект пользователя, принимая УЖЕ хешированный пароль.
+        """
         db_obj = self.model(
-            **create_data,
-            hashed_password=security.get_password_hash(password),
-            role_id=2 # Устанавливаем роль по умолчанию
+            email=obj_in.email,
+            username=obj_in.username,
+            password_hash=hashed_password,
+            full_name=obj_in.full_name,
+            is_active=True,
+            is_superuser=False,
+            role_id=2
         )
         db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
         return db_obj
 
-    def authenticate(self, db: Session, *, email: str, password: str) -> Optional[models.User]:
-        user = self.get_by_email(db, email=email)
-        if not user or not security.verify_password(password, user.hashed_password):
-            return None
+    def is_superuser(self, user: models.User) -> bool:
+        """Проверяет, является ли пользователь суперпользователем."""
+        return user.is_superuser
+
+    # --- НОВЫЙ МЕТОД, КОТОРЫЙ УСТРАНИТ ОШИБКУ ---
+    def set_active_workspace(self, db: Session, *, user: models.User, workspace: models.Workspace) -> models.User:
+        """
+        Устанавливает активное рабочее пространство для пользователя.
+        Не делает commit.
+        """
+        user.active_workspace_id = workspace.id
+        db.add(user)
         return user
 
+# Создаем единственный экземпляр класса для импорта
 user = CRUDUser(models.User)

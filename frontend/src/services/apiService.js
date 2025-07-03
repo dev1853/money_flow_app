@@ -1,74 +1,177 @@
-// frontend/src/services/apiService.js
+import axios from 'axios';
 
-// Класс для структурированных ошибок, экспортируем его
-export class ApiError extends Error {
-  constructor(statusCode, message) {
-    super(message);
-    this.name = 'ApiError';
-    this.statusCode = statusCode;
-  }
-}
+// 1. Убеждаемся, что базовый URL заканчивается на слэш
+const API_URL = 'http://localhost:8001/api/';
 
-// Универсальная функция для всех запросов
-const request = async (method, url, data = null, headers = {}) => {
-    const defaultHeaders = {
-        'Content-Type': 'application/json',
-    };
+const api = axios.create({
+    baseURL: API_URL,
+});
 
-    const token = localStorage.getItem('token');
-    if (token) {
-        defaultHeaders['Authorization'] = `Bearer ${token}`;
-    }
+// 2. Перехватчик запросов для добавления JWT токена
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
 
-    const config = {
-        method: method,
-        headers: { ...defaultHeaders, ...headers },
-    };
+// 3. Перехватчик ответов для "бесшовного" обновления токена
+let isRefreshing = false;
+let failedQueue = [];
 
-    if (data && method !== 'GET') {
-        if (data instanceof FormData || data instanceof URLSearchParams) {
-            if (data instanceof FormData) {
-                delete config.headers['Content-Type'];
-            }
-            config.body = data;
+const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
         } else {
-            config.body = JSON.stringify(data);
+            prom.resolve(token);
         }
-    }
-
-    try {
-        // ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ ОКРУЖЕНИЯ VITE
-        // Она сама подставит префикс /api.
-        // Запрос пойдет на тот же домен, с которого открыт сайт.
-        const fullUrl = `${import.meta.env.VITE_API_BASE_URL}${url}`;
-        const response = await fetch(fullUrl, config);
-
-        if (!response.ok) {
-            let errorData;
-            try {
-                errorData = await response.json();
-            } catch (e) {
-                errorData = { detail: response.statusText || 'Error' };
-            }
-            throw new ApiError(response.status, errorData.detail);
-        }
-
-        if (response.status === 204) return null;
-        return await response.json();
-
-    } catch (error) {
-        console.error("API Service Error:", error);
-        throw error;
-    }
+    });
+    failedQueue = [];
 };
 
-// Экспортируем объект с методами для использования в приложении
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+        // Перехватываем ошибку 401 и убеждаемся, что это не повторный запрос
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            if (isRefreshing) {
+                // Если токен уже обновляется, ставим запрос в очередь
+                return new Promise(function(resolve, reject) {
+                    failedQueue.push({ resolve, reject });
+                })
+                .then(token => {
+                    originalRequest.headers['Authorization'] = 'Bearer ' + token;
+                    return api(originalRequest);
+                });
+            }
+
+            originalRequest._retry = true;
+            isRefreshing = true;
+
+            const refreshToken = localStorage.getItem('refresh_token');
+            if (!refreshToken) {
+                // Если нет refresh токена, ничего сделать не можем, отправляем на логин
+                // Здесь можно вызывать logout из AuthContext
+                return Promise.reject(error);
+            }
+
+            try {
+                // Запрашиваем новую пару токенов
+                // ПРИМЕЧАНИЕ: эндпоинт и структура запроса должны соответствовать вашему бэкенду
+                const { data } = await axios.post(`${API_URL}auth/refresh-token`, {
+                    refresh_token: refreshToken
+                });
+                
+                // Сохраняем новые токены
+                localStorage.setItem('access_token', data.access_token);
+                localStorage.setItem('refresh_token', data.refresh_token);
+                
+                // Обновляем заголовок для будущих запросов
+                api.defaults.headers.common['Authorization'] = 'Bearer ' + data.access_token;
+                originalRequest.headers['Authorization'] = 'Bearer ' + data.access_token;
+                
+                // Выполняем запросы из очереди с новым токеном
+                processQueue(null, data.access_token);
+                // Повторяем изначальный запрос
+                return api(originalRequest);
+
+            } catch (refreshError) {
+                processQueue(refreshError, null);
+                // Если даже обновление не сработало, разлогиниваем пользователя
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                // Редирект на страницу логина
+                if (window.location.pathname !== '/login') {
+                    window.location = '/login';
+                }
+                return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
+// 4. Универсальная обертка для запросов и ошибок (без изменений)
+export class ApiError extends Error {
+    constructor(message, status, details = null) {
+        super(message);
+        this.name = 'ApiError';
+        this.status = status;
+        this.details = details; // Поле для хранения деталей валидации
+    }
+}
+
+async function request(method, url, data = null, params = null) {
+    try {
+        const config = { method, url, data, params };
+        const response = await api(config);
+        return response.data;
+    } catch (error) {
+        const status = error.response ? error.response.status : 500;
+        let message = 'Network Error';
+        let details = null;
+
+        if (error.response) {
+            // --- КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ ЗДЕСЬ ---
+            // FastAPI при ошибке 422 возвращает массив в поле `detail`
+            if (status === 422 && Array.isArray(error.response.data.detail)) {
+                // Преобразуем массив ошибок в читаемую строку
+                message = "Ошибка валидации. Проверьте введенные данные.";
+                details = error.response.data.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('; ');
+                console.error("Validation errors:", details);
+            } else {
+                message = error.response.data.detail || 'API Error';
+            }
+        }
+        
+        console.error(`API Request Failed:`, new ApiError(message, status, details));
+        throw new ApiError(message, status, details);
+    }
+}
+
+// 5. Экспорт всех методов API
 export const apiService = {
-    get: (url, headers) => request('GET', url, null, headers),
-    post: (url, data, headers) => request('POST', url, data, headers),
-    put: (url, data, headers) => request('PUT', url, data, headers),
-    delete: (url, headers) => request('DELETE', url, null, headers),
-    patch: (url, data, headers) => request('PATCH', url, data, headers),
-    setToken: (token) => localStorage.setItem('token', token),
-    clearToken: () => localStorage.removeItem('token'),
+    // ВАЖНО: ваш метод login в AuthContext должен теперь сохранять и access_token, и refresh_token
+    login: (credentials) => request('post', 'auth/token', new URLSearchParams(credentials)),
+    register: (userData) => request('post', 'users/', userData),
+
+    // Workspace
+    getWorkspaces: () => request('get', 'workspaces/'),
+    createWorkspace: (workspaceData) => request('post', 'workspaces/', workspaceData),
+    setActiveWorkspace: (workspaceId) => request('post', `workspaces/${workspaceId}/set-active`),
+    getActiveWorkspace: () => request('get', 'workspaces/active'),
+
+    // Transactions
+    getTransactions: (params) => request('get', 'transactions/', null, params),
+    createTransaction: (transactionData) => request('post', 'transactions/', transactionData),
+    updateTransaction: (id, transactionData) => request('put', `transactions/${id}`, transactionData),
+    deleteTransaction: (id) => request('delete', `transactions/${id}`),
+
+    // Accounts
+    getAccounts: (workspaceId) => request('get', `accounts/?workspace_id=${workspaceId}`),
+    createAccount: (accountData) => request('post', 'accounts/', accountData),
+
+    // DDS Articles
+    getDdsArticles: (workspaceId) => request('get', `dds-articles/?workspace_id=${workspace_id}`),
+    createDdsArticle: (articleData) => request('post', 'dds-articles/', articleData),
+
+    // Reports
+    getDdsReport: (params) => request('get', 'reports/dds', null, params),
+
+    // Statement
+    uploadStatement: (formData) => request('post', 'statement/upload', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    }),
+    
+    // ... и остальные ваши методы API
 };

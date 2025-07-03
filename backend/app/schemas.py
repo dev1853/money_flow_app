@@ -1,10 +1,10 @@
 # backend/app/schemas.py
 
+import enum
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import List, Optional, Literal, Dict, Any, Union
 from datetime import date, datetime
-
-TransactionType = Literal["income", "expense"]
+from decimal import Decimal 
 
 # --- User Schemas ---
 class UserBase(BaseModel):
@@ -13,19 +13,22 @@ class UserBase(BaseModel):
     is_active: bool = True
     is_superuser: bool = False
     full_name: Optional[str] = None
-    active_workspace_id: Optional[int] = None
+    active_workspace_id: Optional[int] = None 
 
 class UserCreate(UserBase):
-    password: str
-    role_id: int = 2
+    password: str 
+    role_id: int = 2 
 
 class UserUpdate(UserBase):
-    pass
+    password: Optional[str] = None 
+    email: Optional[EmailStr] = None
+    username: Optional[str] = None
 
 class User(UserBase):
     id: int
-    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
-    model_config = ConfigDict(from_attributes=True)
+    created_at: datetime 
+    updated_at: datetime 
+    model_config = ConfigDict(from_attributes=True) 
 
 # --- Token Schema ---
 class Token(BaseModel):
@@ -40,106 +43,109 @@ class WorkspaceBase(BaseModel):
     name: str
 
 class WorkspaceCreate(WorkspaceBase):
-    pass
+    pass 
 
 class WorkspaceUpdate(WorkspaceBase):
-    pass
+    name: Optional[str] = None
 
 class Workspace(WorkspaceBase):
     id: int
     owner_id: int
-    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    currency: str 
+    created_at: datetime 
+    updated_at: datetime 
     model_config = ConfigDict(from_attributes=True)
 
 # --- Account Schemas ---
 class AccountBase(BaseModel):
-    name: str
-    account_type: str
-    currency: str
+    name: str = Field(..., min_length=1, max_length=100)
+    currency: str = Field("RUB", min_length=3, max_length=3)
+    balance: Decimal = Field(Decimal('0.0'), ge=Decimal('0.0'))
     is_active: bool = True
-    initial_balance: float = 0.0
-    current_balance: float = 0.0
-
-class AccountCreate(AccountBase):
     workspace_id: int
 
+class AccountCreate(AccountBase):
+    pass 
+
 class AccountUpdate(BaseModel):
-    name: Optional[str] = None
-    account_type: Optional[str] = None
-    currency: Optional[str] = None
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
     is_active: Optional[bool] = None
-    initial_balance: Optional[float] = None
-    current_balance: Optional[float] = None
+
 
 class Account(AccountBase):
     id: int
     owner_id: int
-    workspace_id: int
-    # ИСПРАВЛЕНО: Удален дублирующий Config, оставлен только model_config
+    
     model_config = ConfigDict(from_attributes=True)
 
-# --- DDS Article Schemas ---
+# --- Dds Article Schemas ---
 class DdsArticleBase(BaseModel):
     name: str
     code: Optional[str] = None
-    type: Literal["income", "expense", "group"]
+    article_type: Literal["income", "expense", "group"] 
     parent_id: Optional[int] = None
+    is_archived: bool = False 
 
-class DdsArticleCreate(DdsArticleBase):
-    workspace_id: int
-    owner_id: int
+class DdsArticleCreate(DdsArticleBase): 
+    pass
 
-class DdsArticleUpdate(DdsArticleBase):
+class DdsArticleUpdate(DdsArticleBase): 
     name: Optional[str] = None
     code: Optional[str] = None
-    type: Optional[Literal["income", "expense", "group"]] = None
+    article_type: Optional[Literal["income", "expense", "group"]] = None
     parent_id: Optional[int] = None
+    is_archived: Optional[bool] = None
 
-class DdsArticle(DdsArticleBase):
+
+class DdsArticleInDBBase(DdsArticleBase): 
     id: int
-    workspace_id: int
     owner_id: int
-    children: List['DdsArticle'] = []
-    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    workspace_id: int
+    created_at: datetime
+    updated_at: datetime
+
     model_config = ConfigDict(from_attributes=True)
+
+class DdsArticle(DdsArticleInDBBase): 
+    children: List["DdsArticle"] = [] 
 
 # --- Transaction Schemas ---
+
+class TransactionType(str, enum.Enum):
+    income = "income"
+    expense = "expense"
+    
 class TransactionBase(BaseModel):
-    date: datetime
-    amount: float
-    transaction_type: str
-    account_id: int
+    transaction_date: date
+    amount: Decimal = Field(..., gt=Decimal('0.0'))
     description: Optional[str] = None
+    transaction_type: TransactionType
+    account_id: int
     dds_article_id: Optional[int] = None
-    # Эта конфигурация верна
-    model_config = ConfigDict(from_attributes=True)
+    
 
 class TransactionCreate(TransactionBase):
-    workspace_id: int
-    owner_id: int
+    pass 
 
 class TransactionUpdate(BaseModel):
-    date: Optional[Union[date, str]] = None
-    amount: Optional[float] = None
+    transaction_date: Optional[date] = None
+    amount: Optional[Decimal] = Field(None, gt=Decimal('0.0'))
     description: Optional[str] = None
     account_id: Optional[int] = None
     dds_article_id: Optional[int] = None
-    transaction_type: Optional[Literal["income", "expense"]] = None
 
 class Transaction(TransactionBase):
     id: int
-    created_at: datetime
-    updated_at: datetime
+    created_by_user_id: int
     workspace_id: int
-    owner_id: int
-    account: Account
-    dds_article: Optional[DdsArticle] = None
-    # ИСПРАВЛЕНО: Удален дублирующий Config, оставлен только model_config
+    
     model_config = ConfigDict(from_attributes=True)
-
+    
 class TransactionPage(BaseModel):
     items: List[Transaction]
     total_count: int
+
+    model_config = ConfigDict(from_attributes=True)
 
 # --- Statement Schemas ---
 class FailedRowDetail(BaseModel):
@@ -152,52 +158,72 @@ class StatementUploadResponse(BaseModel):
     skipped_duplicates_count: int
     failed_row_details: List[FailedRowDetail]
 
+    model_config = ConfigDict(from_attributes=True)
+
+
 # --- Report Schemas ---
+
 class DdsReportItem(BaseModel):
-    article_id: int
+    article_id: Optional[int] = None
     article_name: str
-    parent_id: Optional[int] = None
-    income: float
-    expense: float
-    initial_balance: float
-    final_balance: float
-    children: List['DdsReportItem'] = []
-    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    article_type: str
+    amount: Decimal 
+    children: List["DdsReportItem"] = [] 
+    level: int = 0
+    code: Optional[str] = None 
+
     model_config = ConfigDict(from_attributes=True)
 
 class AccountBalance(BaseModel):
     account_id: int
     account_name: str
-    balance: float
-    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    balance: Decimal 
+
+    model_config = ConfigDict(from_attributes=True)
+
+class ProfitLossReport(BaseModel):
+    start_date: date
+    end_date: date
+    total_income: Decimal = Field(default=Decimal('0.00')) 
+    total_expense: Decimal = Field(default=Decimal('0.00')) 
+    net_profit_loss: Decimal = Field(default=Decimal('0.00')) 
+
+    model_config = ConfigDict(from_attributes=True)
+
+# --- Dashboard Schemas ---
+class SummaryItem(BaseModel):
+    currency: str
+    total_income: Decimal = Field(default=Decimal('0.00')) 
+    total_expense: Decimal = Field(default=Decimal('0.00')) 
+    net_balance: Decimal = Field(default=Decimal('0.00')) 
+
+class DashboardSummaryData(BaseModel):
+    start_date: date 
+    end_date: date 
+    summary_by_currency: List[SummaryItem] = []
+
     model_config = ConfigDict(from_attributes=True)
 
 class DashboardCashflowTrendData(BaseModel):
-    event_date: date
-    income: float
-    expense: float
+    period: str 
+    currency: str 
+    total_income: Decimal = Field(default=Decimal('0.00')) 
+    total_expense: Decimal = Field(default=Decimal('0.00')) 
+    net_balance: Decimal = Field(default=Decimal('0.00')) 
 
-class DashboardSummaryData(BaseModel):
-    total_income: float
-    total_expense: float
-    net_profit: float
+    model_config = ConfigDict(from_attributes=True)
 
-class ProfitLossReport(BaseModel):
-    total_income: float
-    total_expense: float
-    net_profit: float
 
-# --- MappingRule Schemas ---
+# --- Mapping Rule Schemas ---
 class MappingRuleBase(BaseModel):
-    keyword: str = Field(..., min_length=1, max_length=255)
+    keyword: str = Field(min_length=1, max_length=255)
     dds_article_id: int
     transaction_type: Optional[TransactionType] = None
     priority: int = 0
     is_active: bool = True
 
 class MappingRuleCreate(MappingRuleBase):
-    owner_id: int
-    workspace_id: int
+    pass
 
 class MappingRuleUpdate(MappingRuleBase):
     keyword: Optional[str] = None
@@ -212,14 +238,68 @@ class MappingRule(MappingRuleBase):
     workspace_id: int
     created_at: datetime
     updated_at: datetime
-    dds_article: DdsArticle
-    # ИСПРАВЛЕНО: Заменен старый Config на model_config для Pydantic V2
+    dds_article: DdsArticle 
     model_config = ConfigDict(from_attributes=True)
 
 class MappingRulePage(BaseModel):
     items: List[MappingRule]
     total_count: int
+    model_config = ConfigDict(from_attributes=True)
 
-# Обновляем ссылки для рекурсивных моделей в одном месте в конце файла
-DdsArticle.update_forward_refs()
-DdsReportItem.update_forward_refs()
+
+# --- НОВЫЕ СХЕМЫ ДЛЯ БЮДЖЕТИРОВАНИЯ ---
+class BudgetItemBase(BaseModel):
+    dds_article_id: int
+    budgeted_amount: Decimal = Field(..., gt=Decimal('0.0'))
+
+class BudgetItemCreate(BudgetItemBase):
+    pass
+
+class BudgetItemUpdate(BudgetItemBase):
+    pass
+
+class BudgetItemInDBBase(BudgetItemBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+class BudgetItemSchema(BudgetItemInDBBase):
+    dds_article: Optional["DdsArticle"] 
+
+
+# --- Схемы для Budget ---
+class BudgetBase(BaseModel):
+    name: str
+    start_date: date
+    end_date: date
+
+class BudgetCreate(BudgetBase):
+    items: List[BudgetItemCreate]
+
+class BudgetUpdate(BudgetBase):
+    pass
+
+class BudgetInDBBase(BudgetBase):
+    id: int
+    owner_id: int
+    workspace_id: int
+    created_at: datetime 
+    updated_at: datetime 
+
+    model_config = ConfigDict(from_attributes=True)
+
+class BudgetSchema(BudgetInDBBase):
+    items: List[BudgetItemSchema] = []
+
+
+# Обновим forward_refs в конце файла
+try:
+    DdsArticle.update_forward_refs() 
+    DdsArticleCreate.update_forward_refs() 
+    BudgetSchema.update_forward_refs()
+    BudgetItemSchema.update_forward_refs()
+    DdsReportItem.update_forward_refs()
+    MappingRule.update_forward_refs() 
+    DdsArticle.update_forward_refs(Account=Account) # Добавляем Account
+    Transaction.update_forward_refs(Account=Account, DdsArticle=DdsArticle) # Добавляем Transaction
+except (NameError, TypeError):
+    pass

@@ -34,7 +34,7 @@ const DdsReportTable = ({ data, onArticleClick }) => {
     { header: 'Статья', accessor: 'article_name', align: 'left', type: 'text' },
     { header: 'Поступления', accessor: 'income', align: 'right', type: 'currency' },
     { header: 'Выбытия', accessor: 'expense', align: 'right', type: 'currency' },
-    { header: 'Чистый денежный поток', accessor: 'net_flow', align: 'right', type: 'currency' },
+    { header: 'Чистый БизнесПоток', accessor: 'net_flow', align: 'right', type: 'currency' },
   ];
 
   const tableFooter = (

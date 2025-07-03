@@ -75,7 +75,7 @@ def authenticate_user(db: Session, username: str, password: str):
     if not user:
         print(f"DEBUG(Auth): Authentication failed: User '{username}' not found.") # <--- ЛОГ
         return False
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user.password_hash):
         print(f"DEBUG(Auth): Authentication failed: Incorrect password for user '{username}'.") # <--- ЛОГ
         return False
     print(f"DEBUG(Auth): Authentication successful for user '{username}'.") # <--- ЛОГ
