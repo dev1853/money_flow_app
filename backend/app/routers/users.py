@@ -3,6 +3,7 @@
 from typing import List, Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+import logging 
 
 # Импортируем все необходимые компоненты из нашего приложения
 from .. import crud, models, schemas
@@ -34,9 +35,13 @@ def create_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e.detail,
         )
-    except Exception:
-        # Ловим любые другие непредвиденные ошибки из сервисного слоя.
-        # В production здесь должно быть логирование ошибки.
+    except Exception as e: # <--- Ловим исключение в переменную 'e'
+        # ДОБАВЛЯЕМ ЭТИ СТРОКИ
+        logging.error("Error during user creation in router", exc_info=True)
+        # или для быстрой отладки:
+        # print(f"ERROR in users router: {e}")
+        # print(traceback.format_exc()) # не забудьте import traceback
+
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Произошла непредвиденная ошибка при создании пользователя.",

@@ -75,7 +75,7 @@ class Account(Base):
     )
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
-    # Используем Numeric для денег - это ПРАВИЛЬНО
+    account_type = Column(String, nullable=False)
     balance = Column(Numeric(15, 2), nullable=False, default=0.0)
     currency = Column(String(3), nullable=False, default="RUB")
     is_active = Column(Boolean, default=True, nullable=False)

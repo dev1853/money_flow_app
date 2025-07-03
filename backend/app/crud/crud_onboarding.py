@@ -29,14 +29,25 @@ def onboard_new_user(db: Session, *, user: models.User):
 
     # 2. Создание счетов
     accounts_to_create = [
-        schemas.AccountCreate(name="Наличные", balance=1000, workspace_id=workspace.id),
-        schemas.AccountCreate(name="Карта", balance=5000, workspace_id=workspace.id),
+    # ИСПРАВЛЕНИЕ: Добавляем 'account_type'
+    schemas.AccountCreate(
+        name="Наличные", 
+        balance=1000, 
+        workspace_id=workspace.id, 
+        account_type="cash" # <-- ДОБАВЛЕНО
+    ),
+    # ИСПРАВЛЕНИЕ: Добавляем 'account_type'
+    schemas.AccountCreate(
+        name="Карта", 
+        balance=5000, 
+        workspace_id=workspace.id, 
+        account_type="bank" # <-- ДОБАВЛЕНО
+    ),
     ]
     for acc_in in accounts_to_create:
-        crud.account.create_with_owner_and_workspace(
-            db, obj_in=acc_in, owner_id=user.id, workspace_id=workspace.id
+        crud.account.create_with_owner(
+            db, obj_in=acc_in, owner_id=user.id
         )
-
     # 3. Загрузка статей ДДС
     try:
         with open(DEFAULT_DDS_ARTICLES_PATH, 'r', encoding='utf-8') as f:

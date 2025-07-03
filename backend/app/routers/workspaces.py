@@ -16,7 +16,6 @@ from ..dependencies import (
 from ..services.workspace_service import workspace_service
 
 router = APIRouter(
-    prefix="/workspaces",
     tags=["workspaces"],
     dependencies=[Depends(get_current_active_user)]
 )

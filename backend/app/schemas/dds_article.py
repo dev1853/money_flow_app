@@ -1,27 +1,37 @@
 # /backend/app/schemas/dds_article.py
 
-from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
+from pydantic import BaseModel, Field
 
+# --- Базовая схема для статьи ---
 class DdsArticleBase(BaseModel):
-    name: str = Field(..., min_length=1, max_length=100)
-    article_type: str
+    name: str
+    article_type: str # 'income', 'expense', 'group'
     parent_id: Optional[int] = None
 
+
+# --- Схема для создания ---
 class DdsArticleCreate(DdsArticleBase):
     workspace_id: int
 
-# --- НЕДОСТАЮЩАЯ СХЕМА, КОТОРАЯ ВЫЗЫВАЛА ОШИБКУ ---
-class DdsArticleUpdate(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=100)
-    parent_id: Optional[int] = None
-    article_type: Optional[str] = None
 
+# --- Схема для чтения с вложенными детьми ---
+# Это основная схема, которую мы используем для отображения дерева
 class DdsArticle(DdsArticleBase):
     id: int
+    owner_id: int
     workspace_id: int
+    
+    # Поле для рекурсии - список таких же DdsArticle
     children: List['DdsArticle'] = []
-    model_config = ConfigDict(from_attributes=True)
 
-# Эта строка нужна для корректной работы рекурсивных ссылок в Pydantic
-DdsArticle.model_rebuild()
+    class Config:
+        orm_mode = True # Для Pydantic v1
+        # from_attributes = True # Для Pydantic v2
+
+# --- Схема для обновления ---
+class DdsArticleUpdate(DdsArticleBase):
+    name: Optional[str] = None
+    article_type: Optional[str] = None
+
+DdsArticle.update_forward_refs()

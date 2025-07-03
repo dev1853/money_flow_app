@@ -12,14 +12,15 @@ import Input from '../components/forms/Input';
 import Label from '../components/forms/Label';
 
 function RegisterPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [formData, setFormData] = useState({
-    username: '', email: '', password: '', confirmPassword: ''
+    username: '', 
+    email: '', 
+    password: '', 
+    confirmPassword: ''
   });
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [passwordsError, setPasswordsError] = useState('');
+  const [formError, setFormError] = useState(''); 
 
   const [handleRegister, isLoading, registerError] = useApiMutation(
     (data) => apiService.register({
@@ -29,8 +30,11 @@ function RegisterPage() {
     }), 
     {
       onSuccess: async () => {
-        await login(formData.email, formData.password);
+        await login(formData.email, formData.password); 
         navigate('/dashboard');
+      },
+      onError: (err) => {
+        console.error("Mutation error caught in RegisterPage:", err); 
       }
     }
   );
@@ -38,28 +42,41 @@ function RegisterPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setFormError(''); 
   };
 
   const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // --- ИСПРАВЛЕНИЕ: Добавляем клиентскую валидацию ---
-        if (password.length < 8) {
+        if (formData.password.length < 8) {
             setFormError('Пароль должен содержать не менее 8 символов.');
-            return; // Прерываем отправку формы
+            return; 
         }
-        if (!email.includes('@')) {
+        if (!formData.email.includes('@')) {
             setFormError('Пожалуйста, введите корректный email.');
             return;
         }
+        if (formData.password !== formData.confirmPassword) {
+            setFormError('Пароли не совпадают.');
+            return;
+        }
 
-        // Если валидация пройдена, сбрасываем ошибку и отправляем данные
         setFormError('');
-        const userData = { email, password, username: email }; // Отправляем email как username
-        registerMutation.mutate(userData);
+        handleRegister(formData); 
     };
 
-  const error = registerError || passwordsError;
+  let errorMessage = formError; // Сначала проверяем локальную ошибку формы
+  if (!errorMessage && registerError) { // Если локальной ошибки нет, но есть ошибка от API
+    if (registerError instanceof Error) { // Проверяем, является ли это объектом ошибки
+      errorMessage = registerError.message;
+      if (registerError.details) { // Если есть дополнительные детали валидации (из ApiError)
+        errorMessage += ` (${registerError.details})`;
+      }
+    } else {
+      // На случай, если registerError по какой-то причине не объект Error, преобразуем в строку
+      errorMessage = String(registerError); 
+    }
+  }
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center">
@@ -135,7 +152,7 @@ function RegisterPage() {
             </div>
           </div>
 
-          {error && <Alert type="error" message={error} />}
+          {errorMessage && <Alert type="error" message={errorMessage} />}
 
           <div>
             <Button type="submit" className="w-full" disabled={isLoading}>

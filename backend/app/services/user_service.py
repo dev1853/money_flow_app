@@ -1,10 +1,12 @@
 # /backend/app/services/user_service.py
 
 from sqlalchemy.orm import Session
+import logging
 
 from .. import crud, models, schemas
 from ..core.exceptions import UserAlreadyExistsError
 from ..security import get_password_hash
+from .onboarding_service import onboarding_service 
 
 class UserService:
     def create_user_with_onboarding(self, db: Session, *, user_in: schemas.UserCreate) -> models.User:
@@ -21,29 +23,29 @@ class UserService:
             user_to_create.username = user_to_create.email
         
         try:
-            # 1. Создаем пользователя, явно передавая хеш
+            # 1. Создаем пользователя
             user = crud.user.create(
                 db=db, 
                 obj_in=user_to_create, 
                 hashed_password=hashed_password
             )
+            db.flush() # Получаем user.id
 
-            # 2. "Сбрасываем" сессию в БД, чтобы получить user.id
-            db.flush()
+            # 2. ВЫЗЫВАЕМ НОВЫЙ СЕРВИС ОДНОЙ СТРОКОЙ
+            onboarding_service.onboard_user(db=db, user=user)
 
-            # 3. Теперь user.id не None, и мы можем безопасно вызвать онбординг
-            crud.onboarding.onboard_new_user(db=db, user=user)
-
-            # 4. Фиксируем всю транзакцию
+            # 3. Фиксируем всю транзакцию
             db.commit()
-            
-            # 5. Обновляем объект из БД
             db.refresh(user)
-            
             return user
-        except Exception as e:
+        except Exception as e: # <--- Ловим исключение в переменную 'e'
+            # ДОБАВЛЯЕМ ЭТИ СТРОКИ
+            logging.error(f"ERROR during user creation: {e}", exc_info=True)
+            # или для быстрой отладки:
+            # print(f"ERROR in user_service: {e}")
+            # print(traceback.format_exc()) # не забудьте import traceback
+            
             db.rollback()
-            print(f"ERROR during user creation: {e}")
             raise
 
 user_service = UserService()

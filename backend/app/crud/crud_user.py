@@ -1,6 +1,6 @@
-# /backend/app/crud/crud_user.py
+# backend/app/crud/crud_user.py
 
-from typing import Optional
+from typing import Optional # Optional нужен для get_by_email
 from sqlalchemy.orm import Session
 
 from .base import CRUDBase
@@ -35,7 +35,6 @@ class CRUDUser(CRUDBase[models.User, schemas.UserCreate, schemas.UserUpdate]):
         """Проверяет, является ли пользователь суперпользователем."""
         return user.is_superuser
 
-    # --- НОВЫЙ МЕТОД, КОТОРЫЙ УСТРАНИТ ОШИБКУ ---
     def set_active_workspace(self, db: Session, *, user: models.User, workspace: models.Workspace) -> models.User:
         """
         Устанавливает активное рабочее пространство для пользователя.

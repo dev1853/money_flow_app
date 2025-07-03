@@ -1,5 +1,7 @@
 # /backend/app/crud/crud_account.py
 from sqlalchemy.orm import Session
+from ..schemas import AccountCreate
+from ..models import Account
 from typing import List, Optional
 from decimal import Decimal
 
@@ -7,12 +9,16 @@ from .base import CRUDBase
 from .. import models, schemas
 
 class CRUDAccount(CRUDBase[models.Account, schemas.AccountCreate, schemas.AccountUpdate]):
-    def create_with_owner_and_workspace(
-        self, db: Session, *, obj_in: schemas.AccountCreate, owner_id: int, workspace_id: int
-    ) -> models.Account:
-        db_obj = self.model(**obj_in.model_dump(), owner_id=owner_id, workspace_id=workspace_id)
+    def create_with_owner(self, db: Session, *, obj_in: AccountCreate, owner_id: int) -> Account:
+        """
+        Создает счет, используя данные из схемы и ID владельца.
+        ID рабочего пространства берется из самой схемы.
+        """
+        obj_in_data = obj_in.dict()
+        # Конфликта больше нет: owner_id добавляется, а workspace_id уже есть в obj_in_data
+        db_obj = self.model(**obj_in_data, owner_id=owner_id)
         db.add(db_obj)
-        # Убираем commit. Транзакцией управляет сервис.
+        db.flush() # Используем flush для получения ID до коммита
         return db_obj
 
     def get_multi_by_workspace(

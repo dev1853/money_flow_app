@@ -1,4 +1,11 @@
-# backend/app/main.py
+# /backend/app/main.py
+
+import sys
+import os
+
+current_path = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_path, ".."))
+sys.path.append(project_root)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,21 +32,23 @@ app = FastAPI(
     version="1.0.0",
 )
 
-origins = [
-    "https://money.dev1853.ru",
-    "http://money.dev1853.ru",
-    "http://localhost",
-    "http://localhost:3000",
-    "http://127.0.0.1",
-    "http://127.0.0.1:3000",
-]
+# origins = [
+#     "https://money.dev1853.ru",
+#     "http://money.dev1853.ru",
+#     "http://localhost",
+#     "http://localhost:3000",
+#     "http://127.0.0.1",
+#     "http://127.0.0.1:3000",
+# ]
+
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Разрешаем запросы с этих доменов
-    allow_credentials=True, # Разрешаем куки
-    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allow_headers=["*"],    # РАЗРЕШАЕМ ВСЕ ЗАГОЛОВКИ, включая Content-Type и Authorization
+    allow_origins=origins,       # Разрешаем указанные источники
+    allow_credentials=True,      # Разрешаем передачу cookie
+    allow_methods=["*"],         # Разрешаем все методы (GET, POST, etc.)
+    allow_headers=["*"],         # Разрешаем все заголовки
 )
 
 api_prefix = "/api"

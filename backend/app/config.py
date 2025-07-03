@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     # Время жизни токена доступа в минутах
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    DEFAULT_DDS_ARTICLES_PATH: str = "app/default_dds_articles.json"
 
     # Пример для URL базы данных, если вы хотите управлять им здесь
     # DATABASE_URL: str = "postgresql://user:password@host:port/dbname"
