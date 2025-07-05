@@ -1,9 +1,8 @@
-// frontend/src/components/TransactionForm.jsx
+// /frontend/src/components/TransactionForm.jsx
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
-
-// Компоненты
 import Alert from './Alert';
 import Button from './Button';
 import Select from './forms/Select';
@@ -14,7 +13,6 @@ import DatePicker from './forms/DatePicker';
 import SegmentedControl from './forms/SegmentedControl';
 import { ArrowUpCircleIcon, ArrowDownCircleIcon } from '@heroicons/react/24/solid';
 
-// Вспомогательная функция для построения иерархического списка
 const buildArticleOptions = (articles, parentId = null, level = 0) => {
     if (!articles) return [];
     let options = [];
@@ -28,7 +26,6 @@ const buildArticleOptions = (articles, parentId = null, level = 0) => {
     return options;
 };
 
-// Функция валидации
 const validateForm = (formData) => {
     const newErrors = {};
     if (!formData.date) newErrors.date = 'Дата обязательна.';
@@ -41,32 +38,34 @@ const validateForm = (formData) => {
 
 function TransactionForm({ transaction, onSubmit, onCancel, accounts, ddsArticles, isSubmitting, error, defaultType = 'expense' }) {
     
-    const [formData, setFormData] = useState({
-        date: transaction?.transaction_date ? parseISO(transaction.transaction_date) : new Date(),
-        account_id: transaction?.account_id || '',
-        amount: transaction?.amount || '',
-        transaction_type: transaction?.transaction_type || defaultType,
-        dds_article_id: transaction?.dds_article_id || '',
-        description: transaction?.description || '',
-        contractor: transaction?.contractor || '',
-        employee: transaction?.employee || '',
-    });
-    
+    const getInitialState = () => {
+        if (transaction) { // Режим редактирования
+            const transactionType = transaction.transaction_type.toLowerCase();
+            return {
+                date: transaction.transaction_date ? parseISO(transaction.transaction_date) : new Date(),
+                account_id: String(transaction.from_account_id || transaction.to_account_id || ''),
+                amount: String(transaction.amount) || '',
+                transaction_type: transactionType,
+                dds_article_id: String(transaction.dds_article_id || ''),
+                description: transaction.description.split(' (Контрагент:')[0].split(' (Сотрудник:')[0],
+                contractor: transaction.description.match(/\(Контрагент: (.*?)\)/)?.[1] || '',
+                employee: transaction.description.match(/\(Сотрудник: (.*?)\)/)?.[1] || '',
+            };
+        }
+        // Режим создания
+        return {
+            date: new Date(), account_id: '', amount: '',
+            transaction_type: defaultType, dds_article_id: '',
+            description: '', contractor: '', employee: '',
+        };
+    };
+
+    const [formData, setFormData] = useState(getInitialState);
     const [validationErrors, setValidationErrors] = useState({});
 
-    // Синхронизируем форму, если пропс `transaction` изменился
     useEffect(() => {
-        setFormData({
-            date: transaction?.transaction_date ? parseISO(transaction.transaction_date) : new Date(),
-            account_id: transaction?.account_id || '',
-            amount: transaction?.amount || '',
-            transaction_type: transaction?.transaction_type || defaultType,
-            dds_article_id: transaction?.dds_article_id || '',
-            description: transaction?.description || '',
-            contractor: transaction?.contractor || '',
-            employee: transaction?.employee || '',
-        });
-    }, [transaction, defaultType]);
+        setFormData(getInitialState());
+    }, [transaction]);
 
     const articleOptions = useMemo(() => {
         if (!ddsArticles) return [];
@@ -79,63 +78,53 @@ function TransactionForm({ transaction, onSubmit, onCancel, accounts, ddsArticle
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        if (validationErrors[name]) {
-            setValidationErrors(prev => ({ ...prev, [name]: null }));
-        }
     };
 
     const handleDateChange = (date) => {
         setFormData(prev => ({ ...prev, date: date }));
-        if (validationErrors.date) {
-            setValidationErrors(prev => ({ ...prev, date: null }));
-        }
     };
     
     const setTransactionType = (type) => {
-        setFormData(prev => ({
-            ...prev,
-            transaction_type: type,
-            dds_article_id: '',
-        }));
+        setFormData(prev => ({ ...prev, transaction_type: type, dds_article_id: '' }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setValidationErrors({});
         const formErrors = validateForm(formData);
         if (Object.keys(formErrors).length > 0) {
             setValidationErrors(formErrors);
             return;
         }
 
-        const dataToSubmit = {
-            account_id: parseInt(formData.account_id),
-            dds_article_id: formData.dds_article_id ? parseInt(formData.dds_article_id) : null,
+        let fullDescription = formData.description || '';
+        if (formData.contractor) fullDescription += ` (Контрагент: ${formData.contractor})`;
+        if (formData.employee) fullDescription += ` (Сотрудник: ${formData.employee})`;
+
+        const payload = {
             transaction_date: format(formData.date, 'yyyy-MM-dd'),
             amount: parseFloat(formData.amount),
-            description: formData.description,
-            contractor: formData.contractor,
-            employee: formData.employee,
-            transaction_type: formData.transaction_type,
+            description: fullDescription.trim(),
+            transaction_type: formData.transaction_type.toUpperCase(),
+            dds_article_id: formData.dds_article_id ? parseInt(formData.dds_article_id) : null,
+            from_account_id: null,
+            to_account_id: null,
         };
-
-        onSubmit(dataToSubmit);
+        
+        if (formData.transaction_type === 'expense') {
+            payload.from_account_id = parseInt(formData.account_id);
+        } else if (formData.transaction_type === 'income') {
+            payload.to_account_id = parseInt(formData.account_id);
+        }
+        
+        console.log("TransactionForm: Отправка данных ->", payload);
+        onSubmit(payload);
     };
-
-    const transactionTypeOptions = useMemo(() => [
-        { value: 'expense', label: 'Расход', icon: <ArrowDownCircleIcon />, activeClassName: 'bg-red-600 text-white shadow-sm' },
-        { value: 'income', label: 'Доход', icon: <ArrowUpCircleIcon />, activeClassName: 'bg-green-600 text-white shadow-sm' },
-    ], []);
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <Alert type="error">{error}</Alert>}
+            {error && <Alert type="error">{typeof error === 'string' ? error : JSON.stringify(error)}</Alert>}
 
-            <SegmentedControl
-                options={transactionTypeOptions}
-                value={formData.transaction_type}
-                onChange={setTransactionType}
-            />
+            <SegmentedControl options={transactionTypeOptions} value={formData.transaction_type} onChange={setTransactionType}/>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

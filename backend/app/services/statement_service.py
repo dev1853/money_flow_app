@@ -7,7 +7,7 @@ from typing import List
 from decimal import Decimal
 from datetime import datetime
 
-from .. import crud, models, schemas
+from app import crud, models, schemas
 # Импортируем transaction_service, чтобы использовать его атомарную логику
 from .transaction_service import transaction_service
 

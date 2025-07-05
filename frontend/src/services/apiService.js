@@ -113,11 +113,11 @@ export const apiService = {
     deleteTransaction: (id) => request('delete', `transactions/${id}`),
 
     // Accounts
-    getAccounts: (workspaceId) => request('get', `accounts/?workspace_id=${workspaceId}`),
+    getAccounts: (workspaceId) => request('get', 'accounts/', null, { workspace_id: workspaceId }),
     createAccount: (accountData) => request('post', 'accounts/', accountData),
 
     // DDS Articles
-    getDdsArticles: (workspaceId) => request('get', `dds-articles/?workspace_id=${workspace_id}`),
+    getDdsArticles: (workspaceId) => request('get', `dds-articles/?workspace_id=${workspaceId}`),
     createDdsArticle: (articleData) => request('post', 'dds-articles/', articleData),
 
     // Reports

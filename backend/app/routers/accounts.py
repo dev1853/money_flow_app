@@ -1,19 +1,16 @@
-# /backend/app/routers/accounts.py
-
+# app/routers/accounts.py
 from typing import List, Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from .. import crud, models, schemas
-# --- ИСПРАВЛЕННЫЙ ИМПОРТ ---
-from ..dependencies import (
+from app import crud, models, schemas
+from app.dependencies import (
     get_db,
     get_current_active_user,
-    get_workspace_from_path,  # <-- Используем новую зависимость для проверки прав на workspace
-    get_account_for_user      # <-- Эта зависимость уже была правильной
+    get_account_for_user,
 )
-# --- Импортируем сервисы, если они понадобятся ---
-from ..services.account_service import account_service
+from app.services.account_service import account_service
+from app.core.exceptions import PermissionDeniedError, AccountDeletionError
 
 router = APIRouter(
     tags=["accounts"],
@@ -27,70 +24,52 @@ def create_account(
     account_in: schemas.AccountCreate,
     current_user: models.User = Depends(get_current_active_user)
 ) -> Any:
-    """
-    Создать новый счет в указанном рабочем пространстве.
-    Права на рабочее пространство проверяются в сервисе.
-    """
+    """Создает новый счет в указанном рабочем пространстве."""
     try:
-        # Делегируем создание и проверку прав сервисному слою
         account = account_service.create_account(
-            db=db, 
-            account_in=account_in, 
-            user_id=current_user.id
+            db=db, account_in=account_in, user_id=current_user.id
         )
+        db.commit()
+        db.refresh(account)
         return account
-    except crud.WorkspaceAccessDenied as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
-    except Exception as e:
-        # Логируем ошибку
+    except PermissionDeniedError as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=e.detail)
+    except Exception:
+        db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Произошла непредвиденная ошибка.")
-
 
 @router.get("/", response_model=List[schemas.Account])
 def read_accounts(
-    *,
-    # Используем зависимость, чтобы получить workspace и сразу проверить права
-    workspace: models.Workspace = Depends(get_workspace_from_path),
     db: Session = Depends(get_db),
-) -> Any:
-    """
-    Получить список счетов для указанного рабочего пространства.
-    """
-    # Теперь, когда зависимость отработала, мы уверены, что пользователь
-    # имеет доступ к этому workspace. Ручная проверка больше не нужна.
-    return crud.account.get_multi_by_workspace(db, workspace_id=workspace.id)
-
+    current_user: models.User = Depends(get_current_active_user),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=100)
+):
+    """Получает список счетов для активного рабочего пространства."""
+    if not current_user.active_workspace_id:
+        return []
+    return crud.account.get_multi_by_workspace(
+        db, workspace_id=current_user.active_workspace_id, skip=skip, limit=limit
+    )
 
 @router.get("/{account_id}", response_model=schemas.Account)
-def read_account(
-    *,
-    # Эта зависимость идеальна, она находит счет и проверяет права. Оставляем ее.
-    account: models.Account = Depends(get_account_for_user),
-) -> Any:
-    """
-    Получить информацию о счете по ID.
-    """
+def read_account(account: models.Account = Depends(get_account_for_user)) -> Any:
+    """Получить информацию о счете по ID."""
     return account
-
 
 @router.put("/{account_id}", response_model=schemas.Account)
 def update_account(
     *,
     db: Session = Depends(get_db),
     account_in: schemas.AccountUpdate,
-    # Здесь также используется правильная зависимость
     account: models.Account = Depends(get_account_for_user),
 ) -> Any:
-    """
-    Обновить счет.
-    """
-    # Логика обновления проста, сервис пока не нужен.
-    # CRUDBase.update не делает commit, поэтому нужно вызвать его явно.
+    """Обновить счет."""
     updated_account = crud.account.update(db=db, db_obj=account, obj_in=account_in)
     db.commit()
     db.refresh(updated_account)
     return updated_account
-
 
 @router.delete("/{account_id}", response_model=schemas.Account)
 def delete_account(
@@ -98,18 +77,17 @@ def delete_account(
     db: Session = Depends(get_db),
     account: models.Account = Depends(get_account_for_user),
 ) -> Any:
-    """
-    Удалить счет.
-    (Внимание: нет логики проверки, что на счете нет транзакций!)
-    """
-    # TODO: Добавить в сервисный слой проверку, что на счете нет транзакций
-    # или что баланс равен нулю, прежде чем удалять.
-    if account.balance != 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Нельзя удалить счет с ненулевым балансом."
-        )
-        
-    deleted_account = crud.account.remove(db=db, id=account.id)
-    db.commit()
-    return deleted_account
+    """Удалить счет."""
+    try:
+        # --- ИЗМЕНЕНИЕ ЗДЕСЬ ---
+        # Вся логика теперь в сервисе
+        deleted_account = account_service.delete_account(db=db, account_to_delete=account)
+        db.commit()
+        return deleted_account
+    except AccountDeletionError as e:
+        db.rollback()
+        # Превращаем бизнес-ошибку в корректный HTTP-ответ
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.detail)
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Произошла непредвиденная ошибка.")

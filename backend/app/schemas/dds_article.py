@@ -2,9 +2,16 @@
 
 from typing import List, Optional
 from pydantic import BaseModel, Field
+from .base import BaseSchema
+
+class DdsArticle(BaseSchema):
+    id: int
+    name: str
+    article_type: str
+    workspace_id: int
 
 # --- Базовая схема для статьи ---
-class DdsArticleBase(BaseModel):
+class DdsArticleBase(BaseSchema):
     name: str
     article_type: str # 'income', 'expense', 'group'
     parent_id: Optional[int] = None
@@ -19,7 +26,7 @@ class DdsArticleCreate(DdsArticleBase):
 # Это основная схема, которую мы используем для отображения дерева
 class DdsArticle(DdsArticleBase):
     id: int
-    owner_id: int
+    # owner_id: int
     workspace_id: int
     
     # Поле для рекурсии - список таких же DdsArticle

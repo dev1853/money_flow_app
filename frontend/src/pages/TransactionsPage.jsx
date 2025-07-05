@@ -4,10 +4,11 @@ import React, { useState, useEffect, useCallback, useReducer, useMemo } from 're
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
 import { format, parseISO, isValid } from 'date-fns';
+import { ru } from 'date-fns/locale';
+
+// Импорт хуков и компонентов
 import { useDataFetching } from '../hooks/useDataFetching';
 import { useApiMutation } from '../hooks/useApiMutation';
-
-// Импорт UI компонентов
 import PageTitle from '../components/PageTitle';
 import Button from '../components/Button';
 import Loader from '../components/Loader';
@@ -27,6 +28,7 @@ const initialFilters = {
     start_date: null,
     end_date: null,
     account_id: 'all',
+    // Убедимся, что все фильтры инициализированы
     contractor: '',
     amount_from: '',
     amount_to: '',
@@ -44,7 +46,8 @@ function filtersReducer(state, action) {
 }
 
 function TransactionsPage() {
-    const { activeWorkspace, isWorkspaceLoaded, accounts, ddsArticles, fetchAccounts } = useAuth();
+    // 1. ПОЛУЧАЕМ ПРАВИЛЬНЫЕ ДАННЫЕ ИЗ КОНТЕКСТА
+    const { activeWorkspace, accounts, ddsArticles, fetchDataForWorkspace } = useAuth();
     
     const [currentPage, setCurrentPage] = useState(1);
     const [filters, dispatchFilters] = useReducer(filtersReducer, initialFilters);
@@ -55,57 +58,72 @@ function TransactionsPage() {
     const [isUploadModalOpen, setUploadModalOpen] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState(null);
 
-    // Загрузка транзакций с помощью нашего хука
+    // 2. ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ С ИСПРАВЛЕННЫМИ ПАРАМЕТРАМИ
     const fetchTransactions = useCallback(async () => {
         const params = {
-            workspace_id: activeWorkspace.id,
             page: currentPage,
             size: ITEMS_PER_PAGE,
             start_date: filters.start_date ? format(filters.start_date, 'yyyy-MM-dd') : undefined,
             end_date: filters.end_date ? format(filters.end_date, 'yyyy-MM-dd') : undefined,
-            account_id: filters.account_id,
-            contractor: filters.contractor,
-            amount_from: filters.amount_from,
-            amount_to: filters.amount_to,
         };
+        // Условно добавляем account_id, только если он выбран
+        if (filters.account_id && filters.account_id !== 'all') {
+            params.account_id = filters.account_id;
+        }
         return apiService.getTransactions(params);
-    }, [activeWorkspace?.id, currentPage, filters]); // Зависимости для useCallback остаются здесь
+    }, [currentPage, filters]); // Зависимость от activeWorkspace не нужна, т.к. хук и так перезапустится
 
-    // 2. Вызываем useDataFetching с ПРАВИЛЬНЫМИ тремя аргументами
+    // 3. ХУК ДЛЯ ЗАГРУЗКИ ДАННЫХ С ПРАВИЛЬНЫМ УСЛОВИЕМ SKIP
     const { data: transactionsData, loading, error, refetch: refetchTransactions } = useDataFetching(
         fetchTransactions,
-        [fetchTransactions], // Зависимость для хука - это сама функция, которая изменится, когда изменятся ее зависимости
-        { skip: !isWorkspaceLoaded }
+        [fetchTransactions, activeWorkspace], // Перезапускаем при смене воркспейса
+        { skip: !activeWorkspace } // Пропускаем, пока нет активного воркспейса
     );
+    console.log("TransactionsPage: Получены данные транзакций ->", transactionsData);
 
-    // Логика для создания и обновления транзакций через хук
-    const transactionMutationFn = async (transactionData) => {
+
+    // Логика для создания и обновления транзакций
+    const transactionMutationFn = (transactionData) => {
         if (editingTransaction) {
             return apiService.updateTransaction(editingTransaction.id, transactionData);
-        } else {
-            return apiService.createTransaction(transactionData);
         }
+        return apiService.createTransaction(transactionData);
     };
 
-    const [submitTransaction, isSubmitting, submissionError] = useApiMutation(transactionMutationFn, {
+    const [submitTransaction, { isLoading: isSubmitting, error: submissionError }] = useApiMutation(transactionMutationFn, {
         onSuccess: () => {
-            refetchTransactions();
-            fetchAccounts(activeWorkspace.id);
+            console.log("TransactionsPage: Мутация успешна! Ответ сервера ->", createdTransaction);
+
+            // 1. Сбрасываем фильтры и переходим на первую страницу
+            handleResetFilters(); 
+            
+            // 2. Обновляем балансы счетов
+            if (activeWorkspace) {
+                fetchDataForWorkspace(activeWorkspace.id);
+            }
+            
+            // 3. Закрываем модальное окно
             handleCloseFormModal();
+
+            // Явный вызов refetchTransactions() больше не нужен,
+            // так как изменение фильтров и страницы автоматически вызовет перезагрузку данных.
         }
     });
 
     const handleTransactionSubmit = (transactionData) => {
+        console.log("TransactionsPage: Вызов мутации с данными ->", transactionData);
         submitTransaction(transactionData);
     };
 
     // Логика для удаления
-    const [deleteTransaction, isDeleting] = useApiMutation(
+    const [deleteTransaction, { isLoading: isDeleting }] = useApiMutation(
         (id) => apiService.deleteTransaction(id),
         {
             onSuccess: () => {
                 refetchTransactions();
-                fetchAccounts(activeWorkspace.id);
+                 if (activeWorkspace) {
+                    fetchDataForWorkspace(activeWorkspace.id);
+                }
                 setTransactionToDelete(null);
             }
         }
@@ -138,8 +156,7 @@ function TransactionsPage() {
         setTransactionToDelete(transaction);
     };
 
-
-    // Подготовка данных для таблицы
+    // Подготовка данных для таблицы с ИСПРАВЛЕННЫМ ДОСТУПОМ К ДАННЫМ
     const headers = useMemo(() => [
         { key: 'status', label: '', className: 'w-12 text-center' },
         { key: 'date', label: 'Дата', className: 'w-24' },
@@ -151,21 +168,26 @@ function TransactionsPage() {
     ], []);
 
     const tableData = useMemo(() => {
-        return (transactionsData?.items || []).map(item => {
-            const isIncome = item.dds_article?.article_type === 'income' || item.transaction_type === 'income';
+        // 4. ИСПОЛЬЗУЕМ `transactionsData?.transactions` ВМЕСТО `?.items`
+        return (transactionsData?.transactions || []).map(item => {
+            const isIncome = item.transaction_type === 'INCOME';
             const amountColor = isIncome ? 'text-green-600' : 'text-red-600';
             const amountPrefix = isIncome ? '+' : '-';
             const StatusIcon = isIncome ? ArrowUpCircleIcon : ArrowDownCircleIcon;
+            
+            // Находим имя счета для отображения
+            const account = accounts.find(acc => acc.id === item.from_account_id || acc.id === item.to_account_id);
+            const ddsArticle = ddsArticles.find(art => art.id === item.dds_article_id);
 
             return {
                 ...item,
                 status: <StatusIcon className={`h-6 w-6 mx-auto ${amountColor}`} />,
                 date: item.transaction_date && isValid(parseISO(item.transaction_date)) ? format(parseISO(item.transaction_date), 'dd.MM.yyyy') : 'Н/Д',
-                account: item.account?.name,
-                dds_article: item.dds_article ? item.dds_article.name : 'Без статьи',
+                account: account ? account.name : 'Неизвестный счет',
+                dds_article: ddsArticle ? ddsArticle.name : 'Без статьи',
                 amount: (
                     <span className={`font-medium ${amountColor}`}>
-                        {amountPrefix} {item.amount} {item.account?.currency || ''}
+                        {amountPrefix} {item.amount} {account?.currency || ''}
                     </span>
                 ),
                 actions: (
@@ -176,7 +198,7 @@ function TransactionsPage() {
                 )
             };
         });
-    }, [transactionsData]);
+    }, [transactionsData, accounts, ddsArticles]);
 
     return (
         <React.Fragment>

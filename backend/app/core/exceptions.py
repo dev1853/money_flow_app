@@ -52,3 +52,15 @@ class DdsArticleNotFoundError(BusinessLogicError):
 class WorkspaceAccessDenied(Exception):
     def __str__(self):
         return "Доступ к рабочему пространству запрещен."
+    
+class DuplicateMappingRuleError(Exception):
+    def __init__(self, detail: str = "Правило с таким ключевым словом уже существует."):
+        self.detail = detail
+
+class DdsArticleInvalidError(Exception):
+    def __init__(self, detail: str = "Указанная статья ДДС некорректна или недоступна."):
+        self.detail = detail
+
+class AccountDeletionError(Exception):
+    def __init__(self, detail: str = "Невозможно удалить счет."):
+        self.detail = detail

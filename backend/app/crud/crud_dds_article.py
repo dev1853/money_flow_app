@@ -106,6 +106,13 @@ class CRUDDdsArticle(CRUDBase[models.DdsArticle, schemas.DdsArticleCreate, schem
 
         _create_article_tree(articles_data) 
         print("--- Завершение функции create_default_articles ---")
+        
+    def get_by_name_and_workspace(self, db: Session, *, name: str, workspace_id: int) -> Optional[models.DdsArticle]:
+        """Получает статью DDS по имени и ID рабочего пространства."""
+        return db.query(self.model).filter(
+            self.model.name == name,
+            self.model.workspace_id == workspace_id
+        ).first()
 
 dds_article = CRUDDdsArticle(models.DdsArticle)
 

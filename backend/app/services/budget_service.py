@@ -1,7 +1,7 @@
 # /backend/app/services/budget_service.py
 
 from sqlalchemy.orm import Session
-from .. import crud, models, schemas
+from app import crud, models, schemas
 from ..core.exceptions import DdsArticleNotFoundError, PermissionDeniedError
 
 class BudgetService:

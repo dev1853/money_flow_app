@@ -1,5 +1,6 @@
 # /backend/app/routers/transactions.py
 
+import logging 
 from typing import Any, List, Optional
 from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, status, Query
@@ -62,7 +63,8 @@ def create_transaction(
     transaction_in: schemas.TransactionCreate,
     current_user: models.User = Depends(get_current_active_user),
     current_workspace: models.Workspace = Depends(get_current_active_workspace),
-) -> Any:
+) -> Any:   
+    print(f"--- DEBUG (Router): Получены данные: {transaction_in.model_dump_json(indent=2)}")
     try:
         return transaction_service.create_transaction(
             db=db,
@@ -77,6 +79,8 @@ def create_transaction(
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
+        logging.error("Непредвиденная ошибка при создании транзакции:", exc_info=True)
+        db.rollback() # Также хорошая практика - откатить транзакцию
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Произошла непредвиденная ошибка.")
 
 @router.put("/{transaction_id}", response_model=schemas.Transaction)

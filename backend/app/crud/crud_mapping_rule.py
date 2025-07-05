@@ -4,6 +4,7 @@ from typing import List, Optional, Dict, Any, Union
 from sqlalchemy.orm import Session, joinedload
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import or_ 
+from app.schemas.mapping_rule import MappingRuleCreate, MappingRuleUpdate
 
 from .base import CRUDBase
 from .. import models, schemas
@@ -95,6 +96,23 @@ class CRUDMappingRule(CRUDBase[models.MappingRule, schemas.MappingRuleCreate, sc
         
         print(f"DEBUG (Auto-categorization - CRUDRule): No rule matched for description '{description}' and type '{transaction_type}'. Returning None.")
         return None
+    
+    def get_by_keyword_and_workspace(self, db: Session, *, keyword: str, workspace_id: int) -> Optional[models.MappingRule]:
+        """Получает правило сопоставления по ключевому слову и ID рабочего пространства."""
+        return db.query(self.model).filter(
+            self.model.keyword == keyword,
+            self.model.workspace_id == workspace_id
+        ).first()
+        
+    def create_with_owner(
+        self, db: Session, *, obj_in: MappingRuleCreate, owner_id: int, workspace_id: int
+    ) -> models.MappingRule:
+        obj_in_data = obj_in.model_dump() # Используем model_dump() для Pydantic v2
+        db_obj = self.model(**obj_in_data, owner_id=owner_id, workspace_id=workspace_id)
+        db.add(db_obj)
+        # db.commit() # Commit делается на уровне сервиса
+        # db.refresh(db_obj) # Refresh тоже делается на уровне сервиса, если нужно
+        return db_obj
 
 # Создаем экземпляр CRUD-операций для MappingRule
 mapping_rule = CRUDMappingRule(models.MappingRule)

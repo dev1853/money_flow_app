@@ -10,6 +10,7 @@ from .mapping_rule import MappingRule, MappingRuleCreate, MappingRuleUpdate, Map
 from .reports import DdsReportItem, ProfitLossReport, AccountBalance
 from .dashboard import DashboardSummaryData, DashboardCashflowTrendData
 from .statement import StatementUploadResponse
+from .account_type import AccountType, AccountTypeBase, AccountTypeCreate, AccountTypeUpdate 
 
 from .budget import (
     Budget, 

@@ -3,7 +3,7 @@
 from sqlalchemy.orm import Session
 import logging
 
-from .. import crud, models, schemas
+from app import crud, models, schemas
 from ..core.exceptions import UserAlreadyExistsError
 from ..security import get_password_hash
 from .onboarding_service import onboarding_service 

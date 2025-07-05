@@ -1,7 +1,11 @@
 # backend/app/config.py
 
-# Для Pydantic v2: pip install pydantic-settings
+import os
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
+BASE_DIR: Path = Path(__file__).resolve().parent.parent 
+# Путь к директории 'app' внутри backend
+APP_DIR = os.path.join(BASE_DIR, 'app')
 
 class Settings(BaseSettings):
     # Этот класс определяет все конфигурационные параметры вашего приложения.
@@ -14,9 +18,12 @@ class Settings(BaseSettings):
     # Алгоритм шифрования JWT
     ALGORITHM: str = "HS256"
     # Время жизни токена доступа в минутах
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    DEFAULT_DDS_ARTICLES_PATH: str = "app/default_dds_articles.json"
-
+    
+    DEFAULT_DDS_ARTICLES_PATH: str = str(BASE_DIR / "app" / "default_dds_articles.json") 
+    # default_transactions.json находится в backend/app/
+    DEFAULT_TRANSACTIONS_PATH: str = str(BASE_DIR / "app" / "default_transactions.json")
+    # dds_keyword_mapping_rules.json находится непосредственно в backend/
+    DEFAULT_MAPPING_RULES_PATH: str = str(BASE_DIR / "dds_keyword_mapping_rules.json")
     # Пример для URL базы данных, если вы хотите управлять им здесь
     # DATABASE_URL: str = "postgresql://user:password@host:port/dbname"
 

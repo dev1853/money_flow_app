@@ -1,7 +1,7 @@
 # /backend/app/services/workspace_service.py
 
 from sqlalchemy.orm import Session
-from .. import crud, models, schemas
+from app import crud, models, schemas
 
 class WorkspaceService:
     def create_workspace_for_user(

@@ -32,16 +32,18 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# origins = [
-#     "https://money.dev1853.ru",
-#     "http://money.dev1853.ru",
-#     "http://localhost",
-#     "http://localhost:3000",
-#     "http://127.0.0.1",
-#     "http://127.0.0.1:3000",
-# ]
+# print(f"DEBUG (main.py): AccountTypeEnum accessed: {list(AccountTypeEnum)}")
 
-origins = ["*"]
+origins = [
+    "https://money.dev1853.ru",
+    "http://money.dev1853.ru",
+    "http://localhost",
+    "http://localhost:3000",
+    "http://127.0.0.1",
+    "http://127.0.0.1:3000",
+]
+
+# origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

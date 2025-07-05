@@ -6,7 +6,8 @@
     "amount": 15000.00,
     "description": "Оплата за услуги",
     "contractor": "ИП Иванов",
-    "employee": null
+    "employee": null,
+    "type": "INCOME"
   },
   {
     "account_name": "Карта Tinkoff", 
@@ -15,7 +16,8 @@
     "amount": 5000.00,
     "description": "Зарплата менеджеру",
     "contractor": null,
-    "employee": "Петров А.А."
+    "employee": "Петров А.А.",
+    "type": "EXPENSE"
   },
   {
     "account_name": "Кошелек", 
@@ -24,7 +26,8 @@
     "amount": 3000.00,
     "description": "Покупка канцтоваров",
     "contractor": "ООО ОфисМаг",
-    "employee": null
+    "employee": null,
+    "type": "EXPENSE"
   },
   {
     "account_name": "Карта Tinkoff", 
@@ -32,7 +35,8 @@
     "date": "2025-05-15",
     "amount": 10000.00,
     "description": "Оплата аренды офиса",
-    "contractor": "Арендодатель",
-    "employee": null
+    "contractor": "Арендодатель ООО",
+    "employee": null,
+    "type": "EXPENSE" 
   }
 ]

@@ -1,36 +1,35 @@
-# /backend/app/services/account_service.py
-
+# app/services/account_service.py
 from sqlalchemy.orm import Session
-from .. import crud, models, schemas
-from ..core.exceptions import PermissionDeniedError # Используем наше стандартное исключение
+from decimal import Decimal
+
+from app import crud, models, schemas
+from app.core.exceptions import PermissionDeniedError, AccountDeletionError
 
 class AccountService:
     def create_account(
-        self,
-        db: Session,
-        *,
-        account_in: schemas.AccountCreate,
-        user_id: int
+        self, db: Session, *, account_in: schemas.AccountCreate, user_id: int
     ) -> models.Account:
-        """
-        Создает счет, предварительно проверив права на рабочее пространство.
-        """
-        # Проверка прав доступа к рабочему пространству
+        """Создает счет, проверяя права на рабочее пространство."""
         workspace = crud.workspace.get(db, id=account_in.workspace_id)
         if not workspace or workspace.owner_id != user_id:
-            # Выбрасываем наше стандартное бизнес-исключение
-            raise PermissionDeniedError() 
+            raise PermissionDeniedError(detail="Нет прав для этого рабочего пространства.")
+        
+        account = crud.account.create_with_owner(
+            db, obj_in=account_in, owner_id=user_id
+        )
+        return account
 
-        try:
-            # Убедимся, что CRUD не делает commit самостоятельно
-            account = crud.account.create_with_owner_and_workspace(
-                db=db, obj_in=account_in, owner_id=user_id, workspace_id=account_in.workspace_id
-            )
-            db.commit()
-            db.refresh(account)
-            return account
-        except Exception:
-            db.rollback()
-            raise
+    def delete_account(self, db: Session, *, account_to_delete: models.Account) -> models.Account:
+        """Удаляет счет, выполняя проверку бизнес-правил."""
+        
+        # 1. Бизнес-логика: нельзя удалить счет с ненулевым балансом.
+        if account_to_delete.balance != Decimal('0.0'):
+            raise AccountDeletionError(detail="Нельзя удалить счет с ненулевым балансом.")
+
+        # 2. В будущем здесь можно добавить проверку на наличие связанных транзакций.
+
+        # 3. Делегирование удаления CRUD-слою
+        return crud.account.remove(db=db, id=account_to_delete.id)
+
 
 account_service = AccountService()

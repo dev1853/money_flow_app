@@ -1,12 +1,17 @@
 # /backend/app/crud/crud_onboarding.py
 
-from sqlalchemy.orm import Session
 import json
+import os
+from sqlalchemy.orm import Session
 
 from .. import crud, models, schemas
 
-DEFAULT_DDS_ARTICLES_PATH = 'app/default_dds_articles.json'
-DEFAULT_TRANSACTIONS_PATH = 'app/default_transactions.json'
+# Определяем текущую директорию файла crud_onboarding.py
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Путь к default_dds_articles.json и default_transactions.json относительно CURRENT_DIR
+DEFAULT_DDS_ARTICLES_PATH = os.path.join(CURRENT_DIR, '..', 'default_dds_articles.json')
+DEFAULT_TRANSACTIONS_PATH = os.path.join(CURRENT_DIR, '..', 'default_transactions.json')
 
 def onboard_new_user(db: Session, *, user: models.User):
     """

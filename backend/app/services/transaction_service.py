@@ -3,7 +3,7 @@
 from sqlalchemy.orm import Session
 from decimal import Decimal
 
-from .. import crud, models, schemas
+from app import crud, models, schemas
 from ..core.exceptions import AccountNotFoundError, PermissionDeniedError, DdsArticleNotFoundError, NotFoundError
 from ..schemas import TransactionType
 
@@ -24,36 +24,51 @@ class TransactionService:
         db: Session, 
         *, 
         transaction_in: schemas.TransactionCreate, 
-        current_user: models.User,
+        current_user: models.User, 
         workspace_id: int
     ) -> models.Transaction:
-        # ... (код из предыдущего шага без изменений) ...
-        # 1. Проверка прав и существования связанных сущностей
-        account = crud.account.get(db, id=transaction_in.account_id)
-        if not account:
-            raise AccountNotFoundError(account_id=transaction_in.account_id)
-        if account.workspace_id != workspace_id or account.owner_id != current_user.id:
-            raise PermissionDeniedError()
-        if transaction_in.dds_article_id:
-            article = crud.dds_article.get(db, id=transaction_in.dds_article_id)
-            if not article or article.workspace_id != workspace_id:
-                raise DdsArticleNotFoundError(dds_article_id=transaction_in.dds_article_id)
-        try:
-            # 2. Создание объекта транзакции
-            transaction = crud.transaction.create_with_owner_and_workspace(db, obj_in=transaction_in, owner_id=current_user.id, workspace_id=workspace_id)
-            # 3. Обновление баланса счета
-            amount_to_update = Decimal(transaction.amount)
-            if transaction.transaction_type == TransactionType.EXPENSE:
-                amount_to_update = -amount_to_update
-            crud.account.update_balance(db, account_id=account.id, amount_change=amount_to_update)
-            # 4. Фиксация транзакции
-            db.commit()
-            # 5. Обновление объекта для response
-            db.refresh(transaction)
-            return transaction
-        except Exception:
-            db.rollback()
-            raise
+        """
+        Создает транзакцию, валидирует права и обновляет балансы счетов.
+        """
+        # 1. Проверяем, что указанный воркспейс принадлежит пользователю
+        if workspace_id not in [ws.id for ws in current_user.workspaces]:
+             raise PermissionDeniedError(detail="Нет доступа к этому рабочему пространству.")
+
+        # 2. Проверяем права на счета и их существование
+        from_account, to_account = None, None
+        if transaction_in.from_account_id:
+            from_account = crud.account.get(db, id=transaction_in.from_account_id)
+            if not from_account or from_account.workspace_id != workspace_id:
+                raise AccountNotFoundError(detail=f"Счет-источник с ID {transaction_in.from_account_id} не найден.")
+        
+        if transaction_in.to_account_id:
+            to_account = crud.account.get(db, id=transaction_in.to_account_id)
+            if not to_account or to_account.workspace_id != workspace_id:
+                raise AccountNotFoundError(detail=f"Счет-получатель с ID {transaction_in.to_account_id} не найден.")
+
+        # 3. Валидация логики по типу транзакции
+        if transaction_in.transaction_type == TransactionType.EXPENSE and not from_account:
+            raise ValueError("Для расхода должен быть указан счет-источник.")
+        if transaction_in.transaction_type == TransactionType.INCOME and not to_account:
+            raise ValueError("Для дохода должен быть указан счет-получатель.")
+        if transaction_in.transaction_type == TransactionType.TRANSFER and (not from_account or not to_account):
+            raise ValueError("Для перевода должны быть указаны оба счета.")
+
+        # 4. Обновляем балансы
+        amount = transaction_in.amount
+        if from_account:
+            from_account.balance -= amount
+            db.add(from_account)
+        if to_account:
+            to_account.balance += amount
+            db.add(to_account)
+
+        # 5. Создаем транзакцию через CRUD
+        db_transaction = crud.transaction.create_with_owner(
+            db, obj_in=transaction_in, owner_id=current_user.id, workspace_id=workspace_id
+        )
+        # Коммит и refresh будут выполнены в роутере
+        return db_transaction
 
     # --- НОВЫЙ МЕТОД ДЛЯ ОБНОВЛЕНИЯ ---
     def update_transaction(
