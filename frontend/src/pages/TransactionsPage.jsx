@@ -28,7 +28,6 @@ const initialFilters = {
     start_date: null,
     end_date: null,
     account_id: 'all',
-    // Убедимся, что все фильтры инициализированы
     contractor: '',
     amount_from: '',
     amount_to: '',
@@ -45,20 +44,36 @@ function filtersReducer(state, action) {
     }
 }
 
+// *** НОВАЯ (ИЛИ ПЕРЕНЕСЕННАЯ) ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ СГЛАЖИВАНИЯ СТАТЕЙ ***
+// Эту функцию можно вынести в отдельный файл utils/articleUtils.js, если она используется в нескольких местах.
+const flattenDdsArticles = (articles) => {
+    let flatList = [];
+    articles.forEach(article => {
+        // Добавляем только статьи, которые не являются группами
+        if (article.article_type !== 'group') {
+            flatList.push(article);
+        }
+        // Рекурсивно добавляем дочерние элементы
+        if (article.children && article.children.length > 0) {
+            flatList = flatList.concat(flattenDdsArticles(article.children));
+        }
+    });
+    return flatList;
+};
+
+
 function TransactionsPage() {
-    // 1. ПОЛУЧАЕМ ПРАВИЛЬНЫЕ ДАННЫЕ ИЗ КОНТЕКСТА
     const { activeWorkspace, accounts, ddsArticles, fetchDataForWorkspace } = useAuth();
-    
+    const [formType, setFormType] = React.useState('expense');
+
     const [currentPage, setCurrentPage] = useState(1);
     const [filters, dispatchFilters] = useReducer(filtersReducer, initialFilters);
     
-    // Состояния для модальных окон
     const [isFormModalOpen, setFormModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState(null);
     const [isUploadModalOpen, setUploadModalOpen] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState(null);
 
-    // 2. ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ С ИСПРАВЛЕННЫМИ ПАРАМЕТРАМИ
     const fetchTransactions = useCallback(async () => {
         const params = {
             page: currentPage,
@@ -66,23 +81,23 @@ function TransactionsPage() {
             start_date: filters.start_date ? format(filters.start_date, 'yyyy-MM-dd') : undefined,
             end_date: filters.end_date ? format(filters.end_date, 'yyyy-MM-dd') : undefined,
         };
-        // Условно добавляем account_id, только если он выбран
         if (filters.account_id && filters.account_id !== 'all') {
             params.account_id = filters.account_id;
         }
         return apiService.getTransactions(params);
-    }, [currentPage, filters]); // Зависимость от activeWorkspace не нужна, т.к. хук и так перезапустится
+    }, [currentPage, filters]);
 
-    // 3. ХУК ДЛЯ ЗАГРУЗКИ ДАННЫХ С ПРАВИЛЬНЫМ УСЛОВИЕМ SKIP
     const { data: transactionsData, loading, error, refetch: refetchTransactions } = useDataFetching(
         fetchTransactions,
-        [fetchTransactions, activeWorkspace], // Перезапускаем при смене воркспейса
-        { skip: !activeWorkspace } // Пропускаем, пока нет активного воркспейса
+        [fetchTransactions, activeWorkspace],
+        { skip: !activeWorkspace }
     );
     console.log("TransactionsPage: Получены данные транзакций ->", transactionsData);
 
+    console.log("TransactionsPage: Accounts ->", accounts); 
+    console.log("TransactionsPage: DdsArticles ->", ddsArticles); // Это исходные, вложенные статьи
 
-    // Логика для создания и обновления транзакций
+
     const transactionMutationFn = (transactionData) => {
         if (editingTransaction) {
             return apiService.updateTransaction(editingTransaction.id, transactionData);
@@ -91,22 +106,18 @@ function TransactionsPage() {
     };
 
     const [submitTransaction, { isLoading: isSubmitting, error: submissionError }] = useApiMutation(transactionMutationFn, {
-        onSuccess: () => {
-            console.log("TransactionsPage: Мутация успешна! Ответ сервера ->", createdTransaction);
+        onSuccess: (data) => { 
+            console.log("TransactionsPage: Мутация успешна! Ответ сервера ->", data); 
 
-            // 1. Сбрасываем фильтры и переходим на первую страницу
             handleResetFilters(); 
             
-            // 2. Обновляем балансы счетов
             if (activeWorkspace) {
                 fetchDataForWorkspace(activeWorkspace.id);
             }
             
-            // 3. Закрываем модальное окно
             handleCloseFormModal();
 
-            // Явный вызов refetchTransactions() больше не нужен,
-            // так как изменение фильтров и страницы автоматически вызовет перезагрузку данных.
+            refetchTransactions(); 
         }
     });
 
@@ -115,13 +126,12 @@ function TransactionsPage() {
         submitTransaction(transactionData);
     };
 
-    // Логика для удаления
     const [deleteTransaction, { isLoading: isDeleting }] = useApiMutation(
         (id) => apiService.deleteTransaction(id),
         {
             onSuccess: () => {
                 refetchTransactions();
-                 if (activeWorkspace) {
+                if (activeWorkspace) {
                     fetchDataForWorkspace(activeWorkspace.id);
                 }
                 setTransactionToDelete(null);
@@ -135,7 +145,6 @@ function TransactionsPage() {
         }
     };
     
-    // Обработчики UI
     const handleFilterChange = useCallback((filterName, value) => {
         dispatchFilters({ type: 'SET_FILTER', filterName, value });
         setCurrentPage(1);
@@ -151,12 +160,12 @@ function TransactionsPage() {
     const handleCloseFormModal = () => {
         setFormModalOpen(false);
         setEditingTransaction(null);
+        console.log("TransactionsPage: handleCloseFormModal вызван, isFormModalOpen ->", false); 
     };
     const handleDeleteRequest = (transaction) => {
         setTransactionToDelete(transaction);
     };
 
-    // Подготовка данных для таблицы с ИСПРАВЛЕННЫМ ДОСТУПОМ К ДАННЫМ
     const headers = useMemo(() => [
         { key: 'status', label: '', className: 'w-12 text-center' },
         { key: 'date', label: 'Дата', className: 'w-24' },
@@ -168,23 +177,28 @@ function TransactionsPage() {
     ], []);
 
     const tableData = useMemo(() => {
-        // 4. ИСПОЛЬЗУЕМ `transactionsData?.transactions` ВМЕСТО `?.items`
+        // *** ИСПРАВЛЕНИЕ ЗДЕСЬ: Сглаживаем ddsArticles перед использованием ***
+        const flatDdsArticles = flattenDdsArticles(ddsArticles || []); 
+        // Добавьте console.log для отладки:
+        console.log("TransactionsPage: Сглаженные DDS Articles ->", flatDdsArticles);
+
         return (transactionsData?.transactions || []).map(item => {
             const isIncome = item.transaction_type === 'INCOME';
             const amountColor = isIncome ? 'text-green-600' : 'text-red-600';
             const amountPrefix = isIncome ? '+' : '-';
             const StatusIcon = isIncome ? ArrowUpCircleIcon : ArrowDownCircleIcon;
             
-            // Находим имя счета для отображения
             const account = accounts.find(acc => acc.id === item.from_account_id || acc.id === item.to_account_id);
-            const ddsArticle = ddsArticles.find(art => art.id === item.dds_article_id);
+            // *** ИСПРАВЛЕНО: Теперь ищем статью в сглаженном списке ***
+            const ddsArticle = flatDdsArticles.find(art => art.id === item.dds_article_id); 
 
             return {
                 ...item,
                 status: <StatusIcon className={`h-6 w-6 mx-auto ${amountColor}`} />,
                 date: item.transaction_date && isValid(parseISO(item.transaction_date)) ? format(parseISO(item.transaction_date), 'dd.MM.yyyy') : 'Н/Д',
                 account: account ? account.name : 'Неизвестный счет',
-                dds_article: ddsArticle ? ddsArticle.name : 'Без статьи',
+                // *** ИСПРАВЛЕНО: Убедимся, что dds_article_id не null, прежде чем искать статью ***
+                dds_article: item.dds_article_id && ddsArticle ? ddsArticle.name : 'Без статьи', 
                 amount: (
                     <span className={`font-medium ${amountColor}`}>
                         {amountPrefix} {item.amount} {account?.currency || ''}
@@ -198,7 +212,7 @@ function TransactionsPage() {
                 )
             };
         });
-    }, [transactionsData, accounts, ddsArticles]);
+    }, [transactionsData, accounts, ddsArticles]); // ddsArticles - зависимость для useMemo
 
     return (
         <React.Fragment>
@@ -239,7 +253,8 @@ function TransactionsPage() {
                     onSubmit={handleTransactionSubmit}
                     onCancel={handleCloseFormModal}
                     accounts={accounts || []}
-                    ddsArticles={ddsArticles || []}
+                    articles={ddsArticles || []} 
+                    defaultType={formType}
                     isSubmitting={isSubmitting}
                     error={submissionError}
                 />

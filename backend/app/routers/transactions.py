@@ -66,7 +66,6 @@ def create_transaction(
     current_user: models.User = Depends(get_current_active_user),
     current_workspace: models.Workspace = Depends(get_current_active_workspace),
 ) -> Any:
-    # 3. Добавляем логирование
     logger.info(
         "Попытка создания транзакции для workspace %d пользователем %s",
         current_workspace.id,
@@ -81,6 +80,11 @@ def create_transaction(
             current_user=current_user,
             workspace_id=current_workspace.id
         )
+        
+        # *** УБЕДИСЬ, ЧТО ЭТИ ДВЕ СТРОКИ ПРИСУТСТВУЮТ! ***
+        db.commit() 
+        db.refresh(transaction) 
+
         logger.info(
             "Транзакция с ID %d успешно создана для workspace %d.",
             transaction.id,
@@ -93,14 +97,14 @@ def create_transaction(
             e.detail,
             current_workspace.id
         )
+        db.rollback() 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.detail)
     except Exception as e:
-        # Логируем непредвиденную ошибку с полным стектрейсом
         logger.error(
             "Непредвиденная ошибка при создании транзакции для workspace %d: %s",
             current_workspace.id,
             e,
-            exc_info=True # <-- Этот флаг добавляет стектрейс в лог
+            exc_info=True
         )
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Произошла непредвиденная ошибка.")

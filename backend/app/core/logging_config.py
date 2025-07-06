@@ -14,8 +14,7 @@ formatters = {
         "datefmt": "%Y-%m-%d %H:%M:%S",
     },
     "access": {
-        # Этот форматтер используется только для uvicorn.access
-        "format": "%(asctime)s - %(levelname)s - %(name)s - Client: %(client_addr)s - Request: \"%(request_line)s\" - Status: %(status_code)s",
+        "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s", # Вот это изменение
         "datefmt": "%Y-%m-%d %H:%M:%S",
     },
 }
@@ -29,7 +28,7 @@ handlers = {
     },
     # Обработчик для логов доступа (консоль)
     "access_console": {
-        "formatter": "access",
+        "formatter": "access", # Используем новый access форматтер
         "class": "logging.StreamHandler",
         "stream": "ext://sys.stdout",
     },
@@ -43,7 +42,7 @@ handlers = {
     },
     # Обработчик для логов доступа (файл)
     "access_file": {
-        "formatter": "access",
+        "formatter": "access", # Используем новый access форматтер
         "class": "logging.handlers.RotatingFileHandler",
         "filename": ACCESS_LOG_FILE,
         "maxBytes": 1024 * 1024 * 5,
@@ -58,7 +57,7 @@ loggers = {
     "uvicorn": {"handlers": ["default_console", "default_file"], "level": "INFO", "propagate": False},
     "uvicorn.error": {"handlers": ["default_console", "default_file"], "level": "INFO", "propagate": False},
     
-    # Логгер uvicorn.access использует ИСКЛЮЧИТЕЛЬНО 'access' форматтер
+    # Логгер uvicorn.access использует 'access' форматтер
     "uvicorn.access": {"handlers": ["access_console", "access_file"], "level": "INFO", "propagate": False},
 }
 
