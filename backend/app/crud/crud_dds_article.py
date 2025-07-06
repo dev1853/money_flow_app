@@ -115,13 +115,3 @@ class CRUDDdsArticle(CRUDBase[models.DdsArticle, schemas.DdsArticleCreate, schem
         ).first()
 
 dds_article = CRUDDdsArticle(models.DdsArticle)
-
-# Загрузка правил сопоставления ключевых слов для статей ДДС (этот блок должен быть в crud_onboarding.py)
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# RULES_FILE_PATH = os.path.join(BASE_DIR, '..', '..', 'dds_keyword_mapping_rules.json')
-# DDS_KEYWORD_RULES = []
-# try:
-#     with open(RULES_FILE_PATH, 'r', encoding='utf-8') as f:
-#         DDS_KEYWORD_RULES = json.load(f)
-# except (FileNotFoundError, json.JSONDecodeError) as e:
-#     print(f"Warning: Could not load DDS keyword mapping rules. File not found or is invalid. Error: {e}")

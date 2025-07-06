@@ -117,8 +117,11 @@ export const apiService = {
     createAccount: (accountData) => request('post', 'accounts/', accountData),
 
     // DDS Articles
+    getDdsArticleById: (articleId) => request('get', `dds-articles/${articleId}`),
     getDdsArticles: (workspaceId) => request('get', `dds-articles/?workspace_id=${workspaceId}`),
     createDdsArticle: (articleData) => request('post', 'dds-articles/', articleData),
+    updateDdsArticle: (articleId, articleData) => request('put', `dds-articles/${articleId}`, articleData),
+    deleteDdsArticle: (articleId) => request('delete', `dds-articles/${articleId}`),
 
     // Reports
     getDdsReport: (params) => request('get', 'reports/dds', null, params),

@@ -18,7 +18,8 @@ function classNames(...classes) {
 const Header = ({ setSidebarOpen }) => { 
   console.log("DEBUG(Header): Component Rendered."); // <--- ЛОГ РЕНДЕРА
   const { isAuthenticated, user, logout, setActiveWorkspace, activeWorkspace, workspaces, fetchWorkspaces } = useAuth(); // <--- Добавлены workspaces, fetchWorkspaces
-  
+  console.log('[Header] Полученные данные из AuthContext:', { activeWorkspace, workspaces });
+
   console.log("DEBUG(Header): setActiveWorkspace type:", typeof setActiveWorkspace); // <--- КРИТИЧЕСКИ ВАЖНЫЙ ЛОГ
   console.log("DEBUG(Header): activeWorkspace value:", activeWorkspace); // <--- ЛОГ
   console.log("DEBUG(Header): workspaces value:", workspaces); // <--- ЛОГ
@@ -43,12 +44,19 @@ const Header = ({ setSidebarOpen }) => {
     }
   };
   
-  const handleWorkspaceChange = (workspace) => {
-    console.log("DEBUG(Header): handleWorkspaceChange called. Selected workspace:", workspace); // <--- ЛОГ
-    setActiveWorkspace(workspace);
-    localStorage.setItem('activeWorkspaceId', workspace.id); // Сохраняем в localStorage для persistence
-    window.location.reload(); // Перезагружаем страницу для обновления всех данных
-  };
+const handleWorkspaceChange = (workspaceId) => {
+  console.log(`[Header] Попытка сменить воркспейс на ID: ${workspaceId}`); // <-- ЛОГ 1
+
+  const newActiveWorkspace = workspaces.find(ws => ws.id === Number(workspaceId));
+  
+  if (newActiveWorkspace) {
+    console.log('[Header] Найден новый воркспейс:', newActiveWorkspace); // <-- ЛОГ 2
+    setActiveWorkspace(newActiveWorkspace);
+    localStorage.setItem('activeWorkspaceId', newActiveWorkspace.id);
+  } else {
+    console.error(`[Header] Воркспейс с ID ${workspaceId} не найден в списке.`); // <-- ЛОГ 3 (на случай ошибки)
+  }
+};
 
 
   return (
@@ -94,13 +102,13 @@ const Header = ({ setSidebarOpen }) => {
                             <Menu.Item key={ws.id}>
                                 {({ active }) => (
                                     <button
-                                        onClick={() => handleWorkspaceChange(ws)} // <--- Используем новую функцию
+                                        onClick={() => handleWorkspaceChange(ws.id)}
                                         className={classNames(
                                             active ? 'bg-gray-50' : '',
                                             'block px-3 py-1 text-sm leading-6 text-gray-700 w-full text-left'
                                         )}
                                     >
-                                        {ws.name} {ws.id === activeWorkspace?.id && ' (текущая)'} {/* Индикатор активного */}
+                                        {ws.name} {ws.id === activeWorkspace?.id && ' (текущая)'}
                                     </button>
                                 )}
                             </Menu.Item>

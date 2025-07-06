@@ -1,5 +1,11 @@
 # /core/exceptions.py
 
+class BaseAppException(Exception):
+    """Базовый класс для всех кастомных исключений в приложении."""
+    def __init__(self, detail: str):
+        self.detail = detail
+        super().__init__(detail)
+        
 class BusinessLogicError(Exception):
     """Базовый класс для всех бизнес-ошибок в приложении."""
     @property
@@ -15,11 +21,8 @@ class UserAlreadyExistsError(BusinessLogicError):
     def detail(self) -> str:
         return f"Пользователь с email '{self.email}' уже существует."
     
-class PermissionDeniedError(BusinessLogicError):
-    """Выбрасывается, когда у пользователя нет прав на выполнение операции."""
-    @property
-    def detail(self) -> str:
-        return "У вас недостаточно прав для выполнения этой операции."
+class PermissionDeniedError(BaseAppException):
+    pass
 
 class NotFoundError(BusinessLogicError):
     """Базовый класс для ошибок 'не найдено'."""
@@ -64,3 +67,15 @@ class DdsArticleInvalidError(Exception):
 class AccountDeletionError(Exception):
     def __init__(self, detail: str = "Невозможно удалить счет."):
         self.detail = detail
+        
+class DuplicateEntryError(BaseAppException):
+    """Исключение для дублирующихся записей."""
+    pass
+
+class DdsArticleHasChildrenError(BaseAppException):
+    """Исключение при попытке удалить статью ДДС с дочерними элементами."""
+    pass
+
+class DdsArticleInUseError(BaseAppException):
+    """Исключение при попытке удалить статью ДДС, которая используется в транзакциях."""
+    pass

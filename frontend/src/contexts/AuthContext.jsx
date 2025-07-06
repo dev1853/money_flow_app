@@ -1,5 +1,7 @@
+// frontend/src/contexts/AuthContext.jsx
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiService';
 
 // 1. Создание контекста
@@ -99,6 +101,14 @@ export const AuthProvider = ({ children }) => {
         fetchUserAndInitialData();
     }, [fetchUserAndInitialData]);
 
+    useEffect(() => {
+        if (workspaces.length > 0 && !activeWorkspace) {
+            const lastWorkspaceId = localStorage.getItem('active_workspace_id'); // <-- Правильный ключ
+            const lastWorkspace = workspaces.find(ws => String(ws.id) === lastWorkspaceId);
+            setActiveWorkspaceState(lastWorkspace || workspaces[0]); // <-- Прямая установка состояния
+        }
+    }, [workspaces]); 
+
     // Функция входа в систему
     const login = async (email, password) => {
         // ИСПРАВЛЕНИЕ: Передаем username и password явно в apiService.login
@@ -124,9 +134,10 @@ export const AuthProvider = ({ children }) => {
         const selectedWorkspace = workspaces.find(ws => String(ws.id) === String(workspaceId));
         if (selectedWorkspace) {
             setActiveWorkspaceState(selectedWorkspace);
-            localStorage.setItem('active_workspace_id', workspaceId);
+            // Сохраняем выбор пользователя
+            localStorage.setItem('active_workspace_id', workspaceId); 
             await fetchDataForWorkspace(workspaceId);
-        } else {
+        }  else {
              // Если выбранный воркспейс не найден, очищаем активный
             setActiveWorkspaceState(null);
             localStorage.removeItem('active_workspace_id');

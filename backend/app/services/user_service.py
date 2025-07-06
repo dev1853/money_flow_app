@@ -6,7 +6,7 @@ import logging
 from app import crud, models, schemas
 from ..core.exceptions import UserAlreadyExistsError
 from ..security import get_password_hash
-from .onboarding_service import onboarding_service 
+from .onboarding_service import onboarding_service
 
 class UserService:
     def create_user_with_onboarding(self, db: Session, *, user_in: schemas.UserCreate) -> models.User:

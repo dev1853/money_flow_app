@@ -1,0 +1,127 @@
+2025-07-05 22:53:32 - INFO - uvicorn.error - Started server process [49869]
+2025-07-05 22:53:32 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-05 22:53:32 - INFO - uvicorn.error - Application startup complete.
+2025-07-05 22:53:32 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-05 23:04:54 - INFO - uvicorn.error - Shutting down
+2025-07-05 23:04:54 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-05 23:04:54 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-05 23:04:54 - INFO - uvicorn.error - Finished server process [49869]
+2025-07-05 23:04:57 - INFO - uvicorn.error - Started server process [58581]
+2025-07-05 23:04:57 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-05 23:04:57 - INFO - uvicorn.error - Application startup complete.
+2025-07-05 23:04:57 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-05 23:05:25 - INFO - uvicorn.error - Shutting down
+2025-07-05 23:05:25 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-05 23:05:25 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-05 23:05:25 - INFO - uvicorn.error - Finished server process [58581]
+2025-07-05 23:05:34 - INFO - uvicorn.error - Started server process [59183]
+2025-07-05 23:05:34 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-05 23:05:34 - INFO - uvicorn.error - Application startup complete.
+2025-07-05 23:05:34 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-05 23:07:44 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'Платежи' для workspace 0
+2025-07-05 23:07:44 - WARNING - app.routers.dds_articles - Ошибка доступа при создании статьи ДДС: Недостаточно прав для этого рабочего пространства.
+2025-07-05 23:07:51 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'Платежи' для workspace 0
+2025-07-05 23:07:51 - WARNING - app.routers.dds_articles - Ошибка доступа при создании статьи ДДС: Недостаточно прав для этого рабочего пространства.
+2025-07-05 23:07:59 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'Платежи' для workspace 0
+2025-07-05 23:07:59 - WARNING - app.routers.dds_articles - Ошибка доступа при создании статьи ДДС: Недостаточно прав для этого рабочего пространства.
+2025-07-05 23:08:14 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'Платежи' для workspace 0
+2025-07-05 23:08:14 - WARNING - app.routers.dds_articles - Ошибка доступа при создании статьи ДДС: Недостаточно прав для этого рабочего пространства.
+2025-07-05 23:08:30 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'Платежи' для workspace 43
+2025-07-05 23:08:30 - ERROR - app.routers.dds_articles - Непредвиденная ошибка при создании статьи ДДС: (psycopg2.errors.ForeignKeyViolation) insert or update on table "dds_articles" violates foreign key constraint "fk_dds_articles_parent"
+DETAIL:  Key (parent_id)=(0) is not present in table "dds_articles".
+
+[SQL: INSERT INTO dds_articles (name, article_type, parent_id, is_active, workspace_id) VALUES (%(name)s, %(article_type)s, %(parent_id)s, %(is_active)s, %(workspace_id)s) RETURNING dds_articles.id, dds_articles.created_at, dds_articles.updated_at]
+[parameters: {'name': 'Платежи', 'article_type': 'expense', 'parent_id': 0, 'is_active': True, 'workspace_id': 43}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/engine/default.py", line 924, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "dds_articles" violates foreign key constraint "fk_dds_articles_parent"
+DETAIL:  Key (parent_id)=(0) is not present in table "dds_articles".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dds_articles.py", line 50, in create_dds_article
+    article = dds_article_service.create_article(
+  File "/home/true/Projects/money_flow_app/backend/app/services/dds_article_service.py", line 53, in create_article
+    db_article = crud.dds_article.create_with_owner(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dds_article.py", line 76, in create_with_owner
+    db.commit()
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 2017, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 1302, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 1277, in _prepare_impl
+    self.session.flush()
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 4341, in flush
+    self._flush(objects)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 4477, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 4437, in _flush
+    flush_context.execute()
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/orm/persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 2353, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/engine/default.py", line 924, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "dds_articles" violates foreign key constraint "fk_dds_articles_parent"
+DETAIL:  Key (parent_id)=(0) is not present in table "dds_articles".
+
+[SQL: INSERT INTO dds_articles (name, article_type, parent_id, is_active, workspace_id) VALUES (%(name)s, %(article_type)s, %(parent_id)s, %(is_active)s, %(workspace_id)s) RETURNING dds_articles.id, dds_articles.created_at, dds_articles.updated_at]
+[parameters: {'name': 'Платежи', 'article_type': 'expense', 'parent_id': 0, 'is_active': True, 'workspace_id': 43}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-06 12:04:19 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'Выручка от продаж' для workspace 1
+2025-07-06 12:04:19 - WARNING - app.routers.dds_articles - Ошибка доступа при создании статьи ДДС: Недостаточно прав для этого рабочего пространства.
+2025-07-06 12:04:26 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'Выручка от продаж' для workspace 43
+2025-07-06 12:04:26 - INFO - app.routers.dds_articles - Статья ДДС с ID 653 успешно создана.
+2025-07-06 12:12:21 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'Выручка от продаж товаров' для workspace 43
+2025-07-06 12:12:22 - INFO - app.routers.dds_articles - Статья ДДС с ID 654 успешно создана.
+2025-07-06 12:12:40 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'Выручка от продаж товаров' для workspace 43
+2025-07-06 12:12:40 - WARNING - app.routers.dds_articles - Попытка создания дубликата статьи ДДС: Статья с именем 'Выручка от продаж товаров' уже существует.
+2025-07-06 12:12:58 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'Выручка от продаж товаров 1 категории' для workspace 43
+2025-07-06 12:12:58 - INFO - app.routers.dds_articles - Статья ДДС с ID 655 успешно создана.
+2025-07-06 12:56:28 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'фыв' для workspace 43
+2025-07-06 12:56:28 - INFO - app.routers.dds_articles - Статья ДДС с ID 656 успешно создана.
+2025-07-06 12:56:37 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'пар' для workspace 43
+2025-07-06 12:56:37 - INFO - app.routers.dds_articles - Статья ДДС с ID 657 успешно создана.
+2025-07-06 13:03:02 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'пыва' для workspace 43
+2025-07-06 13:03:02 - INFO - app.routers.dds_articles - Статья ДДС с ID 658 успешно создана.
+2025-07-06 13:14:00 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'фыв' для workspace 43
+2025-07-06 13:14:00 - WARNING - app.routers.dds_articles - Попытка создания дубликата статьи ДДС: Статья с именем 'фыв' уже существует.
+2025-07-06 13:18:44 - INFO - app.routers.dds_articles - Попытка создания статьи ДДС 'description' для workspace 43
+2025-07-06 13:18:44 - INFO - app.routers.dds_articles - Статья ДДС с ID 659 успешно создана.
+2025-07-06 16:59:35 - INFO - uvicorn.error - Started server process [6405]
+2025-07-06 16:59:35 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-06 16:59:35 - INFO - uvicorn.error - Application startup complete.
+2025-07-06 16:59:35 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)

@@ -23,8 +23,12 @@ from .routers import (
     mapping_rules,
     budgets 
 )
+from .core.logging_config import setup_logging # <-- 1. Импортируем нашу функцию
 
-# Base.metadata.create_all(bind=engine)
+# 2. Вызываем настройку логирования ПЕРЕД созданием FastAPI приложения
+setup_logging()
+# Создаем таблицы в БД (если их нет)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Money Flow App API",

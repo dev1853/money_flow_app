@@ -32,12 +32,8 @@ class CRUDTransaction(CRUDBase[models.Transaction, TransactionCreate, Transactio
         """
         Создает транзакцию, используя данные из схемы и добавляя ID владельца и воркспейса.
         """
-        print(f"--- DEBUG (Service): Сохранение в БД. Данные: {transaction_in.model_dump()}")
         obj_in_data = obj_in.model_dump()
         
-        # Создаем объект модели SQLAlchemy, напрямую передавая данные.
-        # Теперь ключи в obj_in_data (from_account_id, to_account_id)
-        # напрямую соответствуют полям в models.Transaction.
         db_obj = self.model(
             **obj_in_data,
             user_id=owner_id,
@@ -45,13 +41,9 @@ class CRUDTransaction(CRUDBase[models.Transaction, TransactionCreate, Transactio
         )
         
         db.add(db_obj)
-        # Мы не делаем commit здесь, это задача роутера или сервиса
-        db.flush() # Используем flush, чтобы получить ID объекта до коммита
+        # Коммит выполняется на уровне сервиса, а не CRUD
+        db.flush() 
         db.refresh(db_obj)
-        print(f"--- DEBUG (Service): Транзакция создана с ID: {db_transaction.id}")
-        # Возвращаем созданный объект
-        print(f"--- DEBUG (Service): Возвращаем объект: {db_obj.model_dump
-        
         return db_obj
     
     def get_count_by_workspace(
@@ -116,5 +108,11 @@ class CRUDTransaction(CRUDBase[models.Transaction, TransactionCreate, Transactio
             .limit(limit)
             .all()
         )
+        
+    def get_count_by_dds_article(self, db: Session, *, article_id: int) -> int:
+        """
+        Получает количество транзакций, связанных с определенной статьей ДДС.
+        """
+        return db.query(self.model).filter(models.Transaction.dds_article_id == article_id).count()
 
 transaction = CRUDTransaction(models.Transaction)

@@ -7,8 +7,6 @@ from .mixins import TimestampMixin
 
 class DdsArticle(Base, TimestampMixin):
     __tablename__ = "dds_articles"
-
-    # ВОТ ЭТА СТРОКА БЫЛА ПРОПУЩЕНА
     id = Column(Integer, primary_key=True, index=True)
 
     name = Column(String, nullable=False, index=True)

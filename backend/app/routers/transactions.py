@@ -20,6 +20,8 @@ from ..core.exceptions import (
     DdsArticleNotFoundError
 )
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(
     tags=["transactions"],
     dependencies=[Depends(get_current_active_user)]
@@ -63,24 +65,44 @@ def create_transaction(
     transaction_in: schemas.TransactionCreate,
     current_user: models.User = Depends(get_current_active_user),
     current_workspace: models.Workspace = Depends(get_current_active_workspace),
-) -> Any:   
-    print(f"--- DEBUG (Router): Получены данные: {transaction_in.model_dump_json(indent=2)}")
+) -> Any:
+    # 3. Добавляем логирование
+    logger.info(
+        "Попытка создания транзакции для workspace %d пользователем %s",
+        current_workspace.id,
+        current_user.email,
+    )
+    logger.debug("Входящие данные транзакции: %s", transaction_in.model_dump_json())
+
     try:
-        return transaction_service.create_transaction(
+        transaction = transaction_service.create_transaction(
             db=db,
             transaction_in=transaction_in,
             current_user=current_user,
             workspace_id=current_workspace.id
         )
+        logger.info(
+            "Транзакция с ID %d успешно создана для workspace %d.",
+            transaction.id,
+            current_workspace.id
+        )
+        return transaction
     except (AccountNotFoundError, DdsArticleNotFoundError) as e:
+        logger.warning(
+            "Ошибка создания транзакции (404 - Not Found): %s. Workspace: %d",
+            e.detail,
+            current_workspace.id
+        )
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.detail)
-    except PermissionDeniedError as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=e.detail)
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logging.error("Непредвиденная ошибка при создании транзакции:", exc_info=True)
-        db.rollback() # Также хорошая практика - откатить транзакцию
+        # Логируем непредвиденную ошибку с полным стектрейсом
+        logger.error(
+            "Непредвиденная ошибка при создании транзакции для workspace %d: %s",
+            current_workspace.id,
+            e,
+            exc_info=True # <-- Этот флаг добавляет стектрейс в лог
+        )
+        db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Произошла непредвиденная ошибка.")
 
 @router.put("/{transaction_id}", response_model=schemas.Transaction)

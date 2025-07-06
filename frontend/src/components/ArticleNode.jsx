@@ -38,8 +38,7 @@ const ArticleNode = ({ article, level = 0, onEdit, onDelete, onAddSubArticle }) 
   
   const Icon = hasChildren ? FolderIcon : DocumentTextIcon;
   const ToggleIcon = isOpen ? ChevronDownIcon : ChevronRightIcon;
-  const typeInfo = ARTICLE_TYPE_INFO[article.type]; // Получаем информацию о типе
-
+  const typeInfo = ARTICLE_TYPE_INFO[article.article_type];
   return (
     <div>
       <div

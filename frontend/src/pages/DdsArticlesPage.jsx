@@ -29,8 +29,8 @@ function DdsArticlesPage() {
   // --- РЕФАКТОРИНГ ЛОГИКИ ЗАГРУЗКИ ---
   
   // 1. Определяем функцию для запроса дерева статей
-  const fetchArticlesTree = useCallback(async () => {
-    return await apiService.getDdsArticlesTree(activeWorkspace.id);
+  const fetchArticles = useCallback(async () => {
+    return await apiService.getDdsArticles(activeWorkspace.id);
   }, [activeWorkspace]);
 
   // 2. Используем наш хук для загрузки данных
@@ -39,7 +39,7 @@ function DdsArticlesPage() {
     loading, 
     error, 
     refetch 
-  } = useDataFetching(fetchArticlesTree, [activeWorkspace], { skip: !activeWorkspace });
+  } = useDataFetching(fetchArticles, [activeWorkspace], { skip: !activeWorkspace });
 
   // --- ОБРАБОТЧИКИ ДЕЙСТВИЙ ---
 
@@ -123,6 +123,7 @@ function DdsArticlesPage() {
           articleToEdit={articleToEdit}
           parentId={parentArticleId}
           onSuccess={handleCloseModal} 
+          articlesTree={articlesTree}
         />
       </Modal>
       <ConfirmationModal
