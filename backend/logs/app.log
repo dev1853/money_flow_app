@@ -573,3 +573,15 @@ ValueError: Для дохода должен быть указан счет-по
 2025-07-06 22:48:06 - INFO - app.routers.transactions - Транзакция с ID 82 успешно создана для workspace 52.
 2025-07-06 22:54:24 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 52 пользователем admin13451@admin.ru
 2025-07-06 22:54:24 - INFO - app.routers.transactions - Транзакция с ID 83 успешно создана для workspace 52.
+2025-07-06 23:03:51 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 43 пользователем admin11555@admin.ru
+2025-07-06 23:03:51 - ERROR - app.routers.transactions - Непредвиденная ошибка при создании транзакции для workspace 43: Для расхода должен быть указан счет-источник.
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/routers/transactions.py", line 77, in create_transaction
+    transaction = transaction_service.create_transaction(
+  File "/home/true/Projects/money_flow_app/backend/app/services/transaction_service.py", line 51, in create_transaction
+    raise ValueError("Для расхода должен быть указан счет-источник.")
+ValueError: Для расхода должен быть указан счет-источник.
+2025-07-06 23:04:44 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 53 пользователем admin11323211@admin.ru
+2025-07-06 23:04:44 - INFO - app.routers.transactions - Транзакция с ID 88 успешно создана для workspace 53.
+2025-07-06 23:07:28 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 53 пользователем admin11323211@admin.ru
+2025-07-06 23:07:28 - INFO - app.routers.transactions - Транзакция с ID 89 успешно создана для workspace 53.
