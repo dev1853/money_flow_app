@@ -2,15 +2,17 @@
 
 from typing import Any, Dict, List, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import func, case, extract 
-from datetime import date, datetime, timedelta 
+from sqlalchemy import func, case, extract
+from datetime import date, datetime, timedelta
+from decimal import Decimal # Импортируем Decimal
 
 from .base import CRUDBase
-from .. import models, schemas
-from fastapi import HTTPException 
+from .. import models, schemas # Убедитесь, что 'schemas' импортируется
 
-class CRUDDashboard(CRUDBase[models.Transaction, schemas.TransactionCreate, schemas.TransactionUpdate]): 
-    
+from fastapi import HTTPException
+
+class CRUDDashboard(CRUDBase[models.Transaction, schemas.TransactionCreate, schemas.TransactionUpdate]):
+
     def get_summary_data(
         self, db: Session, *, owner_id: int, workspace_id: int, start_date: date, end_date: date
     ) -> schemas.DashboardSummaryData:
@@ -18,7 +20,7 @@ class CRUDDashboard(CRUDBase[models.Transaction, schemas.TransactionCreate, sche
 
         common_filters = [
             models.Transaction.workspace_id == workspace_id,
-            models.Transaction.created_by_user_id == owner_id,
+            models.Transaction.user_id == owner_id, # ИСПРАВЛЕНО: Изменено на user_id
             models.Transaction.transaction_date >= start_date,
             models.Transaction.transaction_date <= end_date
         ]
@@ -32,11 +34,11 @@ class CRUDDashboard(CRUDBase[models.Transaction, schemas.TransactionCreate, sche
             models.DdsArticle.article_type == 'expense',
             *common_filters
         ).scalar() or 0.0
-        
+
         net_profit_loss = total_income_result - total_expense_result
 
-        summary_item = schemas.SummaryItem(
-            currency="RUB", 
+        summary_item = schemas.SummaryItem( # Убедитесь, что 'SummaryItem' здесь доступен
+            currency="RUB",
             total_income=total_income_result,
             total_expense=total_expense_result,
             net_balance=net_profit_loss
@@ -67,7 +69,7 @@ class CRUDDashboard(CRUDBase[models.Transaction, schemas.TransactionCreate, sche
             )).label("total_amount")
         ).join(models.DdsArticle).filter(
             models.Transaction.workspace_id == workspace_id,
-            models.Transaction.created_by_user_id == owner_id,
+            models.Transaction.user_id == owner_id, # ИСПРАВЛЕНО: Изменено на user_id
             models.Transaction.transaction_date >= start_date,
             models.Transaction.transaction_date <= end_date
         )
@@ -92,7 +94,7 @@ class CRUDDashboard(CRUDBase[models.Transaction, schemas.TransactionCreate, sche
         end_date: date,
         period_type: str = "month"
     ) -> List[schemas.DashboardCashflowTrendData]:
-        print(f"--- DEBUG (Trend): get_cashflow_trend_by_period invoked. Period type: {period_type} ---") # ДОБАВЛЕНО
+        print(f"--- DEBUG (Trend): get_cashflow_trend_by_period invoked. Period type: {period_type} ---")
 
         if period_type == "month":
             group_by_col = func.date_trunc('month', models.Transaction.transaction_date)
@@ -111,11 +113,11 @@ class CRUDDashboard(CRUDBase[models.Transaction, schemas.TransactionCreate, sche
 
         results = db.query(
             group_by_col.label('period_start'),
-            func.sum(case((models.DdsArticle.article_type == 'income', models.Transaction.amount), else_=0)).label('total_income'), 
-            func.sum(case((models.DdsArticle.article_type == 'expense', models.Transaction.amount), else_=0)).label('total_expense'), 
+            func.sum(case((models.DdsArticle.article_type == 'income', models.Transaction.amount), else_=0)).label('total_income'),
+            func.sum(case((models.DdsArticle.article_type == 'expense', models.Transaction.amount), else_=0)).label('total_expense'),
         ).join(models.DdsArticle).filter(
             models.Transaction.workspace_id == workspace_id,
-            models.Transaction.created_by_user_id == owner_id,
+            models.Transaction.user_id == owner_id, # ИСПРАВЛЕНО: Изменено на user_id
             models.Transaction.transaction_date >= start_date,
             models.Transaction.transaction_date <= end_date
         ).group_by(
@@ -125,25 +127,25 @@ class CRUDDashboard(CRUDBase[models.Transaction, schemas.TransactionCreate, sche
         ).all()
 
         trend_data = []
-        for i, row in enumerate(results): # ДОБАВЛЕНО: итератор i
+        for i, row in enumerate(results):
             period_str = None
-            if row.period_start: # ДОБАВЛЕНО: Проверяем, что period_start не None
+            if row.period_start:
                 if period_type == "day":
                     period_str = row.period_start.strftime("%Y-%m-%d")
-                else: # month, quarter, year
-                    period_str = row.period_start.strftime("%Y-%m") # Общий формат для месяцев, кварталов, годов
-            
-            print(f"--- DEBUG (Trend - Row {i}): period_start: {row.period_start}, Formatted period_str: {period_str} ---") # ДОБАВЛЕНО
+                else:
+                    period_str = row.period_start.strftime("%Y-%m")
+
+            print(f"--- DEBUG (Trend - Row {i}): period_start: {row.period_start}, Formatted period_str: {period_str} ---")
 
             trend_data.append(schemas.DashboardCashflowTrendData(
-                period=period_str if period_str else "Unknown Period", # ИСПРАВЛЕНО: Если period_str None, то "Unknown Period"
-                currency="RUB", 
-                total_income=row.total_income if row.total_income is not None else Decimal('0.00'), # ИСПРАВЛЕНО: Decimal('0.00')
-                total_expense=row.total_expense if row.total_expense is not None else Decimal('0.00'), # ИСПРАВЛЕНО: Decimal('0.00')
-                net_balance=(row.total_income - row.total_expense) if row.total_income is not None and row.total_expense is not None else Decimal('0.00') # ИСПРАВЛЕНО: Decimal('0.00')
+                period=period_str if period_str else "Unknown Period",
+                currency="RUB",
+                income=row.total_income if row.total_income is not None else Decimal('0.00'),
+                expense=row.total_expense if row.total_expense is not None else Decimal('0.00'),
+                net_balance=(row.total_income - row.total_expense) if row.total_income is not None and row.total_expense is not None else Decimal('0.00')
             ))
-        
-        print(f"--- DEBUG (Trend): Trend data fetched. Count: {len(trend_data)} ---") # ДОБАВЛЕНО
+
+        print(f"--- DEBUG (Trend): Trend data fetched. Count: {len(trend_data)} ---")
 
         return trend_data
 

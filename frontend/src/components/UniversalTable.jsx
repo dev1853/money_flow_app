@@ -1,12 +1,18 @@
 // frontend/src/components/UniversalTable.jsx
 
 import React from 'react';
+import Alert from './Alert';
 import Loader from './Loader';
 import EmptyState from './EmptyState';
 
-function UniversalTable({ headers, data, loading, emptyMessage = "Нет данных для отображения." }) {
+function UniversalTable({ headers, data, loading, emptyMessage = "Нет данных для отображения.", footer }) {
   if (loading) {
     return <Loader />;
+  }
+
+  if (!headers || !Array.isArray(headers)) {
+    console.error("UniversalTable: `headers` prop is required and must be an array.");
+    return <Alert type="error">Ошибка конфигурации таблицы: отсутствуют заголовки.</Alert>;
   }
 
   if (!data || data.length === 0) { // Убедимся, что data - массив и не пуст
@@ -39,6 +45,11 @@ function UniversalTable({ headers, data, loading, emptyMessage = "Нет дан�
             </tr>
           ))}
         </tbody>
+        {footer && (
+          <tfoot className="bg-gray-50 border-t-2 border-gray-200">
+            {footer}
+          </tfoot>
+        )}
       </table>
     </div>
   );

@@ -585,3 +585,1820 @@ ValueError: Для расхода должен быть указан счет-и
 2025-07-06 23:04:44 - INFO - app.routers.transactions - Транзакция с ID 88 успешно создана для workspace 53.
 2025-07-06 23:07:28 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 53 пользователем admin11323211@admin.ru
 2025-07-06 23:07:28 - INFO - app.routers.transactions - Транзакция с ID 89 успешно создана для workspace 53.
+2025-07-06 23:19:26 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 31, in get_dashboard_summary
+    return crud.crud_dashboard.get_summary_data(
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_summary_data'
+2025-07-06 23:19:26 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 31, in get_dashboard_summary
+    return crud.crud_dashboard.get_summary_data(
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_summary_data'
+2025-07-06 23:19:26 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 54, in get_dashboard_cashflow_trend
+    return crud.crud_dashboard.get_cashflow_trend_data(
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_cashflow_trend_data'
+2025-07-06 23:19:26 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 54, in get_dashboard_cashflow_trend
+    return crud.crud_dashboard.get_cashflow_trend_data(
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_cashflow_trend_data'
+2025-07-06 23:19:27 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 54, in get_dashboard_cashflow_trend
+    return crud.crud_dashboard.get_cashflow_trend_data(
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_cashflow_trend_data'
+2025-07-06 23:19:27 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 31, in get_dashboard_summary
+    return crud.crud_dashboard.get_summary_data(
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_summary_data'
+2025-07-06 23:19:33 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 31, in get_dashboard_summary
+    return crud.crud_dashboard.get_summary_data(
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_summary_data'
+2025-07-06 23:19:33 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 54, in get_dashboard_cashflow_trend
+    return crud.crud_dashboard.get_cashflow_trend_data(
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_cashflow_trend_data'
+2025-07-06 23:20:58 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 31, in get_dashboard_summary
+    owner_id=current_user.id,
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_summary_data'
+2025-07-06 23:20:58 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 54, in get_dashboard_cashflow_trend
+    start_date=start_date,
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_cashflow_trend_data'
+2025-07-06 23:22:11 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 54, in get_dashboard_cashflow_trend
+    return crud.crud_dashboard.get_cashflow_trend_by_period( # ИСПРАВЛЕНО: Изменено имя метода
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_cashflow_trend_data'
+2025-07-06 23:22:11 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 31, in get_dashboard_summary
+    return crud.crud_dashboard.get_summary_data(
+AttributeError: module 'app.crud.crud_dashboard' has no attribute 'get_summary_data'
+2025-07-06 23:23:17 - INFO - uvicorn.error - Shutting down
+2025-07-06 23:23:17 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-06 23:23:17 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-06 23:23:17 - INFO - uvicorn.error - Finished server process [247184]
+2025-07-06 23:23:21 - INFO - uvicorn.error - Started server process [285059]
+2025-07-06 23:23:21 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-06 23:23:21 - INFO - uvicorn.error - Application startup complete.
+2025-07-06 23:23:21 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-06 23:23:24 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 54, in get_dashboard_cashflow_trend
+    return crud.dashboard_crud.get_cashflow_trend_by_period( # ИСПРАВЛЕНО: Изменено имя метода и используется экземпляр dashboard_crud
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 118, in get_cashflow_trend_by_period
+    models.Transaction.created_by_user_id == owner_id,
+AttributeError: type object 'Transaction' has no attribute 'created_by_user_id'
+2025-07-06 23:23:24 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 31, in get_dashboard_summary
+    return crud.dashboard_crud.get_summary_data( # ИСПРАВЛЕНО: Используем экземпляр dashboard_crud
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 21, in get_summary_data
+    models.Transaction.created_by_user_id == owner_id,
+AttributeError: type object 'Transaction' has no attribute 'created_by_user_id'
+2025-07-06 23:25:03 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 31, in get_dashboard_summary
+    return crud.dashboard_crud.get_summary_data( # ИСПРАВЛЕНО: Используем экземпляр dashboard_crud
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 21, in get_summary_data
+    models.Transaction.workspace_id == workspace_id,
+AttributeError: type object 'Transaction' has no attribute 'created_by_user_id'
+2025-07-06 23:25:03 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 54, in get_dashboard_cashflow_trend
+    return crud.dashboard_crud.get_cashflow_trend_by_period( # ИСПРАВЛЕНО: Изменено имя метода и используется экземпляр dashboard_crud
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 118, in get_cashflow_trend_by_period
+    models.Transaction.workspace_id == workspace_id,
+AttributeError: type object 'Transaction' has no attribute 'created_by_user_id'
+2025-07-06 23:26:42 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 31, in get_dashboard_summary
+    return crud.dashboard_crud.get_summary_data( # ИСПРАВЛЕНО: Используем экземпляр dashboard_crud
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 21, in get_summary_data
+    models.Transaction.workspace_id == workspace_id,
+AttributeError: type object 'Transaction' has no attribute 'created_by_user_id'
+2025-07-06 23:26:42 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 54, in get_dashboard_cashflow_trend
+    return crud.dashboard_crud.get_cashflow_trend_by_period( # ИСПРАВЛЕНО: Изменено имя метода и используется экземпляр dashboard_crud
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 118, in get_cashflow_trend_by_period
+    models.Transaction.workspace_id == workspace_id,
+AttributeError: type object 'Transaction' has no attribute 'created_by_user_id'
+2025-07-06 23:27:25 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 31, in get_dashboard_summary
+    owner_id=current_user.id,
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 21, in get_summary_data
+    models.Transaction.workspace_id == workspace_id,
+AttributeError: type object 'Transaction' has no attribute 'created_by_user_id'
+2025-07-06 23:27:25 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 54, in get_dashboard_cashflow_trend
+    start_date=start_date,
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 118, in get_cashflow_trend_by_period
+    models.Transaction.workspace_id == workspace_id,
+AttributeError: type object 'Transaction' has no attribute 'created_by_user_id'
+2025-07-06 23:27:30 - INFO - uvicorn.error - Shutting down
+2025-07-06 23:27:31 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-06 23:27:31 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-06 23:27:31 - INFO - uvicorn.error - Finished server process [285059]
+2025-07-06 23:27:33 - INFO - uvicorn.error - Started server process [288286]
+2025-07-06 23:27:33 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-06 23:27:33 - INFO - uvicorn.error - Application startup complete.
+2025-07-06 23:27:33 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-06 23:27:54 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 29, in get_dashboard_summary
+    return crud.dashboard_crud.get_summary_data( # ИСПРАВЛЕНО: Используем экземпляр dashboard_crud
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 39, in get_summary_data
+    summary_item = schemas.SummaryItem(
+AttributeError: module 'app.schemas' has no attribute 'SummaryItem'
+2025-07-06 23:27:54 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 50, in get_dashboard_cashflow_trend
+    return crud.dashboard_crud.get_cashflow_trend_by_period( # ИСПРАВЛЕНО: Изменено имя метода и используется экземпляр dashboard_crud
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 139, in get_cashflow_trend_by_period
+    trend_data.append(schemas.DashboardCashflowTrendData(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/pydantic/main.py", line 164, in __init__
+    __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for DashboardCashflowTrendData
+income
+  Field required [type=missing, input_value={'period': '2025-07-06', ...: Decimal('2949999.00')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+expense
+  Field required [type=missing, input_value={'period': '2025-07-06', ...: Decimal('2949999.00')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+2025-07-06 23:29:29 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 50, in get_dashboard_cashflow_trend
+    return crud.dashboard_crud.get_cashflow_trend_by_period( # ИСПРАВЛЕНО: Изменено имя метода и используется экземпляр dashboard_crud
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 139, in get_cashflow_trend_by_period
+    trend_data.append(schemas.DashboardCashflowTrendData(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/pydantic/main.py", line 164, in __init__
+    __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for DashboardCashflowTrendData
+income
+  Field required [type=missing, input_value={'period': '2025-07-06', ...: Decimal('2949999.00')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+expense
+  Field required [type=missing, input_value={'period': '2025-07-06', ...: Decimal('2949999.00')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+2025-07-06 23:29:29 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/dashboard.py", line 29, in get_dashboard_summary
+    return crud.dashboard_crud.get_summary_data( # ИСПРАВЛЕНО: Используем экземпляр dashboard_crud
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_dashboard.py", line 39, in get_summary_data
+    summary_item = schemas.SummaryItem(
+AttributeError: module 'app.schemas' has no attribute 'SummaryItem'
+2025-07-06 23:31:07 - INFO - uvicorn.error - Shutting down
+2025-07-06 23:31:07 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-06 23:31:07 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-06 23:31:07 - INFO - uvicorn.error - Finished server process [288286]
+2025-07-06 23:31:09 - INFO - uvicorn.error - Started server process [290830]
+2025-07-06 23:31:09 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-06 23:31:09 - INFO - uvicorn.error - Application startup complete.
+2025-07-06 23:31:09 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-06 23:38:37 - INFO - uvicorn.error - Shutting down
+2025-07-06 23:38:37 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-06 23:38:37 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-06 23:38:37 - INFO - uvicorn.error - Finished server process [290830]
+2025-07-06 23:38:50 - INFO - uvicorn.error - Started server process [296962]
+2025-07-06 23:38:50 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-06 23:38:50 - INFO - uvicorn.error - Application startup complete.
+2025-07-06 23:38:50 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-06 23:44:52 - INFO - uvicorn.error - Shutting down
+2025-07-06 23:44:52 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-06 23:44:52 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-06 23:44:52 - INFO - uvicorn.error - Finished server process [296962]
+2025-07-06 23:44:55 - INFO - uvicorn.error - Started server process [301508]
+2025-07-06 23:44:55 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-06 23:44:55 - INFO - uvicorn.error - Application startup complete.
+2025-07-06 23:44:55 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-06 23:56:43 - INFO - uvicorn.error - Shutting down
+2025-07-06 23:56:44 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-06 23:56:44 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-06 23:56:44 - INFO - uvicorn.error - Finished server process [301508]
+2025-07-06 23:56:46 - INFO - uvicorn.error - Started server process [310521]
+2025-07-06 23:56:46 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-06 23:56:46 - INFO - uvicorn.error - Application startup complete.
+2025-07-06 23:56:46 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-07 00:00:47 - INFO - uvicorn.error - Shutting down
+2025-07-07 00:00:47 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-07 00:00:47 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-07 00:00:47 - INFO - uvicorn.error - Finished server process [310521]
+2025-07-07 00:00:49 - INFO - uvicorn.error - Started server process [313784]
+2025-07-07 00:00:49 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-07 00:00:49 - INFO - uvicorn.error - Application startup complete.
+2025-07-07 00:00:49 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-07 00:00:51 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/reports.py", line 28, in get_dds_report
+    return crud.report_crud.get_dds_report(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_report.py", line 71, in get_dds_report
+    article_type=article.article_type.value,
+AttributeError: 'str' object has no attribute 'value'
+2025-07-07 00:02:32 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/reports.py", line 28, in get_dds_report
+    return crud.report_crud.get_dds_report(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_report.py", line 71, in get_dds_report
+    article_type=article.article_type, # ИСПРАВЛЕНО: Удалено .value
+AttributeError: 'str' object has no attribute 'value'
+2025-07-07 00:03:39 - INFO - uvicorn.error - Shutting down
+2025-07-07 00:03:39 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-07 00:03:39 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-07 00:03:39 - INFO - uvicorn.error - Finished server process [313784]
+2025-07-07 00:03:42 - INFO - uvicorn.error - Started server process [316091]
+2025-07-07 00:03:42 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-07 00:03:42 - INFO - uvicorn.error - Application startup complete.
+2025-07-07 00:03:42 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-07 00:03:44 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/reports.py", line 28, in get_dds_report
+    return crud.report_crud.get_dds_report(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_report.py", line 68, in get_dds_report
+    schemas.DdsReportItem(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/pydantic/main.py", line 164, in __init__
+    __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for DdsReportItem
+amount
+  Field required [type=missing, input_value={'article_id': 853, 'arti...alance': Decimal('0.0')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+percentage_of_total
+  Field required [type=missing, input_value={'article_id': 853, 'arti...alance': Decimal('0.0')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+2025-07-07 00:04:37 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/reports.py", line 28, in get_dds_report
+    return crud.report_crud.get_dds_report(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_report.py", line 68, in get_dds_report
+    schemas.DdsReportItem(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/pydantic/main.py", line 164, in __init__
+    __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for DdsReportItem
+amount
+  Field required [type=missing, input_value={'article_id': 853, 'arti...alance': Decimal('0.0')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+percentage_of_total
+  Field required [type=missing, input_value={'article_id': 853, 'arti...alance': Decimal('0.0')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+2025-07-07 00:04:37 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/reports.py", line 28, in get_dds_report
+    return crud.report_crud.get_dds_report(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_report.py", line 68, in get_dds_report
+    schemas.DdsReportItem(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/pydantic/main.py", line 164, in __init__
+    __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for DdsReportItem
+amount
+  Field required [type=missing, input_value={'article_id': 853, 'arti...alance': Decimal('0.0')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+percentage_of_total
+  Field required [type=missing, input_value={'article_id': 853, 'arti...alance': Decimal('0.0')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+2025-07-07 00:04:38 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/reports.py", line 28, in get_dds_report
+    return crud.report_crud.get_dds_report(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_report.py", line 68, in get_dds_report
+    schemas.DdsReportItem(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/pydantic/main.py", line 164, in __init__
+    __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for DdsReportItem
+amount
+  Field required [type=missing, input_value={'article_id': 853, 'arti...alance': Decimal('0.0')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+percentage_of_total
+  Field required [type=missing, input_value={'article_id': 853, 'arti...alance': Decimal('0.0')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+2025-07-07 00:05:01 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 396, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/reports.py", line 28, in get_dds_report
+    return crud.report_crud.get_dds_report(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_report.py", line 68, in get_dds_report
+    schemas.DdsReportItem(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/pydantic/main.py", line 164, in __init__
+    __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for DdsReportItem
+amount
+  Field required [type=missing, input_value={'article_id': 853, 'arti...alance': Decimal('0.0')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+percentage_of_total
+  Field required [type=missing, input_value={'article_id': 853, 'arti...alance': Decimal('0.0')}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.5/v/missing
+2025-07-07 00:05:02 - INFO - uvicorn.error - Shutting down
+2025-07-07 00:05:03 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-07 00:05:03 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-07 00:05:03 - INFO - uvicorn.error - Finished server process [316091]
+2025-07-07 00:12:38 - INFO - uvicorn.error - Started server process [322861]
+2025-07-07 00:12:38 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-07 00:12:38 - INFO - uvicorn.error - Application startup complete.
+2025-07-07 00:12:38 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+2025-07-07 16:53:03 - INFO - uvicorn.error - Shutting down
+2025-07-07 16:53:03 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-07-07 16:53:03 - INFO - uvicorn.error - Application shutdown complete.
+2025-07-07 16:53:04 - INFO - uvicorn.error - Finished server process [322861]
+2025-07-07 16:53:11 - INFO - uvicorn.error - Started server process [659845]
+2025-07-07 16:53:11 - INFO - uvicorn.error - Waiting for application startup.
+2025-07-07 16:53:11 - INFO - uvicorn.error - Application startup complete.
+2025-07-07 16:53:11 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)

@@ -1,70 +1,126 @@
 # backend/app/crud/crud_report.py
 
-from typing import Any, Dict, List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import func, case, and_
 from datetime import date
+from typing import List, Dict, Any, Optional
+from decimal import Decimal # Импортируем Decimal
 
+from app import models, schemas
 from .base import CRUDBase
-from .. import models, schemas, crud
 
-# НОВЫЕ ИМПОРТЫ ИЗ report_generators
-from .report_generators import dds_report as dds_report_generator # <--- НОВЫЙ ИМПОРТ
+class CRUDReport(CRUDBase[models.Transaction, schemas.TransactionCreate, schemas.TransactionUpdate]):
 
-
-class CRUDReport(CRUDBase[models.User, schemas.UserCreate, schemas.UserUpdate]):
-    # ... (get, get_multi_by_owner_and_workspace, get_active_rules, find_matching_dds_article_id, get_profit_and_loss_report) ...
-
-    # НОВОЕ: Метод для получения отчета ДДС, который просто вызывает функцию из нового модуля
     def get_dds_report(
         self, db: Session, *, owner_id: int, workspace_id: int, start_date: date, end_date: date
-    ) -> List[Dict[str, Any]]:
-        """
-        Формирует Отчет о движении денежных средств (ДДС), вызывая специализированный генератор.
-        """
-        return dds_report_generator.get_dds_report( # <--- Вызываем функцию из нового файла
-            db=db,
-            owner_id=owner_id,
-            workspace_id=workspace_id,
-            start_date=start_date,
-            end_date=end_date
-        )
+    ) -> List[schemas.DdsReportItem]:
+        dds_articles = db.query(models.DdsArticle).filter(
+            models.DdsArticle.workspace_id == workspace_id
+        ).order_by(models.DdsArticle.name).all()
 
-    # НОВОЕ: Метод для получения Отчета о Прибылях и Убытках (ОПиУ)
-    # Этот метод пока оставим здесь, пока не вынесем его в отдельный файл profit_loss_report.py
-    def get_profit_and_loss_report(
+        report_data = []
+
+        common_transaction_filters = [
+            models.Transaction.workspace_id == workspace_id,
+            models.Transaction.user_id == owner_id,
+        ]
+
+        # Расчет общего оборота для определения процента
+        total_turnover_sum_query = db.query(
+            func.sum(
+                case(
+                    (models.DdsArticle.article_type == 'income', models.Transaction.amount),
+                    (models.DdsArticle.article_type == 'expense', -models.Transaction.amount),
+                    else_=0
+                )
+            )
+        ).join(models.DdsArticle).filter(
+            *common_transaction_filters,
+            models.Transaction.transaction_date >= start_date,
+            models.Transaction.transaction_date <= end_date
+        )
+        total_report_turnover = total_turnover_sum_query.scalar() or Decimal('0.0')
+
+        for article in dds_articles:
+            initial_balance_query = db.query(
+                func.sum(
+                    case(
+                        (models.DdsArticle.article_type == 'income', models.Transaction.amount),
+                        (models.DdsArticle.article_type == 'expense', -models.Transaction.amount),
+                        else_=0
+                    )
+                )
+            ).join(models.DdsArticle).filter(
+                *common_transaction_filters,
+                models.Transaction.dds_article_id == article.id,
+                models.Transaction.transaction_date < start_date
+            )
+            initial_balance = initial_balance_query.scalar() or Decimal('0.0')
+
+            turnover_query = db.query(
+                func.sum(
+                    case(
+                        (models.DdsArticle.article_type == 'income', models.Transaction.amount),
+                        (models.DdsArticle.article_type == 'expense', -models.Transaction.amount),
+                        else_=0
+                    )
+                )
+            ).join(models.DdsArticle).filter(
+                *common_transaction_filters,
+                models.Transaction.dds_article_id == article.id,
+                models.Transaction.transaction_date >= start_date,
+                models.Transaction.transaction_date <= end_date
+            )
+            turnover = turnover_query.scalar() or Decimal('0.0')
+
+            final_balance = initial_balance + turnover
+
+            # Расчет amount и percentage_of_total
+            percentage_of_total = Decimal('0.0')
+            if total_report_turnover != Decimal('0.0'):
+                # Убедимся, что turnover не является слишком большим или маленьким для корректного расчета процента
+                percentage_of_total = (turnover / total_report_turnover * Decimal('100.0')).quantize(Decimal('0.01'))
+
+            report_data.append(
+                schemas.DdsReportItem(
+                    article_id=article.id,
+                    article_name=article.name,
+                    article_type=article.article_type,
+                    initial_balance=initial_balance,
+                    turnover=turnover,
+                    final_balance=final_balance,
+                    amount=turnover, # Это может быть также abs(turnover) в зависимости от того, что ожидается
+                    percentage_of_total=percentage_of_total
+                )
+            )
+        return report_data
+    
+    def get_profit_loss_report(
         self, db: Session, *, owner_id: int, workspace_id: int, start_date: date, end_date: date
     ) -> schemas.ProfitLossReport:
-        """
-        Формирует Отчет о прибылях и убытках (ОПиУ) за указанный период.
-        """
-        print(f"DEBUG (Report - P&L): Generating P&L report for workspace {workspace_id} from {start_date} to {end_date}")
-
-        total_income_result = db.query(func.sum(models.Transaction.amount)).filter(
+        common_filters = [
             models.Transaction.workspace_id == workspace_id,
-            models.Transaction.owner_id == owner_id,
-            models.Transaction.transaction_type == 'income',
-            models.Transaction.date >= start_date,
-            models.Transaction.date <= end_date
-        ).scalar() or 0.0
+            models.Transaction.user_id == owner_id,
+            models.Transaction.transaction_date >= start_date,
+            models.Transaction.transaction_date <= end_date
+        ]
 
-        total_expense_result = db.query(func.sum(models.Transaction.amount)).filter(
-            models.Transaction.workspace_id == workspace_id,
-            models.Transaction.owner_id == owner_id,
-            models.Transaction.transaction_type == 'expense',
-            models.Transaction.date >= start_date,
-            models.Transaction.date <= end_date
-        ).scalar() or 0.0
+        total_income = db.query(func.sum(models.Transaction.amount)).join(models.DdsArticle).filter(
+            models.DdsArticle.article_type == 'income',
+            *common_filters
+        ).scalar() or Decimal('0.0')
 
-        net_profit_result = total_income_result - total_expense_result
+        total_expense = db.query(func.sum(models.Transaction.amount)).join(models.DdsArticle).filter(
+            models.DdsArticle.article_type == 'expense',
+            *common_filters
+        ).scalar() or Decimal('0.0')
 
-        print(f"DEBUG (Report - P&L): Total Income: {total_income_result}, Total Expense: {total_expense_result}, Net Profit: {net_profit_result}")
+        net_profit = total_income - total_expense
 
         return schemas.ProfitLossReport(
-            total_income=total_income_result,
-            total_expense=total_expense_result,
-            net_profit=net_profit_result
+            total_income=total_income,
+            total_expense=total_expense,
+            net_profit=net_profit
         )
 
-# Создаем экземпляр CRUD-операций для Report (остается как было)
-report_crud = CRUDReport(models.User)
+report_crud = CRUDReport(models.Transaction)

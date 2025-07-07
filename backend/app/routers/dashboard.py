@@ -6,7 +6,6 @@ from typing import List, Optional
 from datetime import date
 
 from app import crud, models, schemas
-# --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
 from app.dependencies import get_db, get_current_active_user, get_current_active_workspace
 
 router = APIRouter(
@@ -19,7 +18,6 @@ router = APIRouter(
 def get_dashboard_summary(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
-    # --- ИСПОЛЬЗУЕМ ПРАВИЛЬНУЮ ЗАВИСИМОСТЬ ---
     current_workspace: models.Workspace = Depends(get_current_active_workspace),
     start_date: date = Query(..., description="Дата начала периода (ГГГГ-ММ-ДД)"),
     end_date: date = Query(..., description="Дата окончания периода (ГГГГ-ММ-ДД)"),
@@ -28,10 +26,10 @@ def get_dashboard_summary(
     Получает сводные данные для дашборда (общий доход, расход, чистый баланс)
     для текущего активного рабочего пространства.
     """
-    return crud.crud_dashboard.get_summary_data(
+    return crud.dashboard_crud.get_summary_data( # ИСПРАВЛЕНО: Используем экземпляр dashboard_crud
         db=db,
         owner_id=current_user.id,
-        workspace_id=current_workspace.id, # Используем ID из правильной зависимости
+        workspace_id=current_workspace.id,
         start_date=start_date,
         end_date=end_date,
     )
@@ -40,7 +38,6 @@ def get_dashboard_summary(
 def get_dashboard_cashflow_trend(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
-    # --- ИСПОЛЬЗУЕМ ПРАВИЛЬНУЮ ЗАВИСИМОСТЬ ---
     current_workspace: models.Workspace = Depends(get_current_active_workspace),
     start_date: date = Query(..., description="Дата начала периода (ГГГГ-ММ-ДД)"),
     end_date: date = Query(..., description="Дата окончания периода (ГГГГ-ММ-ДД)"),
@@ -50,10 +47,10 @@ def get_dashboard_cashflow_trend(
     Получает данные для графика движения денежных потоков
     для текущего активного рабочего пространства.
     """
-    # Этот эндпоинт теперь также защищен и работает в контексте активного воркспейса
-    return crud.crud_dashboard.get_cashflow_trend_data(
+    return crud.dashboard_crud.get_cashflow_trend_by_period( # ИСПРАВЛЕНО: Изменено имя метода и используется экземпляр dashboard_crud
         db=db,
         workspace_id=current_workspace.id,
+        owner_id=current_user.id,
         start_date=start_date,
         end_date=end_date,
         period_type=period_type

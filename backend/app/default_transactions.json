@@ -2,7 +2,7 @@
   {
     "account_name": "Кошелек", 
     "dds_article_name": "Поступления от клиентов",
-    "date": "2025-05-01",
+    "date": "2025-07-01",
     "amount": 15000.00,
     "description": "Оплата за услуги",
     "contractor": "ИП Иванов",
@@ -12,17 +12,17 @@
   {
     "account_name": "Карта Tinkoff", 
     "dds_article_name": "Оплата труда",
-    "date": "2025-05-05",
+    "date": "2025-07-05",
     "amount": 5000.00,
-    "description": "Зарплата менеджеру",
+    "description": "Оплата за услуги",
     "contractor": null,
     "employee": "Петров А.А.",
-    "type": "EXPENSE"
+    "type": "INCOME"
   },
   {
     "account_name": "Кошелек", 
     "dds_article_name": "Платежи поставщикам",
-    "date": "2025-05-10",
+    "date": "2025-07-10",
     "amount": 3000.00,
     "description": "Покупка канцтоваров",
     "contractor": "ООО ОфисМаг",

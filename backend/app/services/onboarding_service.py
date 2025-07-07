@@ -50,8 +50,8 @@ class OnboardingService:
                 return
 
             accounts_to_create = [
-                {"name": "Кошелек", "account_type_id": cash_type.id, "balance": 0.0},
-                {"name": "Карта Tinkoff", "account_type_id": bank_type.id, "balance": 0.0},
+                {"name": "Кошелек", "account_type_id": cash_type.id, "balance": 12000.0},
+                {"name": "Карта Tinkoff", "account_type_id": bank_type.id, "balance": -5000.0},
             ]
 
             for account_data in accounts_to_create:

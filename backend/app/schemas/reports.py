@@ -1,25 +1,26 @@
-# /backend/app/schemas/reports.py
+# backend/app/schemas/reports.py
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel
 from decimal import Decimal
 from typing import List
 
-# Схема для строки в Отчете о Движении Денежных Средств (ДДС)
 class DdsReportItem(BaseModel):
     article_id: int
     article_name: str
+    article_type: str
+    initial_balance: Decimal
+    turnover: Decimal
+    final_balance: Decimal
     amount: Decimal
-    percentage_of_total: float = Field(..., ge=0, le=100)
+    percentage_of_total: Decimal
 
-# --- СХЕМА, КОТОРАЯ ВЫЗЫВАЛА ОШИБКУ ---
+class DdsReport(BaseModel):
+    items: List[DdsReportItem]
+    total_initial_balance: Decimal
+    total_turnover: Decimal
+    total_final_balance: Decimal
+
 class ProfitLossReport(BaseModel):
     total_income: Decimal
     total_expense: Decimal
     net_profit: Decimal
-    profit_margin: float # Рентабельность
-
-# Схема для отчета по балансам счетов
-class AccountBalance(BaseModel):
-    name: str
-    balance: Decimal
-    currency: str

@@ -16,7 +16,7 @@ from app.config import settings
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30 
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):

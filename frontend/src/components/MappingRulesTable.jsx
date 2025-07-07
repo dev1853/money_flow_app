@@ -1,67 +1,65 @@
 // frontend/src/components/MappingRulesTable.jsx
 import React from 'react';
 import Button from './Button';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import UniversalTable from './UniversalTable';
 
 const MappingRulesTable = ({ rules, onEdit, onDelete }) => {
   // Определение колонок для UniversalTable
-  const columns = [
+  const headers = [
     {
-      header: 'Ключевое слово',
-      accessor: 'keyword',
-      align: 'left',
-      // render не нужен, если UniversalTable рендерит по умолчанию и keyword не требует спец. форматирования
-      // Если нужны специфичные стили, добавить их в render: (row) => (<span className="my-custom-class">{row.keyword}</span>),
+      label: 'Ключевое слово',
+      key: 'keyword',
+      className: 'text-left',
     },
     {
-      header: 'Статья ДДС',
-      accessor: 'dds_article.name',
-      align: 'left',
+      label: 'Статья ДДС',
+      key: 'dds_article_name', // Простой ключ для React
+      className: 'text-left',
       render: (row) => ( // Используем render для доступа к вложенному объекту dds_article
         <span>{row.dds_article ? row.dds_article.name : 'Неизвестно'}</span>
       ),
     },
     {
-      header: 'Тип транзакции',
-      accessor: 'transaction_type',
-      align: 'left',
+      label: 'Тип транзакции',
+      key: 'transaction_type',
+      className: 'text-left',
       render: (row) => ( // Кастомный рендер для преобразования значения
         <span>
-          {row.transaction_type === 'income' ? 'Доход' : (row.transaction_type === 'expense' ? 'Расход' : 'Оба')}
+          {row.transaction_type === 'INCOME' ? 'Доход' : (row.transaction_type === 'EXPENSE' ? 'Расход' : 'Не указан')}
         </span>
       ),
     },
     {
-      header: 'Приоритет',
-      accessor: 'priority',
-      align: 'center',
+      label: 'Приоритет',
+      key: 'priority',
+      className: 'text-center',
     },
     {
-      header: 'Активно',
-      accessor: 'is_active',
-      align: 'center',
+      label: 'Активно',
+      key: 'is_active',
+      className: 'text-center',
       render: (row) => ( // Кастомный рендер для отображения "Да"/"Нет"
         row.is_active ? (
-          <span className="text-green-500">Да</span>
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Да</span>
         ) : (
-          <span className="text-red-500">Нет</span>
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Нет</span>
         )
       ),
     },
     {
-      header: 'Действия',
-      accessor: 'actions',
-      align: 'right', // Выравнивание кнопок вправо
+      label: 'Действия',
+      key: 'actions',
+      className: 'text-right',
       render: (row) => ( // Кастомизированный рендер для кнопок действий
-        <>
-          <Button variant="outline" size="sm" className="mr-2" onClick={() => onEdit(row)}>
-            <PencilIcon className="h-4 w-4" />
+        <div className="flex justify-end space-x-2">
+          <Button variant="icon" onClick={() => onEdit(row)} title="Редактировать">
+            <PencilSquareIcon className="h-5 w-5"/>
           </Button>
-          <Button variant="danger" size="sm" onClick={() => onDelete(row)}>
-            <TrashIcon className="h-4 w-4" />
+          <Button variant="icon" onClick={() => onDelete(row)} className="text-red-600 hover:text-red-800" title="Удалить">
+            <TrashIcon className="h-5 w-5"/>
           </Button>
-        </>
+        </div>
       ),
     },
   ];
@@ -69,7 +67,7 @@ const MappingRulesTable = ({ rules, onEdit, onDelete }) => {
   return (
     <UniversalTable 
       data={rules} 
-      columns={columns} 
+      headers={headers} 
       emptyMessage="Пока нет правил сопоставления. Добавьте первое!" 
     />
   );

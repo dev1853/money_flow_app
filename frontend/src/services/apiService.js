@@ -126,6 +126,13 @@ export const apiService = {
     // Reports
     getDdsReport: (params) => request('get', 'reports/dds', null, params),
 
+    // Dashboard
+    getProfitLossReport: (params) => request('get', 'reports/profit-loss', null, params),
+    getDashboardSummary: (workspaceId, startDate, endDate) =>
+        request('get', 'dashboard/summary', null, { workspace_id: workspaceId, start_date: startDate, end_date: endDate }),
+    getDashboardCashflowTrend: (workspaceId, startDate, endDate, periodType) =>
+        request('get', 'dashboard/cashflow-trend', null, { workspace_id: workspaceId, start_date: startDate, end_date: endDate, period_type: periodType }),
+
     // Statement
     uploadStatement: (formData) => request('post', 'statement/upload', formData, {
         headers: {
