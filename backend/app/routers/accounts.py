@@ -91,3 +91,23 @@ def delete_account(
     except Exception:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Произошла непредвиденная ошибка.")
+    
+@router.delete("/{account_id}", response_model=schemas.Account)
+def archive_account( # Функция переименована, чтобы отразить ее новое назначение
+    *,
+    db: Session = Depends(get_db),
+    account: models.Account = Depends(get_account_for_user),
+) -> Any:
+    """Архивировать счет (установить is_active=False) вместо удаления."""
+    try:
+        # Вызываем новый метод archive_account из сервиса
+        archived_account = account_service.archive_account(db=db, account_to_archive=account)
+        db.commit()
+        db.refresh(archived_account) # Обновляем объект, чтобы он отражал новое состояние is_active
+        return archived_account
+    except AccountDeletionError as e: # Исключение оставлено для обратной совместимости, если нужна специфичная ошибка
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.detail)
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Произошла непредвиденная ошибка.")

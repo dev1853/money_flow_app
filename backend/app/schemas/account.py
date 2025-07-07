@@ -24,7 +24,7 @@ class Account(BaseSchema):
     
 class AccountBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
-    balance: Decimal = Field(Decimal('0.0'), decimal_places=2)
+    balance: Decimal
     currency: str = Field("RUB", min_length=3, max_length=3)
     is_active: bool = True
     account_type_id: int 
@@ -33,17 +33,27 @@ class AccountBase(BaseModel):
         from_attributes = True
 
 # Схема для создания Счета
-class AccountCreate(AccountBase):
-    workspace_id: int
-    pass
+class AccountCreate(BaseModel): # НЕ НАСЛЕДУЕТ ОТ AccountBase, чтобы контролировать balance
+    name: str = Field(..., min_length=1, max_length=100)
+    initial_balance: Decimal = Field(Decimal('0.0'), decimal_places=2) # Принимает initial_balance
+    currency: str = Field("RUB", min_length=3, max_length=3)
+    is_active: bool = True
+    account_type_id: int 
+    workspace_id: int # ID рабочего пространства также требуется при создании
+
+    class Config:
+        from_attributes = True
 
 # Схема для обновления Счета
-class AccountUpdate(AccountBase):
+class AccountUpdate(BaseModel):
     name: Optional[str] = None
-    balance: Optional[Decimal] = None
+    balance: Optional[Decimal] = None # Обновление может изменять баланс
     currency: Optional[str] = None
     is_active: Optional[bool] = None
     account_type_id: Optional[int] = None 
+
+    class Config:
+        from_attributes = True
 
 # Схема для чтения данных из БД, включая связанный объект AccountType
 class AccountInDBBase(AccountBase):

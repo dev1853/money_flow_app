@@ -19,7 +19,8 @@ class OnboardingService:
 
         workspace = self._create_default_workspace(db, user=user)
 
-        self._create_default_accounts(db, user=user, workspace=workspace)
+        # ИСПРАВЛЕНИЕ: Этот метод будет обновлен ниже
+        self._create_default_accounts(db, user=user, workspace=workspace) 
         self._create_default_dds_articles(db, user=user, workspace=workspace)
 
         # Вызываем исправленный метод
@@ -49,19 +50,29 @@ class OnboardingService:
                 print("--- ERROR: Missing default account types (cash or bank_account). Cannot create default accounts. ---")
                 return
 
-            accounts_to_create = [
-                {"name": "Кошелек", "account_type_id": cash_type.id, "balance": 12000.0},
-                {"name": "Карта Tinkoff", "account_type_id": bank_type.id, "balance": -5000.0},
+            # ИСПРАВЛЕНИЕ: Изменено "balance" на "initial_balance" в словарях
+            accounts_data_for_creation = [
+                {"name": "Кошелек", "account_type_id": cash_type.id, "initial_balance": 12000.0, "currency": "RUB", "is_active": True},
+                {"name": "Карта Tinkoff", "account_type_id": bank_type.id, "initial_balance": -5000.0, "currency": "RUB", "is_active": True},
             ]
 
-            for account_data in accounts_to_create:
+            for account_data in accounts_data_for_creation: # Итерируем по новому списку
                 existing_account = crud.account.get_by_name_and_workspace(
                     db, name=account_data['name'], workspace_id=workspace.id
                 )
                 if existing_account:
                     print(f"--- DEBUG (Onboarding): Account '{account_data['name']}' already exists for workspace {workspace.id}. Skipping creation. ---")
                     continue
-                account_schema = schemas.AccountCreate(**account_data, workspace_id=workspace.id)
+                
+                # ИСПРАВЛЕНИЕ: Явно передаем данные в схему AccountCreate, используя initial_balance
+                account_schema = schemas.AccountCreate(
+                    name=account_data['name'],
+                    account_type_id=account_data['account_type_id'],
+                    initial_balance=account_data['initial_balance'],
+                    currency=account_data['currency'], # Важно передать currency и is_active, так как они обязательны в AccountCreate
+                    is_active=account_data['is_active'],
+                    workspace_id=workspace.id
+                )
                 crud.account.create_with_owner(db, obj_in=account_schema, owner_id=user.id)
                 print(f"--- DEBUG (Onboarding): Created account '{account_schema.name}' for workspace {workspace.id}. ---")
 
@@ -138,10 +149,10 @@ class OnboardingService:
                 # И добавляем account_id для валидации схемы, если она его требует
                 if schema_data["transaction_type"] == models.TransactionType.INCOME:
                     schema_data["to_account_id"] = account.id
-                    schema_data["account_id"] = account.id # Для схемы
+                    # schema_data["account_id"] = account.id # Это поле больше не нужно в схеме TransactionCreate
                 elif schema_data["transaction_type"] == models.TransactionType.EXPENSE:
                     schema_data["from_account_id"] = account.id
-                    schema_data["account_id"] = account.id # Для схемы
+                    # schema_data["account_id"] = account.id # Это поле больше не нужно в схеме TransactionCreate
 
                 # 5. Проверяем на дубликат ПЕРЕД созданием схемы
                 existing_transaction = db.query(models.Transaction).filter(
@@ -169,7 +180,6 @@ class OnboardingService:
     def _create_default_mapping_rules(self, db: Session, *, user: models.User, workspace: models.Workspace) -> None:
         """Загружает и создает правила сопоставления по умолчанию."""
         try:
-            # Логика этого метода выглядит корректной, оставляем как есть
             with open(settings.DEFAULT_MAPPING_RULES_PATH, 'r', encoding='utf-8') as f:
                 default_rules = json.load(f)
 
@@ -198,5 +208,5 @@ class OnboardingService:
             print(f"--- ERROR: Failed to load default mapping rules: {e} ---")
             raise
 
-# Создаем единственный экземпляр сервиса для удобного импорта
+# Создаем единственный экземпляр сервиса
 onboarding_service = OnboardingService()

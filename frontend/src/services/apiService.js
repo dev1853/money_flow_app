@@ -10,7 +10,6 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        // ИСПРАВЛЕНИЕ: Используем 'authToken' для получения токена из localStorage
         const token = localStorage.getItem('authToken'); 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -19,43 +18,6 @@ api.interceptors.request.use(
     },
     (error) => Promise.reject(error)
 );
-
-// export const setAuthToken = (token) => {
-//     if (token) {
-//         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-//     } else {
-//         delete api.defaults.headers.common['Authorization'];
-//     }
-// };
-
-// api.interceptors.response.use(
-//     (response) => response,
-//     async (error) => {
-//         const originalRequest = error.config;
-//         if (error.response?.status === 401 && !originalRequest._retry) {
-//             originalRequest._retry = true;
-//             const refreshToken = localStorage.getItem('refresh_token');
-//             if (!refreshToken) {
-//                 window.dispatchEvent(new Event('logout'));
-//                 return Promise.reject(error);
-//             }
-//             try {
-//                 const { data } = await axios.post(`${API_URL}auth/refresh-token`, { refresh_token: refreshToken });
-//                 localStorage.setItem('access_token', data.access_token);
-//                 if (data.refresh_token) {
-//                     localStorage.setItem('refresh_token', data.refresh_token);
-//                 }
-//                 setAuthToken(data.access_token);
-//                 originalRequest.headers['Authorization'] = `Bearer ${data.access_token}`;
-//                 return api(originalRequest);
-//             } catch (refreshError) {
-//                 window.dispatchEvent(new Event('logout'));
-//                 return Promise.reject(refreshError);
-//             }
-//         }
-//         return Promise.reject(error);
-//     }
-// );
 
 export class ApiError extends Error {
     constructor(message, status, details = null) {
@@ -95,7 +57,6 @@ async function request(method, url, data = null, params = null) {
 
 // 5. Экспорт всех методов API
 export const apiService = {
-    // ИСПРАВЛЕНИЕ: Метод login теперь явно принимает username и password
     login: (username, password) => request('post', 'auth/token', new URLSearchParams({ username, password })),
     register: (userData) => request('post', 'users/', userData),
     getUserMe: () => request('get', 'users/me'),
@@ -115,6 +76,8 @@ export const apiService = {
     // Accounts
     getAccounts: (workspaceId) => request('get', 'accounts/', null, { workspace_id: workspaceId }),
     createAccount: (accountData) => request('post', 'accounts/', accountData),
+    updateAccount: (id, accountData) => request('put', `accounts/${id}`, accountData),
+    deleteAccount: (id) => request('delete', `accounts/${id}`), // Этот метод теперь соответствует AccountsPage.jsx
 
     // DDS Articles
     getDdsArticleById: (articleId) => request('get', `dds-articles/${articleId}`),

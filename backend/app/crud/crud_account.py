@@ -1,6 +1,6 @@
 # /backend/app/crud/crud_account.py
 from sqlalchemy.orm import Session
-from ..schemas import AccountCreate, AccountUpdate
+from ..schemas.account import AccountCreate, AccountUpdate # Убедитесь, что импорт корректен
 from ..models import Account
 from typing import List, Optional
 from decimal import Decimal
@@ -8,23 +8,25 @@ from decimal import Decimal
 from .base import CRUDBase
 from .. import models, schemas
 
-class CRUDAccount(CRUDBase[models.Account, schemas.AccountCreate, schemas.AccountUpdate]):
+class CRUDAccount(CRUDBase[models.Account, AccountCreate, AccountUpdate]): # Используем обновленные схемы
     def create_with_owner(self, db: Session, *, obj_in: AccountCreate, owner_id: int) -> Account:
         """
         Создает счет, используя данные из схемы и ID владельца.
-        ID рабочего пространства и ID типа счета берутся из самой схемы.
+        initial_balance из схемы используется для установки начального баланса счета.
         """
-        # ИСПРАВЛЕНИЕ: Используем model_dump() для Pydantic v2
         obj_in_data = obj_in.model_dump() 
         
-        # account_type_id и workspace_id будут находиться в obj_in_data
-        db_obj = self.model(**obj_in_data, owner_id=owner_id)
+        # Извлекаем initial_balance из входных данных
+        initial_balance_value = obj_in_data.pop("initial_balance")
+        
+        # Создаем объект модели, используя оставшиеся данные и явно устанавливая balance
+        db_obj = self.model(**obj_in_data, owner_id=owner_id, balance=initial_balance_value)
         db.add(db_obj)
-        db.flush() # Используем flush для получения ID до коммита
+        db.flush() 
         return db_obj
 
+    # Остальные методы класса остаются без изменений
     def get_by_name(self, db: Session, *, name: str, workspace_id: int) -> Optional[models.Account]:
-        # Этот метод не использует account_type_id напрямую, поэтому он в порядке
         return db.query(self.model).filter(
             self.model.name == name,
             self.model.workspace_id == workspace_id

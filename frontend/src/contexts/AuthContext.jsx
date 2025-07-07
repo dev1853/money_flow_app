@@ -31,7 +31,9 @@ export const AuthProvider = ({ children }) => {
                 apiService.getAccounts(workspaceId),
                 apiService.getDdsArticles(workspaceId)
             ]);
+            console.log("DEBUG: Accounts fetched from API:", fetchedAccounts);
             setAccounts(fetchedAccounts || []);
+            console.log("DEBUG: Accounts state after setAccounts:", fetchedAccounts); 
             setDdsArticles(fetchedArticles || []);
         } catch (error) {
             console.error("Ошибка загрузки данных рабочего пространства:", error);

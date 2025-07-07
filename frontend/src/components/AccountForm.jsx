@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
-import { useApiMutation } from '../hooks/useApiMutation'; // <-- Импортируем наш новый хук
+import { useApiMutation } from '../hooks/useApiMutation';
 
 import Button from './Button';
 import Input from './forms/Input';
@@ -10,8 +10,8 @@ import Select from './forms/Select';
 import Alert from './Alert';
 
 const ACCOUNT_TYPES = [
-  { value: 'bank_account', label: 'Банковский счет' },
-  { value: 'cash_box', label: 'Касса' },
+  { value: 1, label: 'Банковский счет' }, // ПРИМЕР: используйте актуальный ID
+  { value: 2, label: 'Касса' },           // ПРИМЕР: используйте актуальный ID
 ];
 
 const PREDEFINED_CURRENCIES = [
@@ -20,11 +20,14 @@ const PREDEFINED_CURRENCIES = [
     { code: 'EUR', name: 'Евро' },
 ];
 
-// Функция для валидации полей формы
 const validateForm = (formData, isEditMode) => {
     const errors = {};
     if (!formData.name.trim()) {
         errors.name = 'Название счета обязательно для заполнения.';
+    }
+    // ИСПРАВЛЕНИЕ: Добавляем валидацию для account_type_id
+    if (!formData.account_type_id) {
+        errors.account_type_id = 'Тип счета обязателен для заполнения.';
     }
     if (!isEditMode && (!formData.initial_balance || isNaN(parseFloat(formData.initial_balance)))) {
         errors.initial_balance = 'Начальный баланс должен быть числом.';
@@ -33,10 +36,11 @@ const validateForm = (formData, isEditMode) => {
 }
 
 function AccountForm({ account, onSuccess }) {
-  const { activeWorkspace, fetchAccounts } = useAuth();
+  // ИСПРАВЛЕНИЕ: Изменено fetchAccounts на fetchDataForWorkspace
+  const { activeWorkspace, fetchDataForWorkspace } = useAuth(); 
   const [formData, setFormData] = useState({
       name: account?.name || '',
-      account_type: account?.account_type || 'bank_account',
+      account_type_id: account?.account_type_id || ACCOUNT_TYPES[0].value, 
       initial_balance: account?.initial_balance || '0.00',
       currency: account?.currency || 'RUB',
       is_active: account ? account.is_active : true,
@@ -44,7 +48,6 @@ function AccountForm({ account, onSuccess }) {
   const [formErrors, setFormErrors] = useState({});
   const isEditMode = Boolean(account);
 
-  // Определяем функцию, которая будет вызвана при отправке
   const mutationFn = async (data) => {
     if (isEditMode) {
       await apiService.updateAccount(account.id, data);
@@ -53,18 +56,20 @@ function AccountForm({ account, onSuccess }) {
     }
   };
 
-  // Используем наш хук для управления отправкой формы
   const [submitAccount, isSubmitting, submitError] = useApiMutation(mutationFn, {
       onSuccess: () => {
-          fetchAccounts(activeWorkspace.id); // Обновляем список счетов в контексте
+          // ИСПРАВЛЕНИЕ: Вызываем fetchDataForWorkspace с ID активного рабочего пространства
+          if (activeWorkspace?.id) { 
+            fetchDataForWorkspace(activeWorkspace.id); 
+          }
           if (onSuccess) onSuccess();
       }
   });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-    // Убираем ошибку при изменении поля
+    const newValue = name === 'account_type_id' ? parseInt(value, 10) : (type === 'checkbox' ? checked : value);
+    setFormData(prev => ({ ...prev, [name]: newValue }));
     if (formErrors[name]) {
         setFormErrors(prev => ({ ...prev, [name]: null }));
     }
@@ -82,7 +87,7 @@ function AccountForm({ account, onSuccess }) {
 
     const dataToSend = {
       name: formData.name,
-      account_type: formData.account_type,
+      account_type_id: formData.account_type_id, 
       currency: formData.currency,
       is_active: formData.is_active,
     };
@@ -104,12 +109,15 @@ function AccountForm({ account, onSuccess }) {
         {formErrors.name && <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>}
       </div>
       <div>
-        <Label htmlFor="account_type">Тип счета</Label>
-        <Select id="account_type" name="account_type" value={formData.account_type} onChange={handleChange} required>
+        {/* ИСПРАВЛЕНИЕ: Изменено htmlFor и name на account_type_id */}
+        <Label htmlFor="account_type_id">Тип счета</Label>
+        <Select id="account_type_id" name="account_type_id" value={formData.account_type_id} onChange={handleChange} required>
           {ACCOUNT_TYPES.map(type => (
+            // ИСПРАВЛЕНИЕ: Используем type.value (числовой ID)
             <option key={type.value} value={type.value}>{type.label}</option>
           ))}
         </Select>
+        {formErrors.account_type_id && <p className="text-red-500 text-xs mt-1">{formErrors.account_type_id}</p>}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>

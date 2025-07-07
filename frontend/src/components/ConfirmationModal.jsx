@@ -2,39 +2,35 @@
 import React from 'react';
 import Modal from './Modal'; // Наш базовый Modal
 import Button from './Button'; // Наш кастомный Button
+import Alert from './Alert'; // <-- Импортируем компонент Alert
 
 function ConfirmationModal({
   isOpen,
   onClose,
   onConfirm,
-  title = "Подтвердите действие", //
+  title = "Подтвердите действие", 
   message,
-  confirmText = "Подтвердить", //
-  cancelText = "Отмена", //
-  confirmButtonVariant = "primary" // 'danger', 'primary', 'success'
+  confirmText = "Подтвердить", 
+  cancelText = "Отмена", 
+  confirmButtonVariant = "primary",
+  errorAlertMessage // <-- НОВЫЙ ПРОПС для сообщения об ошибке
 }) {
 
-  // Формируем JSX для футера модального окна
   const modalFooter = (
-    <div className="flex justify-end space-x-3"> {/* Сохраняем выравнивание и отступы */}
+    <div className="flex justify-end space-x-3"> 
       <Button
         variant="secondary"
-        size="md" // Стандартный размер для кнопок в модалках
-        onClick={onClose}
+        size="md" 
+        onClick={onClose} // onClose также очистит ошибку через AccountsPage
       >
         {cancelText}
       </Button>
       <Button
-        variant={confirmButtonVariant} // Используем variant из пропсов
+        variant={confirmButtonVariant} 
         size="md"
         onClick={() => {
-          onConfirm();
-          // onClose(); // Закрытие модалки теперь может быть ответственностью вызывающего кода или Modal, если нужно
-                       // Либо оставить здесь, если это стандартное поведение для ConfirmationModal
-                       // В текущем Modal.jsx onClose вызывается по клику на X или оверлей.
-                       // Для кнопок в футере, вызывающий код (или onConfirm) должен управлять закрытием.
-                       // Я оставлю onClose() здесь, так как это логично для кнопки подтверждения в данном компоненте.
-          onClose(); 
+          onConfirm(); // onConfirm теперь будет отвечать за установку ошибки и решение о закрытии модального окна
+          // onClose(); // Эту строку убираем, чтобы onConfirm мог контролировать закрытие
         }}
       >
         {confirmText}
@@ -47,12 +43,19 @@ function ConfirmationModal({
       isOpen={isOpen} 
       onClose={onClose} 
       title={title}
-      footer={modalFooter} // <--- Передаем кнопки в новый проп footer
-      maxWidth="max-w-md" // Можно задать стандартную ширину для confirmation модалок
+      footer={modalFooter} 
+      maxWidth="max-w-md" 
     >
+      {/* <-- НОВОЕ: Отображаем Alert здесь, если есть сообщение об ошибке --> */}
+      {errorAlertMessage && (
+        <div className="mb-4"> {/* Добавляем отступ снизу */}
+          <Alert type="error" message={errorAlertMessage} />
+        </div>
+      )}
+
       {/* Основное сообщение остается как children для Modal */}
-      <div className="mt-2"> {/* Оригинальный отступ для сообщения */}
-        <p className="text-sm text-gray-600 whitespace-pre-wrap"> {/* */}
+      <div className="mt-2"> 
+        <p className="text-sm text-gray-600 whitespace-pre-wrap"> 
           {message}
         </p>
       </div>
