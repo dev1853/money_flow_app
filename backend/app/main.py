@@ -7,7 +7,9 @@ current_path = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_path, ".."))
 sys.path.append(project_root)
 
-from fastapi import FastAPI
+import logging 
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from .database import Base, engine
 from .routers import (
@@ -23,10 +25,12 @@ from .routers import (
     mapping_rules,
     budgets 
 )
-from .core.logging_config import setup_logging # <-- 1. Импортируем нашу функцию
+from .core.logging_config import setup_logging
 
 # 2. Вызываем настройку логирования ПЕРЕД созданием FastAPI приложения
 setup_logging()
+logging.basicConfig(level=logging.INFO) 
+logger = logging.getLogger(__name__) 
 # Создаем таблицы в БД (если их нет)
 Base.metadata.create_all(bind=engine)
 
@@ -36,7 +40,21 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# print(f"DEBUG (main.py): AccountTypeEnum accessed: {list(AccountTypeEnum)}")
+# Middleware для перехвата всех исключений
+@app.middleware("http")
+async def log_and_handle_exceptions_middleware(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except HTTPException as http_exc:
+        # Теперь этот блок будет работать, так как HTTPException импортирован
+        raise http_exc
+    except Exception as exc:
+        logger.exception("Произошла необработанная ошибка на сервере")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "Произошла внутренняя ошибка на сервере."},
+        )
+
 
 origins = [
     "https://money.dev1853.ru",
@@ -69,4 +87,4 @@ app.include_router(statement.router, prefix=f"{api_prefix}/statement", tags=["st
 app.include_router(reports.router, prefix=f"{api_prefix}/reports", tags=["reports"])
 app.include_router(dashboard.router, prefix=f"{api_prefix}/dashboard", tags=["dashboard"])
 app.include_router(mapping_rules.router, prefix=f"{api_prefix}/mapping_rules", tags=["mapping_rules"])
-app.include_router(budgets.router, prefix=f"{api_prefix}/budgets", tags=["budgets"])
+app.include_router(budgets.router, prefix="/api/budgets", tags=["budgets"])

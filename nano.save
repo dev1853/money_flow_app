@@ -1,0 +1,14 @@
+feat: Enhance account management and improve reporting
+
+Refactor various aspects of account and report management for improved user experience and data accuracy.
+
+- **Account Management Improvements:**
+  - Correctly save and display initial balances for new accounts.
+  - Implemented soft deletion (archiving) for accounts.
+  - Enforced a business rule preventing archiving accounts with non-zero balance.
+  - Enhanced error display for account archiving.
+
+- **Reporting Enhancements (Initial Integration):**
+  - Updated P&L report API and CRUD function to accept new parameters.
+  - Resolved TypeError in P&L report.
+

@@ -5,61 +5,58 @@ from typing import List, Optional
 from datetime import date
 from decimal import Decimal
 
-from .dds_article import DdsArticle
+# Импортируем базовую схему для статьи
+from .dds_article import DdsArticleBase
 
-# --- Существующие схемы ---
+# Схема для вложенной статьи в ответе API
+class DdsArticleInBudget(DdsArticleBase):
+    id: int
+    name: str
+    model_config = ConfigDict(from_attributes=True)
+
+# --- Схемы для Статей Бюджета (BudgetItem) ---
 class BudgetItemBase(BaseModel):
-    dds_article_id: int
-    budgeted_amount: Decimal = Field(..., gt=Decimal('0.0'))
+    dds_article_id: int = Field(..., description="ID статьи ДДС")
+    budgeted_amount: Decimal = Field(..., gt=0, description="Запланированная сумма")
 
 class BudgetItemCreate(BudgetItemBase):
     pass
 
+class BudgetItemUpdate(BudgetItemBase):
+    dds_article_id: Optional[int] = Field(None)
+    budgeted_amount: Optional[Decimal] = Field(None, gt=0)
+
+# Схема BudgetItem для ответа API
+class BudgetItem(BudgetItemBase):
+    id: int
+    budget_id: int
+    dds_article: DdsArticleInBudget # <-- Это поле решает проблему "Статья не найдена"
+    model_config = ConfigDict(from_attributes=True)
+
+# --- Схемы для Бюджета (Budget) ---
 class BudgetBase(BaseModel):
-    name: str = Field(..., min_length=1)
+    name: str
+    description: Optional[str] = None
     start_date: date
     end_date: date
 
 class BudgetCreate(BudgetBase):
     items: List[BudgetItemCreate]
 
-class BudgetUpdate(BaseModel):
-    name: Optional[str] = Field(None, min_length=1)
+class BudgetUpdate(BudgetBase):
+    name: Optional[str] = Field(None)
+    description: Optional[str] = None
     start_date: Optional[date] = None
     end_date: Optional[date] = None
+    items: Optional[List[BudgetItemUpdate]] = None
 
-class BudgetItem(BudgetItemBase):
-    id: int
-    type: str
-    model_config = ConfigDict(from_attributes=True)
-
+# Финальная схема Budget для ответа API
 class Budget(BudgetBase):
     id: int
     owner_id: int
     workspace_id: int
-    items: List[BudgetItem] = []
+    budget_items: List[BudgetItem] = []
+    total_budgeted: Optional[Decimal] = None
+    total_actual: Optional[Decimal] = None
+    total_deviation: Optional[Decimal] = None
     model_config = ConfigDict(from_attributes=True)
-
-# --- СХЕМЫ, КОТОРЫЕ ВЫЗВАЛИ ОШИБКУ ---
-class BudgetItemStatus(BaseModel):
-    article_id: int
-    article_name: str
-    budgeted_amount: Decimal
-    actual_amount: Decimal
-    
-    @property
-    def deviation(self) -> Decimal:
-        return self.budgeted_amount - self.actual_amount
-
-class BudgetStatus(BaseModel):
-    budget_id: int
-    budget_name: str
-    start_date: date
-    end_date: date
-    total_budgeted: Decimal
-    total_actual: Decimal
-    items_status: List[BudgetItemStatus]
-    
-    @property
-    def total_deviation(self) -> Decimal:
-        return self.total_budgeted - self.total_actual

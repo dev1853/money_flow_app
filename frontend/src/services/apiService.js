@@ -39,9 +39,7 @@ async function request(method, url, data = null, params = null) {
         let details = null;
 
         if (error.response) {
-            // ИСПРАВЛЕНИЕ: Проверяем, что error.response.data.detail существует перед доступом к нему
             if (status === 422 && error.response.data && Array.isArray(error.response.data.detail)) {
-                // Преобразуем массив ошибок в читаемую строку
                 message = "Ошибка валидации. Проверьте введенные данные.";
                 details = error.response.data.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('; ');
                 console.error("Validation errors:", details);
@@ -95,6 +93,13 @@ export const apiService = {
         request('get', 'dashboard/summary', null, { workspace_id: workspaceId, start_date: startDate, end_date: endDate }),
     getDashboardCashflowTrend: (workspaceId, startDate, endDate, periodType) =>
         request('get', 'dashboard/cashflow-trend', null, { workspace_id: workspaceId, start_date: startDate, end_date: endDate, period_type: periodType }),
+
+    // Budgets <-- НОВЫЕ МЕТОДЫ ДЛЯ БЮДЖЕТОВ
+    getBudgets: (params) => request('get', 'budgets/', null, params), // Получение списка бюджетов
+    createBudget: (budgetData) => request('post', 'budgets/', budgetData), // Создание бюджета
+    getBudgetStatus: (budgetId) => request('get', `budgets/${budgetId}/status`), // Получение статуса бюджета
+    updateBudget: (budgetId, budgetData) => request('put', `budgets/${budgetId}`, budgetData), // Обновление бюджета (предполагаемый эндпоинт)
+    deleteBudget: (budgetId) => request('delete', `budgets/${budgetId}`), // Удаление бюджета (предполагаемый эндпоинт)
 
     // Statement
     uploadStatement: (formData) => request('post', 'statement/upload', formData, {

@@ -1,6 +1,7 @@
 # app/models/budget_item.py
 from sqlalchemy import Column, Integer, String, ForeignKey, Numeric, CheckConstraint
 from sqlalchemy.orm import relationship
+from decimal import Decimal
 
 from ..database import Base
 from .mixins import TimestampMixin
@@ -13,7 +14,8 @@ class BudgetItem(Base, TimestampMixin):
 
     id = Column(Integer, primary_key=True, index=True)
     budgeted_amount = Column(Numeric(15, 2), nullable=False)
-    type = Column(String(10), nullable=False)
+    # ИСПРАВЛЕНИЕ: Делаем nullable=True и добавляем default='expense'
+    type = Column(String(10), nullable=True, default='expense') 
     
     budget_id = Column(Integer, ForeignKey("budgets.id"), nullable=False)
     dds_article_id = Column(Integer, ForeignKey("dds_articles.id"), nullable=False)

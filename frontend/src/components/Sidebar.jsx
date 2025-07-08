@@ -1,11 +1,11 @@
 // frontend/src/components/Sidebar.jsx
-import React, { useState, useEffect, Fragment, useCallback } from 'react'; // Добавлен useCallback
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import { NavLink, useLocation, Link } from 'react-router-dom';
 import {
   HomeIcon,
   NewspaperIcon,
   CurrencyDollarIcon,
-  ChartBarIcon,
+  ChartBarIcon, // <-- Используем эту иконку для бюджетов
   Cog6ToothIcon, 
   ChevronRightIcon, 
   ReceiptPercentIcon,
@@ -24,6 +24,7 @@ const navigation = [
   { name: 'Транзакции', href: '/transactions', icon: NewspaperIcon, type: 'link' },
   { name: 'Счета', href: '/accounts', icon: CurrencyDollarIcon, type: 'link' },
   { name: 'Статьи ДДС', href: '/articles', icon: ReceiptPercentIcon, type: 'link' },
+  { name: 'Бюджеты', href: '/budgets', icon: ChartBarIcon, type: 'link' }, // <-- НОВОЕ: Добавляем пункт для Бюджетов
 
   {
     name: 'Отчеты',
@@ -57,12 +58,7 @@ export default function Sidebar({ setSidebarOpen }) {
   // Вспомогательная функция для определения, активен ли родительский пункт
   const isParentActive = useCallback((item) => {
     if (!item.children) return false;
-    if (item.name === 'Настройки') {
-        return location.pathname.startsWith('/settings') || 
-               location.pathname.startsWith('/mapping-rules') || 
-               location.pathname.startsWith('/admin') ||
-               location.pathname.startsWith('/help'); // <--- ДОБАВЛЕНО /help
-    }
+    // Проверяем, если URL текущей страницы начинается с href любого из дочерних элементов
     return item.children.some(child => location.pathname.startsWith(child.href));
   }, [location.pathname]);
 
@@ -75,7 +71,7 @@ export default function Sidebar({ setSidebarOpen }) {
       }
     });
     setOpenStates(initialOpenStates);
-  }, [location.pathname, isParentActive]); // Добавлен isParentActive в зависимости
+  }, [location.pathname, isParentActive]);
 
   // Универсальная функция для переключения состояния раскрытия родительских элементов
   const toggleParentMenu = useCallback((itemName) => {
@@ -84,7 +80,7 @@ export default function Sidebar({ setSidebarOpen }) {
       newStates.set(itemName, !newStates.get(itemName));
       return newStates;
     });
-  }, []); // Пустой массив зависимостей, т.к. не использует внешние переменные
+  }, []); 
 
   const { isAuthenticated, user, logout } = useAuth();
 
@@ -150,7 +146,7 @@ export default function Sidebar({ setSidebarOpen }) {
                             <NavLink
                               to={child.href}
                               onClick={() => setSidebarOpen(false)} 
-                              className={({ isActive }) => classNames( // <--- ИСПОЛЬЗУЕМ isActive из NavLink
+                              className={({ isActive }) => classNames( 
                                 isActive
                                   ? 'bg-gray-50 text-indigo-600'
                                   : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
@@ -167,11 +163,11 @@ export default function Sidebar({ setSidebarOpen }) {
                     <NavLink
                       to={item.href}
                       onClick={() => setSidebarOpen(false)} 
-                      className={({ isActive }) => classNames( // <--- ИСПОЛЬЗУЕМ isActive из NavLink
+                      className={({ isActive }) => classNames( 
                         isActive
                           ? 'bg-gray-50 text-indigo-600'
                           : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
-                        baseNavLinkClasses // Используем общие классы
+                        baseNavLinkClasses 
                       )}
                     >
                       <item.icon
@@ -192,7 +188,7 @@ export default function Sidebar({ setSidebarOpen }) {
       </nav>
 
       <div className="flex flex-col gap-y-3 border-t border-gray-200 pt-4 mt-auto">
-        <div className="flex items-center justify-between"> {/* Изменено на justify-between */}
+        <div className="flex items-center justify-between"> 
           <QuickCashExpenseForm />
         </div>
       </div>

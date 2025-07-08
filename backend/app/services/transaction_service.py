@@ -20,21 +20,22 @@ class TransactionService:
         return transaction
 
     def create_transaction(
-        self, 
-        db: Session, 
-        *, 
-        transaction_in: schemas.TransactionCreate, 
-        current_user: models.User, 
+        self,
+        db: Session,
+        *,
+        transaction_in: schemas.TransactionCreate,
+        current_user: models.User,
         workspace_id: int
     ) -> models.Transaction:
         """
-        Создает транзакцию, валидирует права и обновляет балансы счетов.
+        Создает транзакцию, валидирует права и корректно обновляет балансы счетов.
+        Сумма всегда положительна, тип транзакции определяет логику.
         """
-        # 1. Проверяем, что указанный воркспейс принадлежит пользователю
+        # 1. Проверяем права на воркспейс
         if workspace_id not in [ws.id for ws in current_user.workspaces]:
-             raise PermissionDeniedError(detail="Нет доступа к этому рабочему пространству.")
+            raise PermissionDeniedError(detail="Нет доступа к этому рабочему пространству.")
 
-        # 2. Проверяем права на счета и их существование
+        # 2. Проверяем счета
         from_account, to_account = None, None
         if transaction_in.from_account_id:
             from_account = crud.account.get(db, id=transaction_in.from_account_id)
@@ -46,28 +47,36 @@ class TransactionService:
             if not to_account or to_account.workspace_id != workspace_id:
                 raise AccountNotFoundError(detail=f"Счет-получатель с ID {transaction_in.to_account_id} не найден.")
 
-        # 3. Валидация логики по типу транзакции
-        if transaction_in.transaction_type == TransactionType.EXPENSE and not from_account:
+        # 3. Валидируем логику по типу транзакции
+        if transaction_in.transaction_type == models.TransactionType.EXPENSE and not from_account:
             raise ValueError("Для расхода должен быть указан счет-источник.")
-        if transaction_in.transaction_type == TransactionType.INCOME and not to_account:
+        if transaction_in.transaction_type == models.TransactionType.INCOME and not to_account:
             raise ValueError("Для дохода должен быть указан счет-получатель.")
-        if transaction_in.transaction_type == TransactionType.TRANSFER and (not from_account or not to_account):
+        if transaction_in.transaction_type == models.TransactionType.TRANSFER and (not from_account or not to_account):
             raise ValueError("Для перевода должны быть указаны оба счета.")
 
-        # 4. Обновляем балансы
-        amount = transaction_in.amount
-        if from_account:
+        # 4. ОБНОВЛЯЕМ БАЛАНСЫ, СУММА ВСЕГДА ПОЛОЖИТЕЛЬНАЯ
+        amount = abs(transaction_in.amount) # Убедимся, что работаем с положительным числом
+
+        if transaction_in.transaction_type == models.TransactionType.EXPENSE:
             from_account.balance -= amount
             db.add(from_account)
-        if to_account:
+        
+        elif transaction_in.transaction_type == models.TransactionType.INCOME:
             to_account.balance += amount
             db.add(to_account)
 
-        # 5. Создаем транзакцию через CRUD
+        elif transaction_in.transaction_type == models.TransactionType.TRANSFER:
+            from_account.balance -= amount
+            to_account.balance += amount
+            db.add(from_account)
+            db.add(to_account)
+
+        # 5. Создаем саму запись о транзакции
         db_transaction = crud.transaction.create_with_owner(
             db, obj_in=transaction_in, owner_id=current_user.id, workspace_id=workspace_id
         )
-        # Коммит и refresh будут выполнены в роутере
+        
         return db_transaction
 
     # --- НОВЫЙ МЕТОД ДЛЯ ОБНОВЛЕНИЯ ---

@@ -1,6 +1,6 @@
 // frontend/src/utils/dateUtils.js
 
-import { endOfMonth } from 'date-fns';
+import { endOfMonth, startOfMonth, format } from 'date-fns'; // <-- ИСПРАВЛЕНИЕ: Добавлен импорт startOfMonth и format
 
 /**
  * Возвращает объект с датами начала и конца текущего календарного квартала.
@@ -23,10 +23,37 @@ export const getCurrentQuarterDates = () => {
   }
 
   const startDate = new Date(currentYear, quarterStartMonth, 1);
-  // Конец 3-го месяца квартала
   const endDate = endOfMonth(new Date(currentYear, quarterStartMonth + 2)); 
 
   return { startDate, endDate };
+};
+
+// <-- НОВОЕ: Добавляем функции для работы с датами
+
+/**
+ * Возвращает текущую дату в формате 'YYYY-MM-DD'.
+ * @returns {string} Текущая дата.
+ */
+export const getToday = () => {
+  return format(new Date(), 'yyyy-MM-dd');
+};
+
+/**
+ * Возвращает первый день месяца для заданной даты в формате 'YYYY-MM-DD'.
+ * @param {Date} date - Дата.
+ * @returns {string} Первый день месяца.
+ */
+export const getStartOfMonth = (date) => {
+  return format(startOfMonth(date), 'yyyy-MM-dd');
+};
+
+/**
+ * Возвращает последний день месяца для заданной даты в формате 'YYYY-MM-DD'.
+ * @param {Date} date - Дата.
+ * @returns {string} Последний день месяца.
+ */
+export const getEndOfMonth = (date) => {
+  return format(endOfMonth(date), 'yyyy-MM-dd');
 };
 
 // Сюда в будущем можно будет добавлять другие функции для работы с датами

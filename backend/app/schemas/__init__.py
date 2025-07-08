@@ -12,12 +12,5 @@ from .dashboard import SummaryItem, DashboardSummaryData, DashboardCashflowTrend
 from .statement import StatementUploadResponse
 from .account_type import AccountType, AccountTypeBase, AccountTypeCreate, AccountTypeUpdate 
 
-from .budget import (
-    Budget, 
-    BudgetCreate, 
-    BudgetUpdate, 
-    BudgetItem, 
-    BudgetItemCreate,
-    BudgetStatus,
-    BudgetItemStatus
-)
+from .budget import Budget, BudgetCreate, BudgetUpdate, BudgetItem, BudgetItemCreate, BudgetItemUpdate
+from .budget_status import BudgetStatus, BudgetItemStatus 
