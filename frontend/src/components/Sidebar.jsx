@@ -11,6 +11,8 @@ import {
   ReceiptPercentIcon,
   PowerIcon,
   ScaleIcon,
+  CalculatorIcon,
+  CalendarDaysIcon
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Menu, Transition } from '@headlessui/react'; 
@@ -24,7 +26,8 @@ const navigation = [
   { name: 'Операции', href: '/transactions', icon: NewspaperIcon, type: 'link' },
   { name: 'Счета', href: '/accounts', icon: CurrencyDollarIcon, type: 'link' },
   { name: 'Статьи', href: '/articles', icon: ReceiptPercentIcon, type: 'link' },
-  { name: 'Бюджеты', href: '/budgets', icon: ScaleIcon, type: 'link' }, // <-- НОВОЕ: Добавляем пункт для Бюджетов
+  { name: 'Бюджеты', href: '/budgets', icon: CalculatorIcon, type: 'link' },
+  { name: 'Платежный календарь', href: '/payment-calendar', icon: CalendarDaysIcon, type: 'link' }, 
 
   {
     name: 'Отчеты',

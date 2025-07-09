@@ -1,73 +1,94 @@
 // frontend/src/pages/HelpPage.jsx
+
 import React from 'react';
-import PageTitle from '../components/PageTitle'; // Используем существующий компонент заголовка
+import PageTitle from '../components/PageTitle';
+import { 
+    HomeIcon, 
+    BanknotesIcon, 
+    CalendarDaysIcon, 
+    CalculatorIcon, 
+    DocumentChartBarIcon 
+} from '@heroicons/react/24/outline';
+
+// Вспомогательный компонент для одного "сообщения" в нашей ленте помощи
+const HelpTopic = ({ icon, question, children }) => {
+    return (
+        <div className="flex items-start space-x-4 py-4">
+            {/* Аватар-иконка */}
+            <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-indigo-100 text-indigo-600">
+                {React.createElement(icon, { className: "h-6 w-6" })}
+            </div>
+
+            {/* "Сообщение" с ответом */}
+            <div className="flex-grow bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <h3 className="font-bold text-gray-900 text-lg mb-2">{question}</h3>
+                <div className="prose prose-sm max-w-none text-gray-600">
+                    {children}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 function HelpPage() {
-  return (
-    <div className="px-4 sm:px-6 lg:px-8 py-6">
-      <PageTitle title="Помощь и Инструкции" className="mb-6" />
-      <div className="bg-white p-6 rounded-lg shadow-sm space-y-6">
-        <h2 className="text-xl font-semibold text-gray-900">Добро пожаловать в Руководство пользователя!</h2>
-        <p className="text-gray-700">
-          Здесь вы найдете краткие инструкции по использованию основных функций приложения "БизнесПоток".
-        </p>
+    return (
+        <div>
+            <PageTitle title="Центр помощи" />
+            <p className="mt-2 mb-8 text-gray-600">
+                Привет! Я ваш личный помощник. Ниже я ответил на самые популярные вопросы о работе с приложением.
+            </p>
 
-        <section>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">1. Вход и регистрация</h3>
-          <p className="text-gray-700">
-            Для начала работы вам необходимо зарегистрироваться или войти в существующий аккаунт. Если у вас несколько компаний, вы сможете переключаться между ними после входа.
-          </p>
-        </section>
+            <div className="space-y-4">
+                
+                <HelpTopic icon={HomeIcon} question="С чего начать? (Сводка)">
+                    <p>Это ваш главный экран, который дает быстрый обзор финансового состояния. Обращайте внимание на:</p>
+                    <ul>
+                        <li><strong>Остатки на счетах:</strong> Общая сумма денег.</li>
+                        <li><strong>Прибыль и убыток:</strong> Ключевые показатели эффективности.</li>
+                        <li><strong>Графики:</strong> Визуальное представление доходов и расходов.</li>
+                    </ul>
+                </HelpTopic>
+                
+                <HelpTopic icon={BanknotesIcon} question="Как учитывать деньги? (Счета и Транзакции)">
+                    <p>Все начинается с правильного учета операций. Сначала создайте <strong>"Счета"</strong> — это ваши реальные кошельки (расчетный счет, касса, карта).</p>
+                    <p>Затем фиксируйте все движения денег как <strong>"Транзакции"</strong>:</p>
+                    <ul>
+                        <li><strong>Доход:</strong> Поступления денег.</li>
+                        <li><strong>Расход:</strong> Траты денег.</li>
+                        <li><strong>Перевод:</strong> Перемещение между своими счетами.</li>
+                    </ul>
+                     <p><strong>Важно:</strong> Привязывайте каждую транзакцию к "Статье ДДС", чтобы отчеты были точными.</p>
+                </HelpTopic>
 
-        <section>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">2. Управление счетами</h3>
-          <p className="text-gray-700">
-            Перейдите в раздел "Счета". Здесь вы можете добавлять, редактировать и просматривать балансы ваших денежных счетов (касса, банк, электронные кошельки).
-          </p>
-        </section>
+                <HelpTopic icon={CalendarDaysIcon} question="Как прогнозировать кассовые разрывы? (Платежный календарь)">
+                     <p>Это ваш финансовый прогноз. Он показывает, хватит ли вам денег на будущие обязательные платежи.</p>
+                     <ol>
+                        <li>Перейдите в <strong>"Платежный календарь"</strong> и выберите период.</li>
+                        <li>Кликните по любому дню, чтобы <strong>запланировать</strong> будущий доход или расход (например, аренду, зарплату).</li>
+                        <li>Следите за ячейками, подсвеченными <strong>красным</strong>. Это и есть кассовые разрывы — дни, когда денег на счетах может не хватить.</li>
+                    </ol>
+                </HelpTopic>
 
-        <section>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">3. Ввод транзакций</h3>
-          <p className="text-gray-700">
-            <span className="font-semibold">Быстрый расход:</span> Нажмите иконку "Быстрый расход" (в мобильной версии в шапке, на десктопе в сайдбаре), чтобы быстро зафиксировать расход наличными.
-          </p>
-          <p className="text-gray-700">
-            <span className="font-semibold">Новая транзакция:</span> Перейдите в раздел "Транзакции". Здесь вы можете добавлять доходы и расходы, указывая счет, сумму, описание, дату и статью ДДС.
-          </p>
-        </section>
+                <HelpTopic icon={CalculatorIcon} question="Как контролировать расходы? (Бюджетирование)">
+                    <p>Бюджет — это ваш план расходов на месяц или квартал. Он помогает не тратить лишнего.</p>
+                     <ul>
+                        <li><strong>Создайте бюджет:</strong> Запланируйте, сколько вы собираетесь потратить по каждой статье (например, "Аренда - 50 000 ₽", "Зарплаты - 150 000 ₽").</li>
+                        <li><strong>Следите за исполнением:</strong> Приложение автоматически сравнит ваш план с фактическими расходами и покажет отклонение. Зеленое отклонение — экономия, красное — перерасход.</li>
+                    </ul>
+                </HelpTopic>
 
-        <section>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">4. Автоматическое разнесение платежей</h3>
-          <p className="text-gray-700">
-            Система может автоматически присваивать статьи ДДС вашим транзакциям!
-            Перейдите в "Настройки" &gt; "Правила разнесения". Здесь вы можете создавать правила, указывая ключевое слово в описании транзакции и статью ДДС. Если при создании транзакции описание содержит ключевое слово из активного правила, статья ДДС будет присвоена автоматически.
-          </p>
-        </section>
+                <HelpTopic icon={DocumentChartBarIcon} question="Как анализировать результаты? (Отчеты)">
+                     <p>В приложении есть два главных отчета:</p>
+                     <ul>
+                        <li><strong>ДДС (Движение денежных средств):</strong> Отвечает на вопрос "Сколько у меня реальных денег и куда они ушли?".</li>
+                        <li><strong>P&L (Прибыли и убытки):</strong> Отвечает на вопрос "Эффективен ли мой бизнес?". Показывает, заработали ли вы, даже если деньги еще не пришли на счет.</li>
+                     </ul>
+                </HelpTopic>
 
-        <section>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">5. Загрузка банковских выписок</h3>
-          <p className="text-gray-700">
-            Для автоматического импорта множества транзакций вы можете загружать банковские выписки в формате CSV. Нажмите кнопку "Выписка" на странице "Транзакции", выберите файл и счет, к которому относится выписка. Система сама разберет и импортирует транзакции.
-          </p>
-        </section>
-
-        <section>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">6. Отчеты</h3>
-          <p className="text-gray-700">
-            В разделе "Отчеты" вы найдете финансовую аналитику:
-            <ul className="list-disc pl-5 mt-1">
-              <li><span className="font-semibold">Движение ДС (ДДС):</span> Покажет, откуда и куда двигались деньги за выбранный период. Вы можете кликнуть на статью для детализации.</li>
-              <li><span className="font-semibold">Прибыли и Убытки (ОПиУ):</span> Отобразит общий доход и расходы за период, показывая финансовый результат.</li>
-            </ul>
-          </p>
-        </section>
-
-        <p className="text-gray-700 mt-6">
-          Если у вас возникнут вопросы, пожалуйста, свяжитесь с поддержкой.
-        </p>
-      </div>
-    </div>
-  );
+            </div>
+        </div>
+    );
 }
 
 export default HelpPage;

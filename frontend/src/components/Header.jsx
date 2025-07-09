@@ -163,7 +163,7 @@ const handleWorkspaceChange = (workspaceId) => {
               leaveTo="transform opacity-0 scale-95"
             >
               <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                <Menu.Item>
+                {/* <Menu.Item>
                   {({ active }) => (
                     <Link
                       to="/profile"
@@ -175,7 +175,7 @@ const handleWorkspaceChange = (workspaceId) => {
                       Мой профиль
                     </Link>
                   )}
-                </Menu.Item>
+                </Menu.Item> */}
                 <Menu.Item>
                   {({ active }) => (
                     <button
