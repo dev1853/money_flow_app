@@ -6,9 +6,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from decimal import Decimal as PythonDecimal
-
 from ..database import Base
 from .mixins import TimestampMixin
+from .counterparty import Counterparty
 
 class TransactionType(str, enum.Enum):
     INCOME = "INCOME"
@@ -38,3 +38,6 @@ class Transaction(Base, TimestampMixin):
     user = relationship("User", foreign_keys=[user_id], back_populates="transactions")
     workspace = relationship("Workspace", back_populates="transactions")
     dds_article = relationship("DdsArticle", back_populates="transactions")
+    
+    counterparty_id = Column(Integer, ForeignKey("counterparties.id"), nullable=True, index=True)
+    counterparty = relationship("Counterparty", back_populates="transactions")

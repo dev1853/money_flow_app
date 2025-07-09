@@ -25,6 +25,7 @@ class TransactionBase(BaseModel):
     to_account_id: Optional[int] = None
     
     dds_article_id: Optional[int] = None
+    counterparty_id: Optional[int] = None
 
 # --- ОБНОВЛЕННАЯ СХЕМА ДЛЯ СОЗДАНИЯ ---
 # Она наследуется от базовой и может добавлять свои поля, если нужно
