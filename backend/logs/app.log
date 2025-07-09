@@ -8771,3 +8771,11 @@ fastapi.exceptions.ResponseValidationError: 1 validation errors:
 2025-07-09 17:02:11 - INFO - uvicorn.error - Waiting for application startup. None
 2025-07-09 17:02:11 - INFO - uvicorn.error - Application startup complete. None
 2025-07-09 17:02:11 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit) None
+2025-07-09 19:21:22 - INFO - uvicorn.error - Shutting down None
+2025-07-09 19:21:22 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 19:21:22 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 19:21:22 - INFO - uvicorn.error - Finished server process [1531962] None
+2025-07-09 19:22:17 - INFO - uvicorn.error - Started server process [1847641] None
+2025-07-09 19:22:17 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 19:22:17 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 19:22:17 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit) None
