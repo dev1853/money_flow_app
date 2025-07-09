@@ -24,7 +24,7 @@ def upgrade() -> None:
         op.drop_index('ix_planned_payments_payment_date', table_name='planned_payments')
     except Exception as e:
         print(f"Index 'ix_planned_payments_payment_date' not found, skipping drop. Error: {e}")    
-    op.drop_table('planned_payments')
+    op.execute("DROP TABLE IF EXISTS planned_payments") # <-- ИЗМЕНЕНИЕ ЗДЕСЬ
     op.alter_column('transactions', 'amount',
                existing_type=sa.NUMERIC(precision=15, scale=2),
                type_=sa.Numeric(precision=10, scale=2),
