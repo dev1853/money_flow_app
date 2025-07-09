@@ -8759,3 +8759,7 @@ fastapi.exceptions.ResponseValidationError: 1 validation errors:
 2025-07-09 13:57:41 - INFO - uvicorn.error - Waiting for application startup. None
 2025-07-09 13:57:41 - INFO - uvicorn.error - Application startup complete. None
 2025-07-09 13:57:41 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit) None
+2025-07-09 16:04:13 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 84 пользователем office@prismatica.agency None
+2025-07-09 16:04:13 - INFO - app.routers.transactions - Транзакция с ID 233 успешно создана для workspace 84. None
+2025-07-09 16:06:02 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 84 пользователем office@prismatica.agency None
+2025-07-09 16:06:02 - INFO - app.routers.transactions - Транзакция с ID 234 успешно создана для workspace 84. None
