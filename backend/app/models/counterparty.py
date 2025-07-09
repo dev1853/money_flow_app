@@ -15,8 +15,8 @@ class CounterpartyType(str, enum.Enum):
 class Counterparty(Base, TimestampMixin):
     __tablename__ = "counterparties"
 
-    # Явно указываем все атрибуты, чтобы Alembic их точно увидел
-    id = Column(Integer, primary_key=True, index=True)
+    # Явно указываем, что поле id нужно индексировать
+    id = Column(Integer, primary_key=True, index=True) 
     name = Column(String, nullable=False, index=True, comment="Название контрагента")
     type = Column(Enum(CounterpartyType), nullable=False, default=CounterpartyType.OTHER)
     
