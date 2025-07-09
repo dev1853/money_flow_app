@@ -34,7 +34,7 @@ services:
     working_dir: /app # Указываем рабочую директорию
     ports:
       # Пробрасываем порт 8000, на котором Nginx ожидает бэкенд
-      - "8000:8000"
+      - "8001:8000"
     environment:
       # Строка подключения к БД. 'postgres' - это имя сервиса БД.
       DATABASE_URL: "postgresql://postgres:Ghbdtnjvktn@postgres:5432/money_flow_db"

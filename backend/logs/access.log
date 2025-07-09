@@ -7297,3 +7297,17 @@
 2025-07-09 16:06:49 - INFO - uvicorn.access - 127.0.0.1:33258 - "OPTIONS /api/dashboard/cashflow-trend?workspace_id=84&start_date=2025-06-10&end_date=2025-09-30&period_type=day HTTP/1.1" 200
 2025-07-09 16:06:49 - INFO - uvicorn.access - 127.0.0.1:33258 - "GET /api/dashboard/cashflow-trend?workspace_id=84&start_date=2025-06-10&end_date=2025-09-30&period_type=day HTTP/1.1" 200
 2025-07-09 16:06:49 - INFO - uvicorn.access - 127.0.0.1:33242 - "GET /api/dashboard/summary?workspace_id=84&start_date=2025-06-10&end_date=2025-09-30 HTTP/1.1" 200
+2025-07-09 16:20:38 - INFO - uvicorn.access - 127.0.0.1:40276 - "OPTIONS /api/auth/token HTTP/1.1" 200
+2025-07-09 16:20:38 - INFO - uvicorn.access - 127.0.0.1:40276 - "POST /api/auth/token HTTP/1.1" 200
+2025-07-09 16:20:38 - INFO - uvicorn.access - 127.0.0.1:40276 - "OPTIONS /api/users/me HTTP/1.1" 200
+2025-07-09 16:20:38 - INFO - uvicorn.access - 127.0.0.1:40276 - "GET /api/users/me HTTP/1.1" 200
+2025-07-09 16:20:38 - INFO - uvicorn.access - 127.0.0.1:40276 - "OPTIONS /api/workspaces/ HTTP/1.1" 200
+2025-07-09 16:20:38 - INFO - uvicorn.access - 127.0.0.1:40276 - "GET /api/workspaces/ HTTP/1.1" 200
+2025-07-09 16:20:38 - INFO - uvicorn.access - 127.0.0.1:40276 - "OPTIONS /api/accounts/?workspace_id=84 HTTP/1.1" 200
+2025-07-09 16:20:38 - INFO - uvicorn.access - 127.0.0.1:40290 - "OPTIONS /api/dds-articles/?workspace_id=84 HTTP/1.1" 200
+2025-07-09 16:20:39 - INFO - uvicorn.access - 127.0.0.1:40276 - "GET /api/accounts/?workspace_id=84 HTTP/1.1" 200
+2025-07-09 16:20:39 - INFO - uvicorn.access - 127.0.0.1:40290 - "GET /api/dds-articles/?workspace_id=84 HTTP/1.1" 200
+2025-07-09 16:20:39 - INFO - uvicorn.access - 127.0.0.1:40290 - "OPTIONS /api/dashboard/summary?workspace_id=84&start_date=2025-07-01&end_date=2025-09-30 HTTP/1.1" 200
+2025-07-09 16:20:39 - INFO - uvicorn.access - 127.0.0.1:40276 - "OPTIONS /api/dashboard/cashflow-trend?workspace_id=84&start_date=2025-07-01&end_date=2025-09-30&period_type=day HTTP/1.1" 200
+2025-07-09 16:20:39 - INFO - uvicorn.access - 127.0.0.1:40276 - "GET /api/dashboard/cashflow-trend?workspace_id=84&start_date=2025-07-01&end_date=2025-09-30&period_type=day HTTP/1.1" 200
+2025-07-09 16:20:39 - INFO - uvicorn.access - 127.0.0.1:40290 - "GET /api/dashboard/summary?workspace_id=84&start_date=2025-07-01&end_date=2025-09-30 HTTP/1.1" 200
