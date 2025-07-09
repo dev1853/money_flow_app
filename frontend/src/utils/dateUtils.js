@@ -1,59 +1,68 @@
 // frontend/src/utils/dateUtils.js
 
-import { endOfMonth, startOfMonth, format } from 'date-fns'; // <-- ИСПРАВЛЕНИЕ: Добавлен импорт startOfMonth и format
+/**
+ * Возвращает первый день месяца для указанной даты.
+ * @param {Date} date - Исходная дата.
+ * @returns {Date} - Новый объект Date, представляющий первое число месяца.
+ */
+export const getFirstDayOfMonth = (date) => {
+  // Устанавливаем время на начало дня, чтобы избежать проблем с часовыми поясами
+  const newDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  newDate.setHours(0, 0, 0, 0);
+  return newDate;
+};
+
+/**
+ * Возвращает последний день месяца для указанной даты.
+ * @param {Date} date - Исходная дата.
+ * @returns {Date} - Новый объект Date, представляющий последнее число месяца.
+ */
+export const getLastDayOfMonth = (date) => {
+  // Устанавливаем 0-й день следующего месяца, что дает последний день текущего
+  const newDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  newDate.setHours(23, 59, 59, 999); // Устанавливаем время на конец дня
+  return newDate;
+};
+
+/**
+ * Форматирует дату в строку формата YYYY-MM-DD.
+ * Эта функция нужна для отправки данных в API.
+ * @param {Date} date - Объект Date для форматирования.
+ * @returns {string} - Дата в виде строки 'YYYY-MM-DD'.
+ */
+export const toISODateString = (date) => {
+  if (!date || !(date instanceof Date)) {
+    return '';
+  }
+  // Метод toISOString() возвращает дату в UTC, split('T')[0] берет только часть с датой
+  return date.toISOString().split('T')[0];
+};
 
 /**
  * Возвращает объект с датами начала и конца текущего календарного квартала.
  * @returns {{startDate: Date, endDate: Date}}
  */
 export const getCurrentQuarterDates = () => {
-  const now = new Date();
-  const currentMonth = now.getMonth(); // 0-indexed (0 = Jan, 11 = Dec)
-  const currentYear = now.getFullYear();
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
 
-  let quarterStartMonth;
-  if (currentMonth >= 0 && currentMonth <= 2) { // Q1: Jan-Mar
-    quarterStartMonth = 0;
-  } else if (currentMonth >= 3 && currentMonth <= 5) { // Q2: Apr-Jun
-    quarterStartMonth = 3;
-  } else if (currentMonth >= 6 && currentMonth <= 8) { // Q3: Jul-Sep
-    quarterStartMonth = 6;
-  } else { // Q4: Oct-Dec
-    quarterStartMonth = 9;
-  }
+    let quarterStartMonth;
+    if (currentMonth < 3) {
+        quarterStartMonth = 0; // Q1
+    } else if (currentMonth < 6) {
+        quarterStartMonth = 3; // Q2
+    } else if (currentMonth < 9) {
+        quarterStartMonth = 6; // Q3
+    } else {
+        quarterStartMonth = 9; // Q4
+    }
 
-  const startDate = new Date(currentYear, quarterStartMonth, 1);
-  const endDate = endOfMonth(new Date(currentYear, quarterStartMonth + 2)); 
+    const startDate = new Date(currentYear, quarterStartMonth, 1);
+    const endDate = new Date(currentYear, quarterStartMonth + 3, 0);
 
-  return { startDate, endDate };
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+
+    return { startDate, endDate };
 };
-
-// <-- НОВОЕ: Добавляем функции для работы с датами
-
-/**
- * Возвращает текущую дату в формате 'YYYY-MM-DD'.
- * @returns {string} Текущая дата.
- */
-export const getToday = () => {
-  return format(new Date(), 'yyyy-MM-dd');
-};
-
-/**
- * Возвращает первый день месяца для заданной даты в формате 'YYYY-MM-DD'.
- * @param {Date} date - Дата.
- * @returns {string} Первый день месяца.
- */
-export const getStartOfMonth = (date) => {
-  return format(startOfMonth(date), 'yyyy-MM-dd');
-};
-
-/**
- * Возвращает последний день месяца для заданной даты в формате 'YYYY-MM-DD'.
- * @param {Date} date - Дата.
- * @returns {string} Последний день месяца.
- */
-export const getEndOfMonth = (date) => {
-  return format(endOfMonth(date), 'yyyy-MM-dd');
-};
-
-// Сюда в будущем можно будет добавлять другие функции для работы с датами

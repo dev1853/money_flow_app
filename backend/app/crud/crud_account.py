@@ -4,6 +4,7 @@ from ..schemas.account import AccountCreate, AccountUpdate # Убедитесь,
 from ..models import Account
 from typing import List, Optional
 from decimal import Decimal
+from sqlalchemy import func
 
 from .base import CRUDBase
 from .. import models, schemas
@@ -65,5 +66,10 @@ class CRUDAccount(CRUDBase[models.Account, AccountCreate, AccountUpdate]): # И�
             self.model.name == name,
             self.model.workspace_id == workspace_id
         ).first()
+        
+    def get_total_balance_by_workspace(self, db: Session, *, workspace_id: int) -> Decimal:
+        """Считает общую сумму на всех счетах в рабочем пространстве."""
+        total = db.query(func.sum(self.model.balance)).filter(self.model.workspace_id == workspace_id).scalar()
+        return total or Decimal('0.0')
 
 account = CRUDAccount(models.Account)

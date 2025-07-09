@@ -21,6 +21,7 @@ import HelpPage from './pages/HelpPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import BudgetsPage from './pages/BudgetsPage'; 
 import BudgetStatusPage from './pages/BudgetStatusPage'; 
+import PaymentCalendarPage from './pages/PaymentCalendarPage';
 
 // Можно оставить заглушки для страниц, которые еще не созданы
 const SettingsPage = () => (<div className="p-4"><h1 className="text-2xl">Настройки (в разработке)</h1></div>);
@@ -54,9 +55,10 @@ function App() {
         <Route path="/reports/account-balances" element={<AccountBalancesReportPage />} />
         <Route path="/admin" element={<AdminPanelPage />} />
         <Route path="/mapping-rules" element={<MappingRulesPage />} />  
-        <Route path="/help" element={<HelpPage />} />
+        <Route path="/help" element={<HelpPage />} />
         <Route path="/budgets" element={<BudgetsPage />} />
         <Route path="/budgets/:budgetId/status" element={<BudgetStatusPage />} />
+        <Route path="/payment-calendar" element={<PaymentCalendarPage />} />
         {/* <Route path="/settings" element={<SettingsPage />} /> */}
       </Route>
       

@@ -9,8 +9,8 @@ import {
   Cog6ToothIcon, 
   ChevronRightIcon, 
   ReceiptPercentIcon,
-  CircleStackIcon,
-  BookOpenIcon,
+  PowerIcon,
+  ScaleIcon,
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Menu, Transition } from '@headlessui/react'; 
@@ -20,11 +20,11 @@ import QuickCashExpenseForm from './QuickCashExpenseForm';
 
 
 const navigation = [
-  { name: 'Дашборд', href: '/dashboard', icon: HomeIcon, type: 'link' },
-  { name: 'Транзакции', href: '/transactions', icon: NewspaperIcon, type: 'link' },
+  { name: 'Сводка', href: '/dashboard', icon: HomeIcon, type: 'link' },
+  { name: 'Операции', href: '/transactions', icon: NewspaperIcon, type: 'link' },
   { name: 'Счета', href: '/accounts', icon: CurrencyDollarIcon, type: 'link' },
-  { name: 'Статьи ДДС', href: '/articles', icon: ReceiptPercentIcon, type: 'link' },
-  { name: 'Бюджеты', href: '/budgets', icon: ChartBarIcon, type: 'link' }, // <-- НОВОЕ: Добавляем пункт для Бюджетов
+  { name: 'Статьи', href: '/articles', icon: ReceiptPercentIcon, type: 'link' },
+  { name: 'Бюджеты', href: '/budgets', icon: ScaleIcon, type: 'link' }, // <-- НОВОЕ: Добавляем пункт для Бюджетов
 
   {
     name: 'Отчеты',
@@ -92,11 +92,11 @@ export default function Sidebar({ setSidebarOpen }) {
     <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
       <div className="flex h-16 shrink-0 items-center">
         <div className="flex items-center group">
-          <CircleStackIcon 
+          <PowerIcon 
             className="h-8 w-8 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
             aria-hidden="true" 
           />
-          <span className="ml-3 text-2xl font-extrabold text-gray-900">БизнесПоток</span>
+          <span className="ml-3 text-2xl font-extrabold text-gray-900">ФинансПРО</span>
         </div>
       </div>
       <nav className="flex flex-1 flex-col">

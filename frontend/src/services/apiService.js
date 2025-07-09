@@ -101,6 +101,17 @@ export const apiService = {
     updateBudget: (budgetId, budgetData) => request('put', `budgets/${budgetId}`, budgetData), // Обновление бюджета (предполагаемый эндпоинт)
     deleteBudget: (budgetId) => request('delete', `budgets/${budgetId}`), // Удаление бюджета (предполагаемый эндпоинт)
 
+
+    // --- Методы для запланированных платежей ---
+    getPlannedPayments: (params) => request('get', 'planned-payments/', null, params),
+    createPlannedPayment: (paymentData) => request('post', 'planned-payments/', paymentData),
+    updatePlannedPayment: (paymentId, paymentData) => request('put', `planned-payments/${paymentId}`, paymentData),
+    deletePlannedPayment: (paymentId) => request('delete', `planned-payments/${paymentId}`),
+
+    // --- Методы для платежного календаря ---
+    getPaymentCalendar: (params) => request('get', 'payment-calendar/', null, params),
+
+
     // Statement
     uploadStatement: (formData) => request('post', 'statement/upload', formData, {
         headers: {

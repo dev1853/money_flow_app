@@ -11,6 +11,7 @@ from .reports import DdsReportItem, DdsReport, ProfitLossReport
 from .dashboard import SummaryItem, DashboardSummaryData, DashboardCashflowTrendData
 from .statement import StatementUploadResponse
 from .account_type import AccountType, AccountTypeBase, AccountTypeCreate, AccountTypeUpdate 
+from .planned_payment import PlannedPayment, PlannedPaymentCreate, PlannedPaymentUpdate
 
 from .budget import Budget, BudgetCreate, BudgetUpdate, BudgetItem, BudgetItemCreate, BudgetItemUpdate
 from .budget_status import BudgetStatus, BudgetItemStatus 

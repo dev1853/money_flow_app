@@ -7786,3 +7786,976 @@ DETAIL:  Failing row contains (202, null, -10000.00, 2025-07-08, EXPENSE, 168, n
 2025-07-08 23:05:44 - INFO - uvicorn.error - Application startup complete. None
 2025-07-08 23:06:06 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 78 пользователем admin3111133@admin.ru None
 2025-07-08 23:06:06 - INFO - app.routers.transactions - Транзакция с ID 204 успешно создана для workspace 78. None
+2025-07-09 08:53:37 - INFO - uvicorn.error - Shutting down None
+2025-07-09 08:53:37 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 08:53:37 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 08:53:37 - INFO - uvicorn.error - Finished server process [1989396] None
+2025-07-09 08:53:41 - INFO - uvicorn.error - Started server process [2058037] None
+2025-07-09 08:53:41 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 08:53:41 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 08:53:56 - INFO - uvicorn.error - Shutting down None
+2025-07-09 08:53:56 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 08:53:56 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 08:53:56 - INFO - uvicorn.error - Finished server process [2058037] None
+2025-07-09 08:53:59 - INFO - uvicorn.error - Started server process [2060276] None
+2025-07-09 08:53:59 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 08:53:59 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 08:55:16 - INFO - uvicorn.error - Shutting down None
+2025-07-09 08:55:16 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 08:55:16 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 08:55:16 - INFO - uvicorn.error - Finished server process [2060276] None
+2025-07-09 08:55:19 - INFO - uvicorn.error - Started server process [2075219] None
+2025-07-09 08:55:19 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 08:55:19 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 08:55:25 - INFO - uvicorn.error - Shutting down None
+2025-07-09 08:55:25 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 08:55:25 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 08:55:25 - INFO - uvicorn.error - Finished server process [2075219] None
+2025-07-09 08:55:27 - INFO - uvicorn.error - Started server process [2076815] None
+2025-07-09 08:55:27 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 08:55:27 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 09:16:14 - INFO - uvicorn.error - Shutting down None
+2025-07-09 09:16:14 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 09:16:14 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 09:16:14 - INFO - uvicorn.error - Finished server process [2076815] None
+2025-07-09 09:16:18 - INFO - uvicorn.error - Started server process [2129116] None
+2025-07-09 09:16:18 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 09:16:18 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 09:16:54 - INFO - uvicorn.error - Shutting down None
+2025-07-09 09:16:54 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 09:16:54 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 09:16:54 - INFO - uvicorn.error - Finished server process [2129116] None
+2025-07-09 09:16:57 - INFO - uvicorn.error - Started server process [2129573] None
+2025-07-09 09:16:57 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 09:16:57 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 09:17:16 - INFO - uvicorn.error - Shutting down None
+2025-07-09 09:17:16 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 09:17:16 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 09:17:16 - INFO - uvicorn.error - Finished server process [2129573] None
+2025-07-09 09:26:17 - INFO - uvicorn.error - Started server process [2197704] None
+2025-07-09 09:26:17 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 09:26:17 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 09:27:27 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 79 пользователем admin1322222@admin.ru None
+2025-07-09 09:27:27 - INFO - app.routers.transactions - Транзакция с ID 209 успешно создана для workspace 79. None
+2025-07-09 09:34:00 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'CRUDPlannedPayment' object has no attribute 'get_multi_by_owner'"), <traceback object at 0x7d1f081e8d00>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/planned_payments.py", line 47, in read_planned_payments
+    return crud.planned_payment.get_multi_by_owner(db=db, owner_id=current_workspace.id)
+AttributeError: 'CRUDPlannedPayment' object has no attribute 'get_multi_by_owner'
+2025-07-09 09:34:24 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'CRUDPlannedPayment' object has no attribute 'create_with_owner'"), <traceback object at 0x7d1f08134440>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/planned_payments.py", line 28, in create_planned_payment
+    return crud.planned_payment.create_with_owner(
+AttributeError: 'CRUDPlannedPayment' object has no attribute 'create_with_owner'
+2025-07-09 09:35:18 - INFO - uvicorn.error - Shutting down None
+2025-07-09 09:35:18 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 09:35:18 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 09:35:18 - INFO - uvicorn.error - Finished server process [2197704] None
+2025-07-09 09:35:21 - INFO - uvicorn.error - Started server process [2309398] None
+2025-07-09 09:35:21 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 09:35:21 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 09:36:52 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'NameError'>, NameError("name 'func' is not defined"), <traceback object at 0x7dc073f8ff80>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/payment_calendar.py", line 26, in get_payment_calendar
+    return payment_calendar_service.generate_calendar(
+  File "/home/true/Projects/money_flow_app/backend/app/services/payment_calendar_service.py", line 25, in generate_calendar
+    current_balance = crud.account.get_total_balance_by_workspace(db, workspace_id=workspace_id)
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_account.py", line 71, in get_total_balance_by_workspace
+    total = db.query(func.sum(self.model.balance)).filter(self.model.workspace_id == workspace_id).scalar()
+NameError: name 'func' is not defined
+2025-07-09 09:37:48 - INFO - uvicorn.error - Shutting down None
+2025-07-09 09:37:48 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 09:37:48 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 09:37:48 - INFO - uvicorn.error - Finished server process [2309398] None
+2025-07-09 09:37:50 - INFO - uvicorn.error - Started server process [2311962] None
+2025-07-09 09:37:50 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 09:37:50 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 09:48:14 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 79 пользователем admin1322222@admin.ru None
+2025-07-09 09:48:14 - INFO - app.routers.transactions - Транзакция с ID 210 успешно создана для workspace 79. None
+2025-07-09 09:56:38 - INFO - uvicorn.error - Shutting down None
+2025-07-09 09:56:38 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 09:56:38 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 09:56:38 - INFO - uvicorn.error - Finished server process [2311962] None
+2025-07-09 09:56:51 - INFO - uvicorn.error - Started server process [2476873] None
+2025-07-09 09:56:51 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 09:56:51 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 10:10:51 - INFO - uvicorn.error - Shutting down None
+2025-07-09 10:10:51 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 10:10:51 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 10:10:51 - INFO - uvicorn.error - Finished server process [2476873] None
+2025-07-09 10:10:53 - INFO - uvicorn.error - Started server process [2510333] None
+2025-07-09 10:10:53 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 10:10:53 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 10:11:07 - INFO - uvicorn.error - Shutting down None
+2025-07-09 10:11:07 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 10:11:07 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 10:11:07 - INFO - uvicorn.error - Finished server process [2510333] None
+2025-07-09 10:11:09 - INFO - uvicorn.error - Started server process [2510610] None
+2025-07-09 10:11:09 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 10:11:09 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 10:11:31 - INFO - uvicorn.error - Shutting down None
+2025-07-09 10:11:31 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 10:11:31 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 10:11:31 - INFO - uvicorn.error - Finished server process [2510610] None
+2025-07-09 10:11:33 - INFO - uvicorn.error - Started server process [2510823] None
+2025-07-09 10:11:33 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 10:11:33 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 10:11:45 - INFO - uvicorn.error - Shutting down None
+2025-07-09 10:11:45 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 10:11:45 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 10:11:45 - INFO - uvicorn.error - Finished server process [2510823] None
+2025-07-09 10:11:47 - INFO - uvicorn.error - Started server process [2511138] None
+2025-07-09 10:11:47 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 10:11:47 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 10:12:12 - INFO - uvicorn.error - Shutting down None
+2025-07-09 10:12:12 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 10:12:12 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 10:12:12 - INFO - uvicorn.error - Finished server process [2511138] None
+2025-07-09 10:12:14 - INFO - uvicorn.error - Started server process [2511431] None
+2025-07-09 10:12:14 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 10:12:14 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 11:12:05 - INFO - uvicorn.error - Started server process [5103] None
+2025-07-09 11:12:05 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 11:12:05 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 11:12:05 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit) None
+2025-07-09 11:14:17 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'sqlalchemy.exc.ArgumentError'>, ArgumentError('SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481e9820>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481e9cd0>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481e9d30>).'), <traceback object at 0x7d3b481f1380>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/payment_calendar.py", line 26, in get_payment_calendar
+    return payment_calendar_service.generate_calendar(
+  File "/home/true/Projects/money_flow_app/backend/app/services/payment_calendar_service.py", line 26, in generate_calendar
+    planned_payments = crud.planned_payment.get_multi_by_workspace_and_period(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_planned_payment.py", line 47, in get_multi_by_workspace_and_period
+    or_(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/_elements_constructors.py", line 1488, in or_
+    return BooleanClauseList.or_(*clauses)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3165, in or_
+    return cls._construct(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3063, in _construct
+    [
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3064, in <listcomp>
+    coercions.expect(roles.WhereHavingRole, clause)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 396, in expect
+    resolved = impl._literal_coercion(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 634, in _literal_coercion
+    self._raise_for_expected(element, argname)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
+    raise exc.ArgumentError(msg, code=code) from err
+sqlalchemy.exc.ArgumentError: SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481e9820>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481e9cd0>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481e9d30>).
+2025-07-09 11:14:17 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'sqlalchemy.exc.ArgumentError'>, ArgumentError('SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481f43d0>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481f4a00>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481f4c70>).'), <traceback object at 0x7d3b480631c0>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/payment_calendar.py", line 26, in get_payment_calendar
+    return payment_calendar_service.generate_calendar(
+  File "/home/true/Projects/money_flow_app/backend/app/services/payment_calendar_service.py", line 26, in generate_calendar
+    planned_payments = crud.planned_payment.get_multi_by_workspace_and_period(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_planned_payment.py", line 47, in get_multi_by_workspace_and_period
+    or_(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/_elements_constructors.py", line 1488, in or_
+    return BooleanClauseList.or_(*clauses)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3165, in or_
+    return cls._construct(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3063, in _construct
+    [
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3064, in <listcomp>
+    coercions.expect(roles.WhereHavingRole, clause)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 396, in expect
+    resolved = impl._literal_coercion(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 634, in _literal_coercion
+    self._raise_for_expected(element, argname)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
+    raise exc.ArgumentError(msg, code=code) from err
+sqlalchemy.exc.ArgumentError: SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481f43d0>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481f4a00>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481f4c70>).
+2025-07-09 11:14:46 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'sqlalchemy.exc.ArgumentError'>, ArgumentError('SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b48438a90>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b48438d30>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b48438ca0>).'), <traceback object at 0x7d3b4849bec0>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/payment_calendar.py", line 26, in get_payment_calendar
+    return payment_calendar_service.generate_calendar(
+  File "/home/true/Projects/money_flow_app/backend/app/services/payment_calendar_service.py", line 26, in generate_calendar
+    planned_payments = crud.planned_payment.get_multi_by_workspace_and_period(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_planned_payment.py", line 47, in get_multi_by_workspace_and_period
+    or_(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/_elements_constructors.py", line 1488, in or_
+    return BooleanClauseList.or_(*clauses)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3165, in or_
+    return cls._construct(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3063, in _construct
+    [
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3064, in <listcomp>
+    coercions.expect(roles.WhereHavingRole, clause)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 396, in expect
+    resolved = impl._literal_coercion(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 634, in _literal_coercion
+    self._raise_for_expected(element, argname)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
+    raise exc.ArgumentError(msg, code=code) from err
+sqlalchemy.exc.ArgumentError: SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b48438a90>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b48438d30>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b48438ca0>).
+2025-07-09 11:14:46 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'sqlalchemy.exc.ArgumentError'>, ArgumentError('SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481d9910>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481d9b80>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b482422b0>).'), <traceback object at 0x7d3b4827e040>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/payment_calendar.py", line 26, in get_payment_calendar
+    return payment_calendar_service.generate_calendar(
+  File "/home/true/Projects/money_flow_app/backend/app/services/payment_calendar_service.py", line 26, in generate_calendar
+    planned_payments = crud.planned_payment.get_multi_by_workspace_and_period(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_planned_payment.py", line 47, in get_multi_by_workspace_and_period
+    or_(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/_elements_constructors.py", line 1488, in or_
+    return BooleanClauseList.or_(*clauses)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3165, in or_
+    return cls._construct(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3063, in _construct
+    [
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3064, in <listcomp>
+    coercions.expect(roles.WhereHavingRole, clause)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 396, in expect
+    resolved = impl._literal_coercion(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 634, in _literal_coercion
+    self._raise_for_expected(element, argname)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
+    raise exc.ArgumentError(msg, code=code) from err
+sqlalchemy.exc.ArgumentError: SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481d9910>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b481d9b80>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7d3b482422b0>).
+2025-07-09 11:15:58 - INFO - uvicorn.error - Shutting down None
+2025-07-09 11:15:58 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 11:15:58 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 11:15:58 - INFO - uvicorn.error - Finished server process [5103] None
+2025-07-09 11:16:06 - INFO - uvicorn.error - Started server process [29979] None
+2025-07-09 11:16:06 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 11:16:06 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 11:16:06 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit) None
+2025-07-09 11:16:27 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'sqlalchemy.exc.ArgumentError'>, ArgumentError('SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7331f075a670>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f075a700>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f075a7f0>).'), <traceback object at 0x7331f0754ec0>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/payment_calendar.py", line 26, in get_payment_calendar
+    return payment_calendar_service.generate_calendar(
+  File "/home/true/Projects/money_flow_app/backend/app/services/payment_calendar_service.py", line 26, in generate_calendar
+    planned_payments = crud.planned_payment.get_multi_by_workspace_and_period(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_planned_payment.py", line 47, in get_multi_by_workspace_and_period
+    or_(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/_elements_constructors.py", line 1488, in or_
+    return BooleanClauseList.or_(*clauses)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3165, in or_
+    return cls._construct(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3063, in _construct
+    [
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3064, in <listcomp>
+    coercions.expect(roles.WhereHavingRole, clause)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 396, in expect
+    resolved = impl._literal_coercion(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 634, in _literal_coercion
+    self._raise_for_expected(element, argname)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
+    raise exc.ArgumentError(msg, code=code) from err
+sqlalchemy.exc.ArgumentError: SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7331f075a670>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f075a700>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f075a7f0>).
+2025-07-09 11:16:27 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'sqlalchemy.exc.ArgumentError'>, ArgumentError('SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7331f07694f0>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f0769310>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f05d7190>).'), <traceback object at 0x7331f05d8240>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/payment_calendar.py", line 26, in get_payment_calendar
+    return payment_calendar_service.generate_calendar(
+  File "/home/true/Projects/money_flow_app/backend/app/services/payment_calendar_service.py", line 26, in generate_calendar
+    planned_payments = crud.planned_payment.get_multi_by_workspace_and_period(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_planned_payment.py", line 47, in get_multi_by_workspace_and_period
+    or_(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/_elements_constructors.py", line 1488, in or_
+    return BooleanClauseList.or_(*clauses)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3165, in or_
+    return cls._construct(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3063, in _construct
+    [
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3064, in <listcomp>
+    coercions.expect(roles.WhereHavingRole, clause)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 396, in expect
+    resolved = impl._literal_coercion(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 634, in _literal_coercion
+    self._raise_for_expected(element, argname)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
+    raise exc.ArgumentError(msg, code=code) from err
+sqlalchemy.exc.ArgumentError: SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7331f07694f0>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f0769310>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f05d7190>).
+2025-07-09 11:19:58 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'sqlalchemy.exc.ArgumentError'>, ArgumentError('SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7331f05d79d0>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f05d7eb0>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f05d7400>).'), <traceback object at 0x7331f0750040>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/payment_calendar.py", line 26, in get_payment_calendar
+    return payment_calendar_service.generate_calendar(
+  File "/home/true/Projects/money_flow_app/backend/app/services/payment_calendar_service.py", line 26, in generate_calendar
+    planned_payments = crud.planned_payment.get_multi_by_workspace_and_period(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_planned_payment.py", line 47, in get_multi_by_workspace_and_period
+    # Либо это не повторяющийся платеж внутри нашего окна
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/_elements_constructors.py", line 1488, in or_
+    return BooleanClauseList.or_(*clauses)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3165, in or_
+    return cls._construct(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3063, in _construct
+    [
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3064, in <listcomp>
+    coercions.expect(roles.WhereHavingRole, clause)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 396, in expect
+    resolved = impl._literal_coercion(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 634, in _literal_coercion
+    self._raise_for_expected(element, argname)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
+    raise exc.ArgumentError(msg, code=code) from err
+sqlalchemy.exc.ArgumentError: SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7331f05d79d0>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f05d7eb0>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f05d7400>).
+2025-07-09 11:19:58 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'sqlalchemy.exc.ArgumentError'>, ArgumentError('SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7331f0753040>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f0753c70>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f0753be0>).'), <traceback object at 0x7331f05d6f40>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/home/true/Projects/money_flow_app/backend/app/routers/payment_calendar.py", line 26, in get_payment_calendar
+    return payment_calendar_service.generate_calendar(
+  File "/home/true/Projects/money_flow_app/backend/app/services/payment_calendar_service.py", line 26, in generate_calendar
+    planned_payments = crud.planned_payment.get_multi_by_workspace_and_period(
+  File "/home/true/Projects/money_flow_app/backend/app/crud/crud_planned_payment.py", line 47, in get_multi_by_workspace_and_period
+    # Либо это не повторяющийся платеж внутри нашего окна
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/_elements_constructors.py", line 1488, in or_
+    return BooleanClauseList.or_(*clauses)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3165, in or_
+    return cls._construct(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3063, in _construct
+    [
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 3064, in <listcomp>
+    coercions.expect(roles.WhereHavingRole, clause)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 396, in expect
+    resolved = impl._literal_coercion(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 634, in _literal_coercion
+    self._raise_for_expected(element, argname)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
+    raise exc.ArgumentError(msg, code=code) from err
+sqlalchemy.exc.ArgumentError: SQL expression for WHERE/HAVING role expected, got (<sqlalchemy.sql.elements.BinaryExpression object at 0x7331f0753040>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f0753c70>, <sqlalchemy.sql.elements.BinaryExpression object at 0x7331f0753be0>).
+2025-07-09 11:20:13 - INFO - uvicorn.error - Shutting down None
+2025-07-09 11:20:13 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 11:20:13 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 11:20:13 - INFO - uvicorn.error - Finished server process [29979] None
+2025-07-09 11:20:23 - INFO - uvicorn.error - Started server process [64670] None
+2025-07-09 11:20:23 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 11:20:23 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 11:20:23 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit) None
+2025-07-09 11:33:02 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 80 пользователем true1853@yandex.ru None
+2025-07-09 11:33:02 - INFO - app.routers.transactions - Транзакция с ID 215 успешно создана для workspace 80. None
+2025-07-09 11:34:17 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 80 пользователем true1853@yandex.ru None
+2025-07-09 11:34:17 - INFO - app.routers.transactions - Транзакция с ID 216 успешно создана для workspace 80. None
+2025-07-09 13:52:11 - INFO - uvicorn.error - Shutting down None
+2025-07-09 13:52:11 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 13:52:11 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 13:52:11 - INFO - uvicorn.error - Finished server process [64670] None
+2025-07-09 13:52:15 - INFO - uvicorn.error - Started server process [452524] None
+2025-07-09 13:52:15 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 13:52:15 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 13:52:15 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit) None
+2025-07-09 13:52:22 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'fastapi.exceptions.ResponseValidationError'>, ResponseValidationError(), <traceback object at 0x73c12292ddc0>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 296, in app
+    content = await serialize_response(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 155, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 1 validation errors:
+  {'type': 'model_attributes_type', 'loc': ('response',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': None}
+
+2025-07-09 13:53:56 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'fastapi.exceptions.ResponseValidationError'>, ResponseValidationError(), <traceback object at 0x73c1228cb2c0>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 296, in app
+    content = await serialize_response(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 155, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 1 validation errors:
+  {'type': 'model_attributes_type', 'loc': ('response',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': None}
+
+2025-07-09 13:55:44 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'fastapi.exceptions.ResponseValidationError'>, ResponseValidationError(), <traceback object at 0x73c1232e9e80>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 296, in app
+    content = await serialize_response(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 155, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 1 validation errors:
+  {'type': 'model_attributes_type', 'loc': ('response',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': None}
+
+2025-07-09 13:57:34 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'fastapi.exceptions.ResponseValidationError'>, ResponseValidationError(), <traceback object at 0x73c1228cd9c0>)
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/true/Projects/money_flow_app/backend/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 296, in app
+    content = await serialize_response(
+  File "/home/true/Projects/money_flow_app/backend/venv/lib/python3.9/site-packages/fastapi/routing.py", line 155, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 1 validation errors:
+  {'type': 'model_attributes_type', 'loc': ('response',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': None}
+
+2025-07-09 13:57:37 - INFO - uvicorn.error - Shutting down None
+2025-07-09 13:57:37 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 13:57:37 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 13:57:37 - INFO - uvicorn.error - Finished server process [452524] None
+2025-07-09 13:57:41 - INFO - uvicorn.error - Started server process [488280] None
+2025-07-09 13:57:41 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 13:57:41 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 13:57:41 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit) None

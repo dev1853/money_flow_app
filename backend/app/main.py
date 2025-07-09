@@ -23,7 +23,9 @@ from .routers import (
     reports, 
     dashboard,
     mapping_rules,
-    budgets 
+    budgets,
+    planned_payments,
+    payment_calendar 
 )
 from .core.logging_config import setup_logging
 
@@ -87,4 +89,6 @@ app.include_router(statement.router, prefix=f"{api_prefix}/statement", tags=["st
 app.include_router(reports.router, prefix=f"{api_prefix}/reports", tags=["reports"])
 app.include_router(dashboard.router, prefix=f"{api_prefix}/dashboard", tags=["dashboard"])
 app.include_router(mapping_rules.router, prefix=f"{api_prefix}/mapping_rules", tags=["mapping_rules"])
-app.include_router(budgets.router, prefix="/api/budgets", tags=["budgets"])
+app.include_router(budgets.router, prefix=f"{api_prefix}/budgets", tags=["budgets"])
+app.include_router(planned_payments.router, prefix=f"{api_prefix}/planned-payments", tags=["planned-payments"])
+app.include_router(payment_calendar.router, prefix=f"{api_prefix}/payment-calendar", tags=["payment_calendar"])
