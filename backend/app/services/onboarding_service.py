@@ -33,7 +33,8 @@ class OnboardingService:
 
     def _create_default_workspace(self, db: Session, *, user: models.User) -> models.Workspace:
         """Создает личное рабочее пространство и делает его активным."""
-        workspace_in = schemas.WorkspaceCreate(name="Личное пространство")
+        # ИСПРАВЛЕНИЕ: Добавляем owner_id=user.id
+        workspace_in = schemas.WorkspaceCreate(name="Личное пространство", owner_id=user.id)
         workspace = crud.workspace.create_with_owner(db, obj_in=workspace_in, owner_id=user.id)
         crud.user.set_active_workspace(db, user=user, workspace=workspace)
         return workspace
@@ -131,7 +132,7 @@ class OnboardingService:
                 schema_data = {
                     "amount": tx_data["amount"],
                     "transaction_date": date.fromisoformat(tx_data["date"]),
-                    "transaction_type": models.TransactionType(tx_data["type"]),
+                    "transaction_type": models.TransactionType(tx_data["type"]), # ИСПРАВЛЕНИЕ: Изменено с 'type' на 'transaction_type'
                     "dds_article_id": dds_article.id,
                     "user_id": user.id,
                     "workspace_id": workspace.id
@@ -146,11 +147,10 @@ class OnboardingService:
                 schema_data["description"] = description
                 
                 # 4. Правильно устанавливаем from/to account ID
-                # И добавляем account_id для валидации схемы, если она его требует
-                if schema_data["transaction_type"] == models.TransactionType.INCOME:
+                if schema_data["transaction_type"] == models.TransactionType.INCOME: # Здесь уже используется 'transaction_type'
                     schema_data["to_account_id"] = account.id
                     # schema_data["account_id"] = account.id # Это поле больше не нужно в схеме TransactionCreate
-                elif schema_data["transaction_type"] == models.TransactionType.EXPENSE:
+                elif schema_data["transaction_type"] == models.TransactionType.EXPENSE: # Здесь уже используется 'transaction_type'
                     schema_data["from_account_id"] = account.id
                     # schema_data["account_id"] = account.id # Это поле больше не нужно в схеме TransactionCreate
 

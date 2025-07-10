@@ -1,5 +1,7 @@
 # /backend/app/schemas/__init__.py
 
+from typing import Optional, List # Этот импорт уже добавлен
+
 from .token import Token, TokenData
 from .user import User, UserCreate, UserUpdate
 from .account import Account, AccountCreate, AccountUpdate
@@ -10,8 +12,13 @@ from .mapping_rule import MappingRule, MappingRuleCreate, MappingRuleUpdate, Map
 from .reports import DdsReportItem, DdsReport, ProfitLossReport
 from .dashboard import SummaryItem, DashboardSummaryData, DashboardCashflowTrendData
 from .statement import StatementUploadResponse
-from .account_type import AccountType, AccountTypeBase, AccountTypeCreate, AccountTypeUpdate 
+from .account_type import AccountType, AccountTypeBase, AccountTypeCreate, AccountTypeUpdate
 from .planned_payment import PlannedPayment, PlannedPaymentCreate, PlannedPaymentUpdate
 
 from .budget import Budget, BudgetCreate, BudgetUpdate, BudgetItem, BudgetItemCreate, BudgetItemUpdate
-from .budget_status import BudgetStatus, BudgetItemStatus 
+from .budget_status import BudgetStatus, BudgetItemStatus
+
+# Добавляем явные вызовы model_rebuild() для разрешения прямых ссылок
+User.model_rebuild()
+Workspace.model_rebuild()
+Transaction.model_rebuild()

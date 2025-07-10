@@ -1,5 +1,6 @@
 # /backend/app/schemas/budget_status.py
 
+from __future__ import annotations 
 from pydantic import BaseModel, computed_field
 from typing import List
 from datetime import date

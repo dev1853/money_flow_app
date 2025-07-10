@@ -1,5 +1,6 @@
 # /backend/app/schemas/counterparty.py
 
+from __future__ import annotations 
 from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from ..models.counterparty import CounterpartyType

@@ -1,11 +1,14 @@
 # /backend/app/services/transaction_service.py
 
+import logging
 from sqlalchemy.orm import Session
-from decimal import Decimal
+from decimal import Decimal # Убедитесь, что Decimal импортирован
 
 from app import crud, models, schemas
 from ..core.exceptions import AccountNotFoundError, PermissionDeniedError, DdsArticleNotFoundError, NotFoundError
 from ..schemas import TransactionType
+
+logger = logging.getLogger(__name__)
 
 class TransactionService:
     """Сервис для инкапсуляции бизнес-логики, связанной с транзакциями."""
@@ -39,15 +42,18 @@ class TransactionService:
         from_account, to_account = None, None
         if transaction_in.from_account_id:
             from_account = crud.account.get(db, id=transaction_in.from_account_id)
+            logger.debug(f"Получен счет-источник ID {transaction_in.from_account_id}: {from_account}")
             if not from_account or from_account.workspace_id != workspace_id:
                 raise AccountNotFoundError(detail=f"Счет-источник с ID {transaction_in.from_account_id} не найден.")
         
         if transaction_in.to_account_id:
             to_account = crud.account.get(db, id=transaction_in.to_account_id)
+            logger.debug(f"Получен счет-получатель ID {transaction_in.to_account_id}: {to_account}")
             if not to_account or to_account.workspace_id != workspace_id:
                 raise AccountNotFoundError(detail=f"Счет-получатель с ID {transaction_in.to_account_id} не найден.")
 
         # 3. Валидируем логику по типу транзакции
+        logger.debug(f"Тип транзакции: {transaction_in.transaction_type}, to_account: {to_account}, from_account: {from_account}")
         if transaction_in.transaction_type == models.TransactionType.EXPENSE and not from_account:
             raise ValueError("Для расхода должен быть указан счет-источник.")
         if transaction_in.transaction_type == models.TransactionType.INCOME and not to_account:
@@ -56,7 +62,8 @@ class TransactionService:
             raise ValueError("Для перевода должны быть указаны оба счета.")
 
         # 4. ОБНОВЛЯЕМ БАЛАНСЫ, СУММА ВСЕГДА ПОЛОЖИТЕЛЬНАЯ
-        amount = abs(transaction_in.amount) # Убедимся, что работаем с положительным числом
+        amount = Decimal(abs(transaction_in.amount)) # ИСПРАВЛЕНИЕ: Преобразуем float в Decimal
+        logger.debug(f"Сумма транзакции (Decimal): {amount}") # Добавлено для отладки
 
         if transaction_in.transaction_type == models.TransactionType.EXPENSE:
             from_account.balance -= amount
@@ -105,6 +112,7 @@ class TransactionService:
                 new_amount = -new_amount
 
             # 4. Корректируем баланс счета: отменяем старую сумму и применяем новую
+            # ИСПРАВЛЕНИЕ: Убедитесь, что amount_change также является Decimal
             balance_change = new_amount - old_amount
             crud.account.update_balance(db, account_id=updated_transaction.account_id, amount_change=balance_change)
             
@@ -127,6 +135,7 @@ class TransactionService:
                 amount_to_revert = -amount_to_revert
 
             # 2. Обновляем баланс, возвращая его в состояние до транзакции
+            # ИСПРАВЛЕНИЕ: Убедитесь, что amount_change также является Decimal
             crud.account.update_balance(db, account_id=transaction_to_delete.account_id, amount_change=-amount_to_revert)
             
             # 3. Удаляем транзакцию

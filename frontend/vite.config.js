@@ -1,26 +1,27 @@
-import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
+// /frontend/vite.config.js
 
-// https://vitejs.dev/config/
+import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+
 export default defineConfig({
   plugins: [
     tailwindcss(),
     react()
   ],
   server: {
-    // Эта опция гарантирует, что сервер Vite слушает на всех сетевых интерфейсах
-    // внутри контейнера. Мы уже сделали это через флаг --host в docker-compose,
-    // но указать это здесь — хорошая практика.
-    host: '0.0.0.0',
+    host: '0.0.0.0', // Оставляем эту настройку для Docker
+    port: 3000,      // Явно указываем порт для разработки
 
-    // Указываем Vite, что запросы с нашего домена безопасны.
-    // Это и есть исправление нашей ошибки.
-    allowedHosts: [
-      'money.dev1853.ru'
-    ],
-    
-    // Явно указываем порт, чтобы он совпадал с тем, что в docker-compose
-    port: 3000,
+    // --- ДОБАВЬТЕ ЭТОТ БЛОК ---
+    proxy: {
+      // Все запросы, начинающиеся с '/api', будут перенаправлены
+      '/api': {
+        // Указываем, куда перенаправлять (на ваш работающий бэкенд)
+        target: 'http://localhost:8000',
+        // Обязательная опция для корректной работы прокси
+        changeOrigin: true,
+      },
+    },
   },
 });

@@ -1,5 +1,6 @@
 # backend/app/schemas/base.py
 
+from __future__ import annotations 
 from pydantic import BaseModel, ConfigDict
 
 class BaseSchema(BaseModel):

@@ -1,8 +1,8 @@
-"""initial_schema_setup
+"""clean_initial_schema
 
-Revision ID: 36416c9c63c0
-Revises: 
-Create Date: 2025-07-09 20:09:23.923997
+Revision ID: b88eecc3bf55
+Revises:
+Create Date: 2025-07-09 18:48:11.442005
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '36416c9c63c0'
+revision: str = 'b88eecc3bf55'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -31,6 +31,7 @@ def upgrade() -> None:
     sa.UniqueConstraint('name')
     )
     op.create_index(op.f('ix_account_types_id'), 'account_types', ['id'], unique=False)
+
     op.create_table('roles',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=True),
@@ -38,6 +39,18 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_roles_id'), 'roles', ['id'], unique=False)
     op.create_index(op.f('ix_roles_name'), 'roles', ['name'], unique=True)
+
+    # Создаем workspaces БЕЗ owner_id foreign key пока
+    op.create_table('workspaces',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(), nullable=True),
+    sa.Column('owner_id', sa.Integer(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_workspaces_id'), 'workspaces', ['id'], unique=False)
+    op.create_index(op.f('ix_workspaces_name'), 'workspaces', ['name'], unique=False)
+
+    # Создаем users БЕЗ active_workspace_id foreign key пока
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('full_name', sa.String(), nullable=True),
@@ -48,7 +61,6 @@ def upgrade() -> None:
     sa.Column('is_superuser', sa.Boolean(), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
     sa.Column('active_workspace_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['active_workspace_id'], ['workspaces.id'], ),
     sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -56,15 +68,17 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_full_name'), 'users', ['full_name'], unique=False)
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
     op.create_index(op.f('ix_users_username'), 'users', ['username'], unique=True)
-    op.create_table('workspaces',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=True),
-    sa.Column('owner_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+
+    # Теперь, когда обе таблицы созданы, добавляем внешние ключи для циклической зависимости
+    op.create_foreign_key(
+        'fk_users_active_workspace_id', 'users', 'workspaces',
+        ['active_workspace_id'], ['id']
     )
-    op.create_index(op.f('ix_workspaces_id'), 'workspaces', ['id'], unique=False)
-    op.create_index(op.f('ix_workspaces_name'), 'workspaces', ['name'], unique=False)
+    op.create_foreign_key(
+        'fk_workspaces_owner_id', 'workspaces', 'users',
+        ['owner_id'], ['id']
+    )
+
     op.create_table('accounts',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=True),
@@ -211,6 +225,11 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_accounts_name'), table_name='accounts')
     op.drop_index(op.f('ix_accounts_id'), table_name='accounts')
     op.drop_table('accounts')
+    
+    # Отменяем добавление FK между users и workspaces
+    op.drop_constraint('fk_users_active_workspace_id', 'users', type_='foreignkey')
+    op.drop_constraint('fk_workspaces_owner_id', 'workspaces', type_='foreignkey')
+
     op.drop_index(op.f('ix_workspaces_name'), table_name='workspaces')
     op.drop_index(op.f('ix_workspaces_id'), table_name='workspaces')
     op.drop_table('workspaces')

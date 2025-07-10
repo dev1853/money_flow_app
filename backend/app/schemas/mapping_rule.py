@@ -1,5 +1,6 @@
 # /backend/app/schemas/mapping_rule.py
 
+from __future__ import annotations 
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 

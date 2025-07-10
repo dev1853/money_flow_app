@@ -1,5 +1,6 @@
 # /backend/app/schemas/budget.py
 
+from __future__ import annotations 
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 from datetime import date

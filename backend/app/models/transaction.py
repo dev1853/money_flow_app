@@ -31,11 +31,11 @@ class Transaction(Base, TimestampMixin):
     workspace_id = Column(Integer, ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False)
     dds_article_id = Column(Integer, ForeignKey("dds_articles.id"), nullable=True)
 
-    # --- ИСПРАВЛЕНИЕ: Убираем многоточие и добавляем параметры ---
     counterparty_id = Column(Integer, ForeignKey("counterparties.id"), nullable=True, index=True)
 
     # --- Связи (relationships) ---
-    owner = relationship("User")
+    # ИСПРАВЛЕНИЕ: Переименовано owner в user, чтобы соответствовать back_populates в User модели
+    user = relationship("User") # Изменено с 'owner' на 'user'
     workspace = relationship("Workspace")
     from_account = relationship("Account", foreign_keys=[from_account_id])
     to_account = relationship("Account", foreign_keys=[to_account_id])

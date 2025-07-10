@@ -1,25 +1,39 @@
-# /backend/app/schemas/workspace.py
+# schemas/workspace.py
+from __future__ import annotations # Важно для отложенных ссылок
 
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional
+from typing import List, Optional
+from pydantic import BaseModel, Field
 
-# Базовая схема теперь содержит только общие поля, которые есть в модели
-class WorkspaceBase(BaseModel):
-    name: str = Field(..., min_length=1, max_length=100)
+from .base import BaseSchema
+from .account import Account
+from .budget import Budget
+from .counterparty import Counterparty
+from .dds_article import DdsArticle
+from .mapping_rule import MappingRule
+from .transaction import Transaction
 
-# Схема для создания. Она не должна содержать 'description'.
+class WorkspaceBase(BaseSchema):
+    name: str
+
 class WorkspaceCreate(WorkspaceBase):
-    pass
+    owner_id: int
 
-# Схема для обновления.
-class WorkspaceUpdate(WorkspaceBase):
-    pass
+# Добавляем недостающую схему WorkspaceUpdate
+class WorkspaceUpdate(BaseSchema):
+    name: Optional[str] = None
 
-# Схема для ответа API. Здесь мы можем добавить необязательные поля,
-# даже если их нет в модели, но лучше держать их в синхронизации.
-# Если в модели `models.Workspace` нет `description`, то и здесь его быть не должно.
-class Workspace(WorkspaceBase):
+class WorkspaceInDB(WorkspaceBase):
     id: int
     owner_id: int
-    # description: Optional[str] = None # Убираем, чтобы схема точно соответствовала модели
-    model_config = ConfigDict(from_attributes=True)
+
+class Workspace(WorkspaceInDB):
+    owner: Optional["User"] = None # Отложенная ссылка
+    accounts: List[Account] = []
+    budgets: List[Budget] = []
+    counterparties: List[Counterparty] = []
+    dds_articles: List[DdsArticle] = []
+    mapping_rules: List[MappingRule] = []
+    transactions: List[Transaction] = []
+
+# УДАЛИТЕ все вызовы model_rebuild() отсюда. Они будут в __init__.py
+# Workspace.model_rebuild()

@@ -56,13 +56,14 @@ def read_transactions(
         end_date=end_date,
         account_id=account_id
     )
-    return {"transactions": transactions, "total_count": total_count}
+    # ИСПРАВЛЕНИЕ: Изменяем ключи 'transactions' на 'items' и 'total_count' на 'total'
+    return {"items": transactions, "total": total_count}
 
 @router.post("/", response_model=schemas.Transaction, status_code=status.HTTP_201_CREATED)
 def create_transaction(
     *,
     db: Session = Depends(get_db),
-    transaction_in: schemas.TransactionCreate,
+    transaction_in: schemas.TransactionCreate, # Теперь user_id и workspace_id здесь необязательны
     current_user: models.User = Depends(get_current_active_user),
     current_workspace: models.Workspace = Depends(get_current_active_workspace),
 ) -> Any:
@@ -73,15 +74,23 @@ def create_transaction(
     )
     logger.debug("Входящие данные транзакции: %s", transaction_in.model_dump_json())
 
+    # ИСПРАВЛЕНИЕ: Явно присваиваем user_id и workspace_id, если они не были предоставлены
+    if transaction_in.user_id is None: #
+        transaction_in.user_id = current_user.id #
+    if transaction_in.workspace_id is None: #
+        transaction_in.workspace_id = current_workspace.id #
+
+    # Теперь transaction_in содержит все необходимые поля, и нам не нужно создавать новый объект
+    # full_transaction_in, что было причиной TypeError.
+
     try:
         transaction = transaction_service.create_transaction(
             db=db,
-            transaction_in=transaction_in,
+            transaction_in=transaction_in, # Передаем измененную схему
             current_user=current_user,
             workspace_id=current_workspace.id
         )
-        
-        # *** УБЕДИСЬ, ЧТО ЭТИ ДВЕ СТРОКИ ПРИСУТСТВУЮТ! ***
+
         db.commit() 
         db.refresh(transaction) 
 

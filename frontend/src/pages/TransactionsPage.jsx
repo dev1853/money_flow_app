@@ -182,7 +182,8 @@ function TransactionsPage() {
         // Добавьте console.log для отладки:
         console.log("TransactionsPage: Сглаженные DDS Articles ->", flatDdsArticles);
 
-        return (transactionsData?.transactions || []).map(item => {
+        // ИСПРАВЛЕНИЕ: Используем transactionsData?.items вместо transactionsData?.transactions
+        return (transactionsData?.items || []).map(item => { //
             const isIncome = item.transaction_type === 'INCOME';
             const amountColor = isIncome ? 'text-green-600' : 'text-red-600';
             const amountPrefix = isIncome ? '+' : '-';
@@ -243,7 +244,8 @@ function TransactionsPage() {
             
             <Pagination
                 currentPage={currentPage}
-                totalPages={Math.ceil((transactionsData?.total_count || 0) / ITEMS_PER_PAGE)}
+                // ИСПРАВЛЕНИЕ: Используем transactionsData?.total вместо transactionsData?.total_count
+                totalPages={Math.ceil((transactionsData?.total || 0) / ITEMS_PER_PAGE)} //
                 onPageChange={setCurrentPage}
             />
             

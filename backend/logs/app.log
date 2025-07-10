@@ -8783,3 +8783,555 @@ fastapi.exceptions.ResponseValidationError: 1 validation errors:
 2025-07-09 20:08:35 - INFO - uvicorn.error - Waiting for application shutdown. None
 2025-07-09 20:08:35 - INFO - uvicorn.error - Application shutdown complete. None
 2025-07-09 20:08:35 - INFO - uvicorn.error - Finished server process [1847641] None
+2025-07-09 18:54:16 - INFO - uvicorn.error - Started server process [10] None
+2025-07-09 18:54:16 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-09 18:54:16 - INFO - uvicorn.error - Application startup complete. None
+2025-07-09 19:02:22 - INFO - uvicorn.error - Shutting down None
+2025-07-09 19:02:22 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-09 19:02:22 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-09 19:02:22 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-10 10:47:32 - INFO - uvicorn.error - Started server process [14] None
+2025-07-10 10:47:32 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 10:47:32 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 10:48:38 - INFO - uvicorn.error - Started server process [10] None
+2025-07-10 10:48:38 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 10:48:38 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 10:57:52 - INFO - uvicorn.error - Started server process [10] None
+2025-07-10 10:57:52 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 10:57:52 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 10:59:08 - INFO - uvicorn.error - Shutting down None
+2025-07-10 10:59:08 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 10:59:08 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 10:59:08 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-10 10:59:11 - INFO - uvicorn.error - Started server process [16] None
+2025-07-10 10:59:11 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 10:59:11 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:01:12 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:01:12 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:01:12 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:01:12 - INFO - uvicorn.error - Finished server process [16] None
+2025-07-10 11:01:16 - INFO - uvicorn.error - Started server process [20] None
+2025-07-10 11:01:16 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:01:16 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:02:24 - INFO - uvicorn.error - Started server process [9] None
+2025-07-10 11:02:24 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:02:24 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:04:28 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:04:28 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:04:28 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:04:28 - INFO - uvicorn.error - Finished server process [9] None
+2025-07-10 11:04:32 - INFO - uvicorn.error - Started server process [15] None
+2025-07-10 11:04:32 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:04:32 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:05:05 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:05:05 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:05:05 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:05:05 - INFO - uvicorn.error - Finished server process [15] None
+2025-07-10 11:05:08 - INFO - uvicorn.error - Started server process [20] None
+2025-07-10 11:05:08 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:05:08 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:06:24 - INFO - uvicorn.error - Started server process [10] None
+2025-07-10 11:06:24 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:06:24 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:09:25 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:09:25 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:09:25 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:09:25 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-10 11:09:28 - INFO - uvicorn.error - Started server process [17] None
+2025-07-10 11:09:28 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:09:28 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:09:34 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:09:34 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:09:34 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:09:34 - INFO - uvicorn.error - Finished server process [17] None
+2025-07-10 11:09:37 - INFO - uvicorn.error - Started server process [21] None
+2025-07-10 11:09:37 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:09:37 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:09:51 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'fastapi.exceptions.ResponseValidationError'>, ResponseValidationError(), <traceback object at 0x723e2e28e580>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 296, in app
+    content = await serialize_response(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 155, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 2 validation errors:
+  {'type': 'missing', 'loc': ('response', 'items'), 'msg': 'Field required', 'input': {'transactions': [], 'total_count': 0}}
+  {'type': 'missing', 'loc': ('response', 'total'), 'msg': 'Field required', 'input': {'transactions': [], 'total_count': 0}}
+
+2025-07-10 11:10:15 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'fastapi.exceptions.ResponseValidationError'>, ResponseValidationError(), <traceback object at 0x723e2d9b1880>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 296, in app
+    content = await serialize_response(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 155, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 2 validation errors:
+  {'type': 'missing', 'loc': ('response', 'items'), 'msg': 'Field required', 'input': {'transactions': [], 'total_count': 0}}
+  {'type': 'missing', 'loc': ('response', 'total'), 'msg': 'Field required', 'input': {'transactions': [], 'total_count': 0}}
+
+2025-07-10 11:11:42 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:11:42 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:11:42 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:11:42 - INFO - uvicorn.error - Finished server process [21] None
+2025-07-10 11:11:46 - INFO - uvicorn.error - Started server process [30] None
+2025-07-10 11:11:46 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:11:46 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:16:32 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:16:32 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:16:32 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:16:32 - INFO - uvicorn.error - Finished server process [30] None
+2025-07-10 11:16:36 - INFO - uvicorn.error - Started server process [37] None
+2025-07-10 11:16:36 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:16:36 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:16:38 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:16:38 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:16:38 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:16:38 - INFO - uvicorn.error - Finished server process [37] None
+2025-07-10 11:16:41 - INFO - uvicorn.error - Started server process [41] None
+2025-07-10 11:16:41 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:16:41 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:18:15 - INFO - uvicorn.error - Started server process [10] None
+2025-07-10 11:18:15 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:18:15 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:23:02 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:23:02 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:23:02 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:23:02 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-10 11:23:05 - INFO - uvicorn.error - Started server process [17] None
+2025-07-10 11:23:05 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:23:05 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:28:34 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:28:34 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:28:34 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:28:34 - INFO - uvicorn.error - Finished server process [17] None
+2025-07-10 11:28:37 - INFO - uvicorn.error - Started server process [22] None
+2025-07-10 11:28:37 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:28:37 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:36:12 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:36:12 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:36:12 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:36:12 - INFO - uvicorn.error - Finished server process [22] None
+2025-07-10 11:36:15 - INFO - uvicorn.error - Started server process [27] None
+2025-07-10 11:36:15 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:36:15 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:41:34 - INFO - uvicorn.error - Started server process [9] None
+2025-07-10 11:41:34 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:41:34 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:43:47 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:43:47 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:43:47 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:43:47 - INFO - uvicorn.error - Finished server process [9] None
+2025-07-10 11:43:50 - INFO - uvicorn.error - Started server process [16] None
+2025-07-10 11:43:50 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:43:50 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:43:59 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'fastapi.exceptions.ResponseValidationError'>, ResponseValidationError(), <traceback object at 0x794c60109840>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 296, in app
+    content = await serialize_response(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 155, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 8 validation errors:
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 0, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x794c60074fa0>}
+  {'type': 'recursion_loop', 'loc': ('response', 0, 'transactions', 0, 'workspace'), 'msg': 'Recursion error - cyclic reference detected', 'input': <app.models.workspace.Workspace object at 0x794c601f8b20>}
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 1, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x794c60074fd0>}
+  {'type': 'recursion_loop', 'loc': ('response', 0, 'transactions', 1, 'workspace'), 'msg': 'Recursion error - cyclic reference detected', 'input': <app.models.workspace.Workspace object at 0x794c601f8b20>}
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 2, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x794c6008d070>}
+  {'type': 'recursion_loop', 'loc': ('response', 0, 'transactions', 2, 'workspace'), 'msg': 'Recursion error - cyclic reference detected', 'input': <app.models.workspace.Workspace object at 0x794c601f8b20>}
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 3, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x794c6008d0a0>}
+  {'type': 'recursion_loop', 'loc': ('response', 0, 'transactions', 3, 'workspace'), 'msg': 'Recursion error - cyclic reference detected', 'input': <app.models.workspace.Workspace object at 0x794c601f8b20>}
+
+2025-07-10 11:50:33 - INFO - uvicorn.error - Started server process [10] None
+2025-07-10 11:50:33 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:50:33 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:51:01 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'fastapi.exceptions.ResponseValidationError'>, ResponseValidationError(), <traceback object at 0x7434ed719f40>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 296, in app
+    content = await serialize_response(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 155, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 4 validation errors:
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 0, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x7434ed634640>}
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 1, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x7434ed6346a0>}
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 2, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x7434ed6346d0>}
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 3, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x7434ed634700>}
+
+2025-07-10 11:51:47 - INFO - uvicorn.error - Started server process [9] None
+2025-07-10 11:51:47 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:51:47 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 11:51:59 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'fastapi.exceptions.ResponseValidationError'>, ResponseValidationError(), <traceback object at 0x7534fb444600>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 296, in app
+    content = await serialize_response(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 155, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 4 validation errors:
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 0, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x7534fb3d9820>}
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 1, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x7534fb3d9880>}
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 2, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x7534fb3d98b0>}
+  {'type': 'missing', 'loc': ('response', 0, 'transactions', 3, 'type'), 'msg': 'Field required', 'input': <app.models.transaction.Transaction object at 0x7534fb3d98e0>}
+
+2025-07-10 11:56:31 - INFO - uvicorn.error - Shutting down None
+2025-07-10 11:56:32 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 11:56:32 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 11:56:32 - INFO - uvicorn.error - Finished server process [9] None
+2025-07-10 11:56:34 - INFO - uvicorn.error - Started server process [15] None
+2025-07-10 11:56:34 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 11:56:34 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 12:00:43 - INFO - uvicorn.error - Shutting down None
+2025-07-10 12:00:44 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 12:00:44 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 12:00:44 - INFO - uvicorn.error - Finished server process [15] None
+2025-07-10 12:00:46 - INFO - uvicorn.error - Started server process [20] None
+2025-07-10 12:00:46 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 12:00:46 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 12:00:49 - INFO - uvicorn.error - Started server process [24] None
+2025-07-10 12:00:49 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 12:00:49 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 12:19:57 - INFO - uvicorn.error - Started server process [10] None
+2025-07-10 12:19:57 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 12:19:57 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 12:29:50 - INFO - uvicorn.error - Started server process [10] None
+2025-07-10 12:29:50 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 12:29:50 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 12:51:41 - INFO - uvicorn.error - Shutting down None
+2025-07-10 12:51:41 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 12:51:41 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 12:51:41 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-10 12:51:45 - INFO - uvicorn.error - Started server process [18] None
+2025-07-10 12:51:45 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 12:51:45 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 12:55:37 - INFO - uvicorn.error - Started server process [10] None
+2025-07-10 12:55:37 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 12:55:37 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 13:11:58 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
+2025-07-10 13:11:58 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'TypeError'>, TypeError("app.schemas.transaction.TransactionCreate() got multiple values for keyword argument 'user_id'"), <traceback object at 0x74fa76a3ae40>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/transactions.py", line 78, in create_transaction
+    full_transaction_in = schemas.TransactionCreate(
+TypeError: app.schemas.transaction.TransactionCreate() got multiple values for keyword argument 'user_id'
+2025-07-10 13:13:46 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
+2025-07-10 13:13:46 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'TypeError'>, TypeError("app.schemas.transaction.TransactionCreate() got multiple values for keyword argument 'user_id'"), <traceback object at 0x74fa76a37a80>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 49, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/transactions.py", line 78, in create_transaction
+    full_transaction_in = schemas.TransactionCreate(
+TypeError: app.schemas.transaction.TransactionCreate() got multiple values for keyword argument 'user_id'
+2025-07-10 13:15:44 - INFO - uvicorn.error - Shutting down None
+2025-07-10 13:15:44 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 13:15:44 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 13:15:44 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-10 13:15:47 - INFO - uvicorn.error - Started server process [17] None
+2025-07-10 13:15:47 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 13:15:47 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 13:16:05 - INFO - uvicorn.error - Shutting down None
+2025-07-10 13:16:05 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 13:16:05 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 13:16:05 - INFO - uvicorn.error - Finished server process [17] None
+2025-07-10 13:16:08 - INFO - uvicorn.error - Started server process [21] None
+2025-07-10 13:16:08 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 13:16:08 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 13:16:12 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
+2025-07-10 13:16:12 - ERROR - app.routers.transactions - Непредвиденная ошибка при создании транзакции для workspace 1: Для дохода должен быть указан счет-получатель. (<class 'ValueError'>, ValueError('Для дохода должен быть указан счет-получатель.'), <traceback object at 0x7aa9b97d03c0>)
+Traceback (most recent call last):
+  File "/app/app/routers/transactions.py", line 87, in create_transaction
+    transaction = transaction_service.create_transaction(
+  File "/app/app/services/transaction_service.py", line 54, in create_transaction
+    raise ValueError("Для дохода должен быть указан счет-получатель.")
+ValueError: Для дохода должен быть указан счет-получатель.
+2025-07-10 13:16:47 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
+2025-07-10 13:16:47 - ERROR - app.routers.transactions - Непредвиденная ошибка при создании транзакции для workspace 1: Для дохода должен быть указан счет-получатель. (<class 'ValueError'>, ValueError('Для дохода должен быть указан счет-получатель.'), <traceback object at 0x7aa9b97befc0>)
+Traceback (most recent call last):
+  File "/app/app/routers/transactions.py", line 87, in create_transaction
+    transaction = transaction_service.create_transaction(
+  File "/app/app/services/transaction_service.py", line 54, in create_transaction
+    raise ValueError("Для дохода должен быть указан счет-получатель.")
+ValueError: Для дохода должен быть указан счет-получатель.
+2025-07-10 13:19:57 - INFO - uvicorn.error - Started server process [10] None
+2025-07-10 13:19:57 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 13:19:57 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 13:21:44 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
+2025-07-10 13:21:44 - ERROR - app.routers.transactions - Непредвиденная ошибка при создании транзакции для workspace 1: unsupported operand type(s) for -=: 'decimal.Decimal' and 'float' (<class 'TypeError'>, TypeError("unsupported operand type(s) for -=: 'decimal.Decimal' and 'float'"), <traceback object at 0x7d9395ef6600>)
+Traceback (most recent call last):
+  File "/app/app/routers/transactions.py", line 87, in create_transaction
+    transaction = transaction_service.create_transaction(
+  File "/app/app/services/transaction_service.py", line 62, in create_transaction
+    from_account.balance -= amount
+TypeError: unsupported operand type(s) for -=: 'decimal.Decimal' and 'float'
+2025-07-10 13:24:40 - INFO - uvicorn.error - Shutting down None
+2025-07-10 13:24:40 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-10 13:24:40 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-10 13:24:40 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-10 13:24:44 - INFO - uvicorn.error - Started server process [18] None
+2025-07-10 13:24:44 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 13:24:44 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 13:25:40 - INFO - uvicorn.error - Started server process [10] None
+2025-07-10 13:25:40 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-10 13:25:40 - INFO - uvicorn.error - Application startup complete. None
+2025-07-10 13:25:42 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
+2025-07-10 13:25:42 - INFO - app.routers.transactions - Транзакция с ID 5 успешно создана для workspace 1. None

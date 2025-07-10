@@ -1,68 +1,60 @@
-# /backend/app/schemas/transaction.py
+# schemas/transaction.py
+from __future__ import annotations # Важно для отложенных ссылок
 
-import enum
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional
+from typing import Optional, List
 from datetime import date
-from decimal import Decimal
+from pydantic import BaseModel, Field
 
-# Этот Enum остается без изменений
-class TransactionType(str, enum.Enum):
-    INCOME = "INCOME"
-    EXPENSE = "EXPENSE"
-    TRANSFER = "TRANSFER"
+from .base import BaseSchema
+from .account import Account
+from .dds_article import DdsArticle
+from .counterparty import Counterparty
+from ..models.transaction import TransactionType
 
-# --- ОБНОВЛЕННАЯ БАЗОВАЯ СХЕМА ---
-# Используется для валидации данных, приходящих из API
-class TransactionBase(BaseModel):
-    transaction_date: date
-    amount: Decimal = Field(..., gt=Decimal('0.0'), description="Сумма транзакции, всегда положительная")
+class TransactionBase(BaseSchema):
     description: Optional[str] = None
-    transaction_type: TransactionType
+    amount: float = Field(..., gt=0)
+    transaction_date: date
+    # ИСПРАВЛЕНИЕ: Удаляем alias="type"
+    transaction_type: TransactionType # Изменено с Field(..., alias="type")
     
-    # Заменяем неоднозначный account_id на явные поля
+class TransactionCreate(TransactionBase):
     from_account_id: Optional[int] = None
     to_account_id: Optional[int] = None
-    
+    user_id: Optional[int] = None       # ИСПРАВЛЕНИЕ: Сделано необязательным
+    workspace_id: Optional[int] = None  # ИСПРАВЛЕНИЕ: Сделано необязательным
     dds_article_id: Optional[int] = None
     counterparty_id: Optional[int] = None
 
-# --- ОБНОВЛЕННАЯ СХЕМА ДЛЯ СОЗДАНИЯ ---
-# Она наследуется от базовой и может добавлять свои поля, если нужно
-class TransactionCreate(TransactionBase):
-    pass
-
-# --- ОБНОВЛЕННАЯ СХЕМА ДЛЯ ОБНОВЛЕНИЯ ---
-# Все поля опциональны
-class TransactionUpdate(BaseModel):
-    transaction_date: Optional[date] = None
-    amount: Optional[Decimal] = Field(None, gt=Decimal('0.0'))
+# Добавляем недостающую схему TransactionUpdate
+class TransactionUpdate(BaseSchema):
     description: Optional[str] = None
+    amount: Optional[float] = Field(None, gt=0)
+    transaction_date: Optional[date] = None
+    transaction_type: Optional[TransactionType] # Изменено с Field(None, alias="type")
     from_account_id: Optional[int] = None
     to_account_id: Optional[int] = None
     dds_article_id: Optional[int] = None
+    counterparty_id: Optional[int] = None
 
-# --- ОБНОВЛЕННАЯ СХЕМА ДЛЯ ОТВЕТА API ---
-# Эта схема используется в response_model и должна ТОЧНО соответствовать
-# полям SQLAlchemy модели, которые мы хотим вернуть.
-class Transaction(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class TransactionInDB(TransactionBase):
     id: int
-    transaction_date: date
-    amount: Decimal
-    description: Optional[str]
-    transaction_type: TransactionType
-    
-    # Явные поля, которые есть в модели SQLAlchemy
-    from_account_id: Optional[int] = None 
+    from_account_id: Optional[int] = None
     to_account_id: Optional[int] = None
-    dds_article_id: Optional[int]
-    
     user_id: int
     workspace_id: int
+    dds_article_id: Optional[int] = None
+    counterparty_id: Optional[int] = None
 
-# --- СХЕМА ДЛЯ ПАГИНАЦИИ, ИСПОЛЬЗУЕТ ОБНОВЛЕННУЮ СХЕМУ Transaction ---
+class Transaction(TransactionInDB):
+    from_account: Optional[Account] = None
+    to_account: Optional[Account] = None
+    user: Optional["User"] = None
+    # workspace: Optional["Workspace"] = None # Эту строку вы уже удалили
+    dds_article: Optional[DdsArticle] = None
+    counterparty: Optional[Counterparty] = None
+
+# Добавляем недостающую схему TransactionPage
 class TransactionPage(BaseModel):
-    transactions: List[Transaction]
-    total_count: int
+    items: List[Transaction]
+    total: int

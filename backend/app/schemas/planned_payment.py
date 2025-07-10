@@ -1,5 +1,6 @@
 # /backend/app/schemas/planned_payment.py
 
+from __future__ import annotations 
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import date
 from decimal import Decimal

@@ -1,5 +1,6 @@
 # backend/app/schemas/reports.py
 
+from __future__ import annotations 
 from pydantic import BaseModel
 from decimal import Decimal
 from typing import List
