@@ -15,7 +15,6 @@ class CRUDDdsArticle(CRUDBase[models.DdsArticle, schemas.DdsArticleCreate, schem
     CRUD-класс для работы со статьями ДДС (Движение Денежных Средств).
     """
 
-    # НОВЫЙ МЕТОД: get_by_name_and_workspace
     def get_by_name_and_workspace(
         self, db: Session, *, name: str, workspace_id: int
     ) -> Optional[models.DdsArticle]:
@@ -50,12 +49,23 @@ class CRUDDdsArticle(CRUDBase[models.DdsArticle, schemas.DdsArticleCreate, schem
         return root_nodes
     
     def get_multi_by_workspace(
-        self, db: Session, *, workspace_id: int, skip: int = 0, limit: int = 1000
-    ) -> List[models.DdsArticle]:
+        self, db: Session, *, workspace_id: int, skip: int = 0, limit: int = 1000, parent_id: Optional[int] = None # Добавлен parent_id
+    ) -> List[models.DdsArticle]: # Исправлено: добавлено models.
+        """
+        Получает список статей ДДС для указанного рабочего пространства, 
+        с возможностью фильтрации по parent_id.
+        """
+        query = db.query(self.model).filter(
+            self.model.workspace_id == workspace_id
+        )
+        if parent_id is not None:
+            query = query.filter(self.model.parent_id == parent_id)
+        else:
+            # Если parent_id None, получаем только корневые статьи
+            query = query.filter(self.model.parent_id == None)
+
         return (
-            db.query(self.model)
-            .filter(models.DdsArticle.workspace_id == workspace_id)
-            .order_by(self.model.id)
+            query.order_by(self.model.name)
             .offset(skip)
             .limit(limit)
             .all()
@@ -107,11 +117,6 @@ class CRUDDdsArticle(CRUDBase[models.DdsArticle, schemas.DdsArticleCreate, schem
         _create_article_tree(articles_data) 
         print("--- Завершение функции create_default_articles ---")
         
-    def get_by_name_and_workspace(self, db: Session, *, name: str, workspace_id: int) -> Optional[models.DdsArticle]:
-        """Получает статью DDS по имени и ID рабочего пространства."""
-        return db.query(self.model).filter(
-            self.model.name == name,
-            self.model.workspace_id == workspace_id
-        ).first()
+# Удален дублирующийся метод get_by_name_and_workspace
 
 dds_article = CRUDDdsArticle(models.DdsArticle)

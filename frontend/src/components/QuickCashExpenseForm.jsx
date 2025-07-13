@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import Modal from './Modal';
 import Button from './Button';
-import TransactionForm from './TransactionForm';
+import TransactionForm from './forms/TransactionForm';
 import Alert from './Alert';
 import { apiService } from '../services/apiService';
 import { useAuth } from '../contexts/AuthContext';

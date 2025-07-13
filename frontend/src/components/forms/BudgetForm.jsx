@@ -1,16 +1,16 @@
 // frontend/src/components/forms/BudgetForm.jsx
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { apiService } from '../services/apiService';
-import { useApiMutation } from '../hooks/useApiMutation';
-import { useDataFetching } from '../hooks/useDataFetching';
+import { useAuth } from '../../contexts/AuthContext';
+import { apiService } from '../../services/apiService';
+import { useApiMutation } from '../../hooks/useApiMutation';
+import { useDataFetching } from '../../hooks/useDataFetching';
 
-import Button from './Button';
-import Input from './forms/Input';
-import Label from './forms/Label';
-import Select from './forms/Select';
-import Alert from './Alert';
+import Button from '../Button';
+import Input from './Input';
+import Label from './Label';
+import Select from './Select';
+import Alert from '../Alert';
 import { PlusIcon, MinusCircleIcon } from '@heroicons/react/24/solid';
 
 // Функция валидации остается без изменений

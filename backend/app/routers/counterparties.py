@@ -1,80 +1,89 @@
-# /backend/app/routers/counterparties.py
+# backend/app/routers/counterparties.py
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Any, List, Optional
+from fastapi import APIRouter, Depends, HTTPException, status, Query # Добавлен Query
 from sqlalchemy.orm import Session
-from typing import List
 
-from .. import crud, models, schemas
+from .. import crud, schemas, models
 from ..dependencies import get_db, get_current_active_user, get_current_active_workspace
+from ..models.counterparty import CounterpartyType # Убедитесь, что CounterpartyType импортирован
 
 router = APIRouter(
-    prefix="/counterparties",
     tags=["counterparties"],
-    dependencies=[Depends(get_current_active_user)],
     responses={404: {"description": "Not found"}},
 )
 
 @router.post("/", response_model=schemas.Counterparty, status_code=status.HTTP_201_CREATED)
 def create_counterparty(
-    *,
-    db: Session = Depends(get_db),
     counterparty_in: schemas.CounterpartyCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_active_user),
     current_workspace: models.Workspace = Depends(get_current_active_workspace),
-):
+) -> Any:
     """
     Создать нового контрагента.
     """
-    # Здесь можно добавить проверку на уникальность по ИНН, если нужно
-    return crud.counterparty.create(db=db, obj_in=counterparty_in, workspace_id=current_workspace.id)
-
-@router.get("/", response_model=List[schemas.Counterparty])
-def read_counterparties(
-    db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 100,
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
-):
-    """
-    Получить список контрагентов для текущего рабочего пространства.
-    """
-    return crud.counterparty.get_multi_by_workspace(
-        db=db, workspace_id=current_workspace.id, skip=skip, limit=limit
+    counterparty = crud.counterparty.create_with_owner(
+        db=db,
+        obj_in=counterparty_in,
+        owner_id=current_user.id,
+        workspace_id=current_workspace.id,
     )
+    return counterparty
+
+@router.get("/", response_model=schemas.CounterpartyPage) # ИСПРАВЛЕНО: Схема ответа изменена на CounterpartyPage
+def read_counterparties(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_active_user),
+    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    search: Optional[str] = Query(None), # Фильтр по имени/контактам
+    type: Optional[CounterpartyType] = Query(None) # Фильтр по типу
+) -> Any:
+    """
+    Получить пагинированный список контрагентов.
+    """
+    total_count = crud.counterparty.get_count_by_workspace(db, workspace_id=current_workspace.id, search=search, type=type) # ИСПРАВЛЕНО: Используем метод подсчета
+    counterparties = crud.counterparty.get_multi_by_workspace(db, skip=skip, limit=limit, workspace_id=current_workspace.id, search=search, type=type) # ИСПРАВЛЕНО: Передаем фильтры
+    return {"items": counterparties, "total": total_count} # ИСПРАВЛЕНО: Возвращаем пагинированный объект
 
 @router.put("/{counterparty_id}", response_model=schemas.Counterparty)
 def update_counterparty(
-    *,
-    db: Session = Depends(get_db),
     counterparty_id: int,
     counterparty_in: schemas.CounterpartyUpdate,
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
-):
-    """
-    Обновить контрагента.
-    """
-    cp = crud.counterparty.get(db=db, id=counterparty_id)
-    if not cp or cp.workspace_id != current_workspace.id:
-        raise HTTPException(status_code=404, detail="Контрагент не найден")
-    
-    updated_cp = crud.counterparty.update(db=db, db_obj=cp, obj_in=counterparty_in)
-    db.commit()
-    return updated_cp
-
-@router.delete("/{counterparty_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_counterparty(
-    *,
     db: Session = Depends(get_db),
-    counterparty_id: int,
+    current_user: models.User = Depends(get_current_active_user),
     current_workspace: models.Workspace = Depends(get_current_active_workspace),
-):
+) -> Any:
+    """
+    Обновить существующего контрагента.
+    """
+    counterparty = crud.counterparty.get(db, id=counterparty_id)
+    if not counterparty or counterparty.workspace_id != current_workspace.id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Контрагент не найден или не принадлежит вашему рабочему пространству.",
+        )
+    counterparty = crud.counterparty.update(db, db_obj=counterparty, obj_in=counterparty_in)
+    return counterparty
+
+@router.delete("/{counterparty_id}", response_model=schemas.Counterparty)
+def delete_counterparty(
+    counterparty_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_active_user),
+    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+) -> Any:
     """
     Удалить контрагента.
     """
-    cp = crud.counterparty.get(db=db, id=counterparty_id)
-    if not cp or cp.workspace_id != current_workspace.id:
-        raise HTTPException(status_code=404, detail="Контрагент не найден")
-    
-    # Здесь можно добавить проверку, не привязан ли контрагент к транзакциям, перед удалением
-    crud.counterparty.remove(db=db, id=counterparty_id)
-    db.commit()
-    return
+    counterparty = crud.counterparty.get(db, id=counterparty_id)
+    if not counterparty or counterparty.workspace_id != current_workspace.id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Контрагент не найден или не принадлежит вашему рабочему пространству.",
+        )
+    counterparty = crud.counterparty.remove(db, id=counterparty_id)
+    return counterparty
+

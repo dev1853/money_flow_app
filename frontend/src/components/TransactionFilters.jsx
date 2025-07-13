@@ -13,17 +13,22 @@ import { XMarkIcon } from '@heroicons/react/24/solid';
 const TransactionFilters = ({
   filters,
   accounts,
+  counterparties,
   onFilterChange,
   onResetFilters,
 }) => {
+  const counterpartyOptions = [
+    { value: 'all', label: 'Все контрагенты' },
+    ...(counterparties || []).map(cp => ({
+      value: cp.id,
+      label: cp.name
+    }))
+  ];
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
-      {/* ИЗМЕНЕНИЕ: Заменяем grid на flex, добавляем flex-wrap для адаптивности 
-        и gap для отступов между элементами. items-end выравнивает все по нижней границе.
-      */}
       <div className="flex flex-wrap items-end gap-4">
         
-        {/* Каждый фильтр теперь - это просто элемент flex-контейнера */}
         <div>
           <Label>Период</Label>
           <DateRangePicker
@@ -40,25 +45,24 @@ const TransactionFilters = ({
             id="account_id"
             value={filters.account_id}
             onChange={e => onFilterChange('account_id', e.target.value)}
-          >
-            <option value="all">Все счета</option>
-            {accounts.map(acc => (
-              <option key={acc.id} value={acc.id}>
-                {acc.name}
-              </option>
-            ))}
-          </Select>
+            options={[
+              { value: 'all', label: 'Все счета' },
+              ...(accounts || []).map(acc => ({
+                value: acc.id,
+                label: acc.name
+              }))
+            ]}
+          />
         </div>
 
+        {/* ИСПРАВЛЕНО: Фильтр "Контрагент" теперь является Select */}
         <div>
-          <Label htmlFor="contractor">Контрагент</Label>
-          <Input
-            type="text"
-            id="contractor"
-            placeholder="Название или ИНН"
-            disabled
-            value={filters.contractor}
-            onChange={e => onFilterChange('contractor', e.target.value)}
+          <Label htmlFor="counterparty_id">Контрагент</Label>
+          <Select
+            id="counterparty_id"
+            value={filters.counterparty_id}
+            onChange={e => onFilterChange('counterparty_id', e.target.value)}
+            options={counterpartyOptions} // Используем новые опции
           />
         </div>
 
@@ -82,9 +86,6 @@ const TransactionFilters = ({
           </div>
         </div>
 
-        {/* ИЗМЕНЕНИЕ: Кнопка сброса теперь является частью flex-контейнера.
-          Мы можем добавить ей отступ, чтобы она прижалась к правому краю.
-        */}
         <div className="ml-auto">
           <Button variant="secondary" onClick={onResetFilters}>
             <XMarkIcon className="h-5 w-5 mr-2" />

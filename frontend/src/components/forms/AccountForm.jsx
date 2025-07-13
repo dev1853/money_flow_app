@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { apiService } from '../services/apiService';
-import { useApiMutation } from '../hooks/useApiMutation';
+import { useAuth } from '../../contexts/AuthContext';
+import { apiService } from '../../services/apiService';
+import { useApiMutation } from '../../hooks/useApiMutation';
 
-import Button from './Button';
-import Input from './forms/Input';
-import Label from './forms/Label';
-import Select from './forms/Select';
-import Alert from './Alert';
+import Button from '../Button';
+import Input from './Input';
+import Label from './Label';
+import Select from './Select';
+import Alert from '../Alert';
 
 const ACCOUNT_TYPES = [
   { value: 1, label: 'Банковский счет' }, // ПРИМЕР: используйте актуальный ID

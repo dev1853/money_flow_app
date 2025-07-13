@@ -6,7 +6,7 @@ import { apiService } from '../services/apiService';
 
 // Компоненты
 import Modal from '../components/Modal';
-import AccountForm from '../components/AccountForm';
+import AccountForm from '../components/forms/AccountForm';
 import AccountCard from '../components/AccountCard'; 
 import ConfirmationModal from '../components/ConfirmationModal'; // Обновленный компонент
 import PageTitle from '../components/PageTitle';

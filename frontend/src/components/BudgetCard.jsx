@@ -1,19 +1,18 @@
 // frontend/src/components/BudgetCard.jsx
 
 import React from 'react';
-// --- ИЗМЕНЕНИЕ: Импортируем иконки из Heroicons ---
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'; 
+// ИСПРАВЛЕНО: Импортируем иконки из Heroicons (solid) и компонент Button
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid'; 
+import Button from './Button'; // ИСПРАВЛЕНО: Импорт компонента Button
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency, formatDate } from '../utils/formatting';
 
-// Вспомогательные компоненты не меняются
 const BudgetItemRow = ({ item }) => (
   <div className="flex justify-between items-center text-sm py-2 border-b border-gray-200 last:border-b-0">
     <span className="text-gray-600">{item.dds_article?.name || 'Статья не найдена'}</span>
     <span className="font-medium text-gray-800">{formatCurrency(item.budgeted_amount)}</span>
   </div>
 );
-
 
 const BudgetCard = ({ budget, onEdit, onDelete }) => {
   const navigate = useNavigate();
@@ -31,25 +30,23 @@ const BudgetCard = ({ budget, onEdit, onDelete }) => {
   return (
     <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300">
       <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3
-            className="text-xl font-bold text-gray-800 cursor-pointer hover:text-blue-600"
-            onClick={handleCardClick}
-          >
+        <div className="flex-grow">
+          <h3 className="text-lg font-bold text-gray-800 cursor-pointer hover:text-indigo-600" onClick={handleCardClick}>
             {budget.name}
           </h3>
-          <p className="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md inline-block mt-1">
-            {formatDate(budget.start_date)} – {formatDate(budget.end_date)}
+          <p className="text-sm text-gray-500">
+            {formatDate(budget.start_date)} - {formatDate(budget.end_date)}
           </p>
         </div>
-        <div className="flex items-center space-x-3">
-          {/* --- ИЗМЕНЕНИЕ: Используем компоненты Heroicons --- */}
-          <button onClick={() => onEdit(budget)} className="text-gray-500 hover:text-blue-600 transition-colors">
+        <div className="flex space-x-2 ml-4">
+          {/* ИСПРАВЛЕНО: Заменена <button> на <Button variant="icon"> */}
+          <Button variant="icon" title="Редактировать" onClick={() => onEdit(budget)} className="text-gray-500 hover:text-indigo-600 transition-colors">
             <PencilSquareIcon className="h-5 w-5" />
-          </button>
-          <button onClick={() => onDelete(budget)} className="text-gray-500 hover:text-red-600 transition-colors">
+          </Button>
+          {/* ИСПРАВЛЕНО: Заменена <button> на <Button variant="icon"> */}
+          <Button variant="icon" title="Удалить" onClick={() => onDelete(budget)} className="text-gray-500 hover:text-red-600 transition-colors">
             <TrashIcon className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -75,7 +72,9 @@ const BudgetCard = ({ budget, onEdit, onDelete }) => {
         </div>
         <div className="flex justify-between items-center">
           <span className="font-semibold text-gray-600">Отклонение:</span>
-          <span className={`font-bold text-lg ${deviationColor}`}>{formatCurrency(deviation)}</span>
+          <span className={`font-bold text-lg ${deviationColor}`}>
+            {formatCurrency(deviation)}
+          </span>
         </div>
       </div>
     </div>

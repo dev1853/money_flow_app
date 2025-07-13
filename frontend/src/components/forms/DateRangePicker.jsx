@@ -39,8 +39,6 @@ const CustomHeader = ({
       <button type="button" onClick={decreaseMonth} disabled={prevMonthButtonDisabled} className="p-1 rounded-full hover:bg-gray-100">
         <ChevronLeftIcon className="h-5 w-5" />
       </button>
-
-      {/* Выпадающие списки для месяца и года */}
       <div className="flex space-x-2">
         <select
           value={months[getMonth(date)]}

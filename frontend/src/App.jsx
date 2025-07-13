@@ -22,10 +22,12 @@ import ProtectedRoute from './components/ProtectedRoute';
 import BudgetsPage from './pages/BudgetsPage'; 
 import BudgetStatusPage from './pages/BudgetStatusPage'; 
 import PaymentCalendarPage from './pages/PaymentCalendarPage';
+import ContractsPage from './pages/ContractsPage'; 
+import NotFoundPage from './pages/NotFoundPage'; 
+import CounterpartiesPage from './pages/CounterpartiesPage'; 
 
 // Можно оставить заглушки для страниц, которые еще не созданы
 const SettingsPage = () => (<div className="p-4"><h1 className="text-2xl">Настройки (в разработке)</h1></div>);
-const NotFoundPage = () => (<div className="p-4 text-center"><h1 className="text-4xl font-bold text-red-500">404 - Страница не найдена</h1><Link to="/" className="text-indigo-600 hover:underline">На главную</Link></div>);
 
 // Компонент-обертка для страниц аутентификации
 const AppWithAuthLayout = () => (
@@ -43,29 +45,31 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />       
       </Route>
 
-      {/* Защищенные маршруты, требующие аутентификации и использующие MainLayout */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/articles" element={<DdsArticlesPage />} />
-        <Route path="/accounts" element={<AccountsPage />} />
-        <Route path="/transactions" element={<TransactionsPage />} />
-        <Route path="/reports/dds" element={<DdsReportPage />} />
-        <Route path="/reports/pnl" element={<ProfitLossReportPage />} />
-        <Route path="/reports/account-balances" element={<AccountBalancesReportPage />} />
-        <Route path="/admin" element={<AdminPanelPage />} />
-        <Route path="/mapping-rules" element={<MappingRulesPage />} />  
-        <Route path="/help" element={<HelpPage />} />
-        <Route path="/budgets" element={<BudgetsPage />} />
-        <Route path="/budgets/:budgetId/status" element={<BudgetStatusPage />} />
+{/* Защищенные маршруты, требующие аутентификации и использующие MainLayout */}
+<Route element={<ProtectedRoute />}>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/articles" element={<DdsArticlesPage />} />
+        <Route path="/accounts" element={<AccountsPage />} />
+        <Route path="/transactions" element={<TransactionsPage />} />
+        <Route path="/reports/dds" element={<DdsReportPage />} />
+        <Route path="/reports/pnl" element={<ProfitLossReportPage />} />
+        <Route path="/reports/account-balances" element={<AccountBalancesReportPage />} />
+        <Route path="/admin" element={<AdminPanelPage />} />
+        <Route path="/mapping-rules" element={<MappingRulesPage />} /> 
+        <Route path="/help" element={<HelpPage />} />
+        <Route path="/budgets" element={<BudgetsPage />} />
+        <Route path="/budgets/:budgetId/status" element={<BudgetStatusPage />} />
         <Route path="/payment-calendar" element={<PaymentCalendarPage />} />
-        {/* <Route path="/settings" element={<SettingsPage />} /> */}
-      </Route>
-      
-      {/* Маршрут для 404 страницы */}
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  );
+        <Route path="contracts" element={<ContractsPage />} /> 
+        {/* <Route path="/settings" element={<SettingsPage />} /> */}
+        <Route path="counterparties" element={<CounterpartiesPage />} /> 
+</Route>
+
+        {/* Маршрут для 404 страницы */}
+        <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+);
 }
 
 export default App;

@@ -1,4 +1,3 @@
-# app/models/transaction.py
 import enum
 from sqlalchemy import (
     Column, Integer, String, ForeignKey, Date, Numeric,
@@ -9,6 +8,7 @@ from decimal import Decimal as PythonDecimal
 from ..database import Base
 from .mixins import TimestampMixin
 from .counterparty import Counterparty 
+from .contract import Contract # Добавляем импорт модели Contract
 
 class TransactionType(str, enum.Enum):
     INCOME = "INCOME"
@@ -32,6 +32,8 @@ class Transaction(Base, TimestampMixin):
     dds_article_id = Column(Integer, ForeignKey("dds_articles.id"), nullable=True)
 
     counterparty_id = Column(Integer, ForeignKey("counterparties.id"), nullable=True, index=True)
+    # Добавляем внешний ключ для договора
+    contract_id = Column(Integer, ForeignKey("contracts.id", ondelete="SET NULL"), nullable=True, index=True) #
 
     # --- Связи (relationships) ---
     # ИСПРАВЛЕНИЕ: Переименовано owner в user, чтобы соответствовать back_populates в User модели
@@ -41,6 +43,8 @@ class Transaction(Base, TimestampMixin):
     to_account = relationship("Account", foreign_keys=[to_account_id])
     dds_article = relationship("DdsArticle")
     counterparty = relationship("Counterparty", back_populates="transactions")
+    # Добавляем связь с договором
+    contract = relationship("Contract", back_populates="transactions") #
 
     __table_args__ = (
         CheckConstraint('amount > 0', name='check_transaction_amount_positive'),

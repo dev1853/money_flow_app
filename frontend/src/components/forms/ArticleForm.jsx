@@ -1,12 +1,12 @@
 // frontend/src/components/ArticleForm.jsx
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { apiService } from '../services/apiService';
-import Alert from './Alert';
-import Input from './forms/Input';
-import Label from './forms/Label';
-import Select from './forms/Select';
-import Button from './Button';
+import { useAuth } from '../../contexts/AuthContext';
+import { apiService } from '../../services/apiService';
+import Alert from '../Alert';
+import Input from './Input';
+import Label from './Label';
+import Select from './Select';
+import Button from '../Button';
 
 const buildArticleOptions = (articles, prefix = '', disabledId = null) => {
   let options = [];

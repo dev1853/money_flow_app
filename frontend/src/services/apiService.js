@@ -30,7 +30,16 @@ export class ApiError extends Error {
 
 async function request(method, url, data = null, params = null) {
     try {
-        const config = { method, url, data, params };
+        const config = { method, url, data, params }; 
+        // --- ИСПРАВЛЕНО: Добавлены отладочные логи перед отправкой запроса ---
+        console.log(`API Service: Sending ${config.method} request to ${config.url}`);
+        if (config.params) {
+            console.log("API Service: Request parameters:", config.params);
+        }
+        if (config.data) {
+            console.log("API Service: Request data:", config.data);
+        }
+        // --- КОНЕЦ ОТЛАДОЧНЫХ ЛОГОВ ---
         const response = await api(config);
         return response.data;
     } catch (error) {
@@ -44,7 +53,7 @@ async function request(method, url, data = null, params = null) {
                 details = error.response.data.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('; ');
                 console.error("Validation errors:", details);
             } else {
-                message = error.response.data?.detail || 'API Error'; // Используем optional chaining
+                message = error.response.data?.detail || 'API Error'; 
             }
         }
         
@@ -75,7 +84,7 @@ export const apiService = {
     getAccounts: (workspaceId) => request('get', 'accounts/', null, { workspace_id: workspaceId }),
     createAccount: (accountData) => request('post', 'accounts/', accountData),
     updateAccount: (id, accountData) => request('put', `accounts/${id}`, accountData),
-    deleteAccount: (id) => request('delete', `accounts/${id}`), // Этот метод теперь соответствует AccountsPage.jsx
+    deleteAccount: (id) => request('delete', `accounts/${id}`), 
 
     // DDS Articles
     getDdsArticleById: (articleId) => request('get', `dds-articles/${articleId}`),
@@ -85,7 +94,7 @@ export const apiService = {
     deleteDdsArticle: (articleId) => request('delete', `dds-articles/${articleId}`),
 
     // Reports
-    getDdsReport: (params) => request('get', 'reports/dds', null, params),
+    getDdsReport: (params) => request('get', 'reports/dds', null, params), // Этот вызов был проблемным
 
     // Dashboard
     getProfitLossReport: (params) => request('get', 'reports/profit-loss', null, params),
@@ -94,21 +103,21 @@ export const apiService = {
     getDashboardCashflowTrend: (workspaceId, startDate, endDate, periodType) =>
         request('get', 'dashboard/cashflow-trend', null, { workspace_id: workspaceId, start_date: startDate, end_date: endDate, period_type: periodType }),
 
-    // Budgets <-- НОВЫЕ МЕТОДЫ ДЛЯ БЮДЖЕТОВ
-    getBudgets: (params) => request('get', 'budgets/', null, params), // Получение списка бюджетов
-    createBudget: (budgetData) => request('post', 'budgets/', budgetData), // Создание бюджета
-    getBudgetStatus: (budgetId) => request('get', `budgets/${budgetId}/status`), // Получение статуса бюджета
-    updateBudget: (budgetId, budgetData) => request('put', `budgets/${budgetId}`, budgetData), // Обновление бюджета (предполагаемый эндпоинт)
-    deleteBudget: (budgetId) => request('delete', `budgets/${budgetId}`), // Удаление бюджета (предполагаемый эндпоинт)
+    // Budgets 
+    getBudgets: (params) => request('get', 'budgets/', null, params), 
+    createBudget: (budgetData) => request('post', 'budgets/', budgetData), 
+    getBudgetStatus: (budgetId) => request('get', `budgets/${budgetId}/status`), 
+    updateBudget: (budgetId, budgetData) => request('put', `budgets/${budgetId}`, budgetData), 
+    deleteBudget: (budgetId) => request('delete', `budgets/${budgetId}`), 
 
 
-    // --- Методы для запланированных платежей ---
+    // Методы для запланированных платежей
     getPlannedPayments: (params) => request('get', 'planned-payments/', null, params),
     createPlannedPayment: (paymentData) => request('post', 'planned-payments/', paymentData),
     updatePlannedPayment: (paymentId, paymentData) => request('put', `planned-payments/${paymentId}`, paymentData),
     deletePlannedPayment: (paymentId) => request('delete', `planned-payments/${paymentId}`),
 
-    // --- Методы для платежного календаря ---
+    // Методы для платежного календаря
     getPaymentCalendar: (params) => request('get', 'payment-calendar/', null, params),
 
 
@@ -118,4 +127,18 @@ export const apiService = {
             'Content-Type': 'multipart/form-data',
         },
     }),
+
+    // Методы для Контрагентов (Counterparties)
+    getCounterparties: (params) => request('get', 'counterparties/', null, params),
+    createCounterparty: (counterpartyData) => request('post', 'counterparties/', counterpartyData),
+    getCounterpartyById: (id) => request('get', `counterparties/${id}`),
+    updateCounterparty: (id, counterpartyData) => request('put', `counterparties/${id}`, counterpartyData),
+    deleteCounterparty: (id) => request('delete', `counterparties/${id}`),
+
+    // Методы для Договоров (Contracts)
+    getContracts: (params) => request('get', 'contracts/', null, params), 
+    createContract: (contractData) => request('post', 'contracts/', contractData),
+    getContractById: (id) => request('get', `contracts/${id}`),
+    updateContract: (id, contractData) => request('put', `contracts/${id}`, contractData),
+    deleteContract: (id) => request('delete', `contracts/${id}`),
 };

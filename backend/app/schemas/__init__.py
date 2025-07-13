@@ -1,6 +1,6 @@
 # /backend/app/schemas/__init__.py
 
-from typing import Optional, List # Этот импорт уже добавлен
+from typing import Optional, List 
 
 from .token import Token, TokenData
 from .user import User, UserCreate, UserUpdate
@@ -17,6 +17,9 @@ from .planned_payment import PlannedPayment, PlannedPaymentCreate, PlannedPaymen
 
 from .budget import Budget, BudgetCreate, BudgetUpdate, BudgetItem, BudgetItemCreate, BudgetItemUpdate
 from .budget_status import BudgetStatus, BudgetItemStatus
+
+from .contract import Contract, ContractCreate, ContractUpdate, ContractPage 
+from .counterparty import Counterparty, CounterpartyCreate, CounterpartyUpdate, CounterpartyPage 
 
 # Добавляем явные вызовы model_rebuild() для разрешения прямых ссылок
 User.model_rebuild()

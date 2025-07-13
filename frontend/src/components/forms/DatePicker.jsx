@@ -4,7 +4,8 @@ import React from 'react';
 import ReactDatePicker, { registerLocale } from 'react-datepicker';
 import { ru } from 'date-fns/locale';
 import { format } from 'date-fns';
-import CustomInput from './CustomDateInput';
+// ИСПРАВЛЕНИЕ: Удаляем дублирующий импорт CustomDateInput
+// import CustomInput from './CustomDateInput'; // Эта строка теперь не нужна
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 
 // Импортируем стили
@@ -12,12 +13,10 @@ import "./CustomDatePicker.css";
 
 // Импортируем компоненты
 import Label from './Label';
-// 1. Импортируем наш общий компонент для поля ввода
+// ИСПРАВЛЕНИЕ: Используем один правильный импорт CustomDateInput
 import CustomDateInput from './CustomDateInput'; 
 
 registerLocale('ru', ru);
-
-// 2. Определение const CustomInput отсюда было полностью удалено, так как мы его импортируем.
 
 const DatePicker = ({ label, id, selected, onChange, ...props }) => {
   return (
@@ -30,8 +29,8 @@ const DatePicker = ({ label, id, selected, onChange, ...props }) => {
         locale="ru"
         dateFormat="d MMMM yyyy г."
         
-        // 3. Здесь теперь используется наш общий, импортированный компонент
-        customInput={<CustomInput placeholder={props.placeholderText || 'Выберите дату'}/>}
+        // ИСПРАВЛЕНИЕ: Используем корректное имя импортированного компонента CustomDateInput
+        customInput={<CustomDateInput placeholder={props.placeholderText || 'Выберите дату'}/>}
         
         renderCustomHeader={({
           date,

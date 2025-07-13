@@ -15,12 +15,13 @@ import Loader from '../components/Loader';
 import Alert from '../components/Alert';
 import Pagination from '../components/Pagination';
 import Modal from '../components/Modal';
-import TransactionForm from '../components/TransactionForm';
+import TransactionForm from '../components/forms/TransactionForm';
 import ConfirmationModal from '../components/ConfirmationModal';
 import StatementUploadModal from '../components/StatementUploadModal'; 
 import TransactionFilters from '../components/TransactionFilters';
 import UniversalTable from '../components/UniversalTable'; 
 import { ArrowUpCircleIcon, ArrowDownCircleIcon, PencilSquareIcon, TrashIcon, PlusIcon, ArrowUpOnSquareIcon } from '@heroicons/react/24/solid';
+import { flattenDdsArticles } from '../utils/articleUtils'; 
 
 const ITEMS_PER_PAGE = 20;
 
@@ -28,7 +29,7 @@ const initialFilters = {
     start_date: null,
     end_date: null,
     account_id: 'all',
-    contractor: '',
+    counterparty_id: 'all', // ИСПРАВЛЕНО: Добавлен фильтр по контрагенту
     amount_from: '',
     amount_to: '',
 };
@@ -44,24 +45,6 @@ function filtersReducer(state, action) {
     }
 }
 
-// *** НОВАЯ (ИЛИ ПЕРЕНЕСЕННАЯ) ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ СГЛАЖИВАНИЯ СТАТЕЙ ***
-// Эту функцию можно вынести в отдельный файл utils/articleUtils.js, если она используется в нескольких местах.
-const flattenDdsArticles = (articles) => {
-    let flatList = [];
-    articles.forEach(article => {
-        // Добавляем только статьи, которые не являются группами
-        if (article.article_type !== 'group') {
-            flatList.push(article);
-        }
-        // Рекурсивно добавляем дочерние элементы
-        if (article.children && article.children.length > 0) {
-            flatList = flatList.concat(flattenDdsArticles(article.children));
-        }
-    });
-    return flatList;
-};
-
-
 function TransactionsPage() {
     const { activeWorkspace, accounts, ddsArticles, fetchDataForWorkspace } = useAuth();
     const [formType, setFormType] = React.useState('expense');
@@ -74,15 +57,42 @@ function TransactionsPage() {
     const [isUploadModalOpen, setUploadModalOpen] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState(null);
 
+    // ИСПРАВЛЕНО: Добавлен стейт для контрагентов для фильтра
+    const [counterparties, setCounterparties] = useState([]); 
+
+    // ИСПРАВЛЕНО: Загрузка контрагентов для фильтра
+    useEffect(() => {
+        const loadCounterparties = async () => {
+            if (activeWorkspace?.id) {
+                try {
+                    const fetchedCounterparties = await apiService.getCounterparties({
+                        workspace_id: activeWorkspace.id
+                    });
+                    // Убедитесь, что apiService.getCounterparties возвращает { items: [], total: 0 }
+                    setCounterparties(fetchedCounterparties?.items || []); 
+                } catch (err) {
+                    console.error("Ошибка загрузки контрагентов для фильтра:", err);
+                }
+            }
+        };
+        loadCounterparties();
+    }, [activeWorkspace]);
+
     const fetchTransactions = useCallback(async () => {
         const params = {
             page: currentPage,
             size: ITEMS_PER_PAGE,
             start_date: filters.start_date ? format(filters.start_date, 'yyyy-MM-dd') : undefined,
             end_date: filters.end_date ? format(filters.end_date, 'yyyy-MM-dd') : undefined,
+            amount_from: filters.amount_from ? parseFloat(filters.amount_from) : undefined,
+            amount_to: filters.amount_to ? parseFloat(filters.amount_to) : undefined,
         };
         if (filters.account_id && filters.account_id !== 'all') {
             params.account_id = filters.account_id;
+        }
+        // ИСПРАВЛЕНО: Добавляем counterparty_id в параметры запроса
+        if (filters.counterparty_id && filters.counterparty_id !== 'all') {
+            params.counterparty_id = filters.counterparty_id;
         }
         return apiService.getTransactions(params);
     }, [currentPage, filters]);
@@ -95,7 +105,7 @@ function TransactionsPage() {
     console.log("TransactionsPage: Получены данные транзакций ->", transactionsData);
 
     console.log("TransactionsPage: Accounts ->", accounts); 
-    console.log("TransactionsPage: DdsArticles ->", ddsArticles); // Это исходные, вложенные статьи
+    console.log("TransactionsPage: DdsArticles ->", ddsArticles); 
 
 
     const transactionMutationFn = (transactionData) => {
@@ -106,20 +116,25 @@ function TransactionsPage() {
     };
 
     const [submitTransaction, { isLoading: isSubmitting, error: submissionError }] = useApiMutation(transactionMutationFn, {
-        onSuccess: (data) => { 
-            console.log("TransactionsPage: Мутация успешна! Ответ сервера ->", data); 
-
-            handleResetFilters(); 
-            
+        onSuccess: (data) => {
+            console.log("TransactionsPage (useApiMutation onSuccess): Мутация успешна! Ответ сервера ->", data);
+            handleResetFilters();
             if (activeWorkspace) {
                 fetchDataForWorkspace(activeWorkspace.id);
             }
-            
+            console.log("TransactionsPage (useApiMutation onSuccess): Вызываю handleCloseFormModal...");
             handleCloseFormModal();
-
-            refetchTransactions(); 
+            console.log("TransactionsPage (useApiMutation onSuccess): Вызываю refetchTransactions...");
+            refetchTransactions();
+            console.log("TransactionsPage (useApiMutation onSuccess): Все действия по успеху вызваны.");
         }
     });
+
+    const handleCloseFormModal = () => {
+        setFormModalOpen(false);
+        setEditingTransaction(null);
+        console.log("TransactionsPage: handleCloseFormModal вызван, isFormModalOpen ->", false);
+    };
 
     const handleTransactionSubmit = (transactionData) => {
         console.log("TransactionsPage: Вызов мутации с данными ->", transactionData);
@@ -157,40 +172,81 @@ function TransactionsPage() {
         setEditingTransaction(transaction);
         setFormModalOpen(true);
     };
-    const handleCloseFormModal = () => {
-        setFormModalOpen(false);
-        setEditingTransaction(null);
-        console.log("TransactionsPage: handleCloseFormModal вызван, isFormModalOpen ->", false); 
-    };
     const handleDeleteRequest = (transaction) => {
         setTransactionToDelete(transaction);
     };
 
-    const headers = useMemo(() => [
-        { key: 'status', label: '', className: 'w-12 text-center' },
-        { key: 'date', label: 'Дата', className: 'w-24' },
-        { key: 'account', label: 'Счет', className: 'w-32' },
-        { key: 'amount', label: 'Сумма', className: 'w-28 text-right' },
-        { key: 'description', label: 'Описание', className: 'flex-grow' },
-        { key: 'dds_article', label: 'Статья ДДС', className: 'w-48' },
-        { key: 'actions', label: 'Действия', className: 'w-28 text-center' }
+    // ИСПРАВЛЕНО: Добавлены accessor или render для каждого столбца
+    const columns = useMemo(() => [
+        { 
+            key: 'status', 
+            label: '', 
+            className: 'w-12 text-center',
+            render: (row) => row.status 
+        },
+        { 
+            key: 'date', 
+            label: 'Дата', 
+            className: 'w-24', 
+            accessor: 'date' 
+        },
+        { 
+            key: 'account', 
+            label: 'Счет', 
+            className: 'w-32', 
+            accessor: 'account' 
+        },
+        { 
+            key: 'amount', 
+            label: 'Сумма', 
+            className: 'w-28 text-right',
+            render: (row) => row.amount 
+        },
+        { 
+            key: 'description', 
+            label: 'Описание', 
+            className: 'flex-grow', 
+            accessor: 'description' 
+        },
+        { // ИСПРАВЛЕНО: Колонка "Контрагент"
+            key: 'counterparty', 
+            label: 'Контрагент', 
+            className: 'w-40', 
+            accessor: 'counterparty.name', // Предполагается, что данные приходят вложенно
+            render: (row) => row.counterparty?.name || 'Без контрагента'
+        },
+        { // ИСПРАВЛЕНО: Колонка "Договор"
+            key: 'contract', 
+            label: 'Договор', 
+            className: 'w-40', 
+            accessor: 'contract.name', // Предполагается, что данные приходят вложенно
+            render: (row) => row.contract?.name || 'Без договора'
+        },
+        { 
+            key: 'dds_article', 
+            label: 'Статья ДДС', 
+            className: 'w-48', 
+            accessor: 'dds_article' 
+        },
+        { 
+            key: 'actions', 
+            label: 'Действия', 
+            className: 'w-28 text-center',
+            render: (row) => row.actions 
+        }
     ], []);
 
     const tableData = useMemo(() => {
-        // *** ИСПРАВЛЕНИЕ ЗДЕСЬ: Сглаживаем ddsArticles перед использованием ***
         const flatDdsArticles = flattenDdsArticles(ddsArticles || []); 
-        // Добавьте console.log для отладки:
         console.log("TransactionsPage: Сглаженные DDS Articles ->", flatDdsArticles);
 
-        // ИСПРАВЛЕНИЕ: Используем transactionsData?.items вместо transactionsData?.transactions
-        return (transactionsData?.items || []).map(item => { //
+        return (transactionsData?.items || []).map(item => { 
             const isIncome = item.transaction_type === 'INCOME';
             const amountColor = isIncome ? 'text-green-600' : 'text-red-600';
             const amountPrefix = isIncome ? '+' : '-';
             const StatusIcon = isIncome ? ArrowUpCircleIcon : ArrowDownCircleIcon;
             
             const account = accounts.find(acc => acc.id === item.from_account_id || acc.id === item.to_account_id);
-            // *** ИСПРАВЛЕНО: Теперь ищем статью в сглаженном списке ***
             const ddsArticle = flatDdsArticles.find(art => art.id === item.dds_article_id); 
 
             return {
@@ -198,7 +254,6 @@ function TransactionsPage() {
                 status: <StatusIcon className={`h-6 w-6 mx-auto ${amountColor}`} />,
                 date: item.transaction_date && isValid(parseISO(item.transaction_date)) ? format(parseISO(item.transaction_date), 'dd.MM.yyyy') : 'Н/Д',
                 account: account ? account.name : 'Неизвестный счет',
-                // *** ИСПРАВЛЕНО: Убедимся, что dds_article_id не null, прежде чем искать статью ***
                 dds_article: item.dds_article_id && ddsArticle ? ddsArticle.name : 'Без статьи', 
                 amount: (
                     <span className={`font-medium ${amountColor}`}>
@@ -213,7 +268,7 @@ function TransactionsPage() {
                 )
             };
         });
-    }, [transactionsData, accounts, ddsArticles]); // ddsArticles - зависимость для useMemo
+    }, [transactionsData, accounts, ddsArticles, handleOpenFormModal, handleDeleteRequest]); 
 
     return (
         <React.Fragment>
@@ -234,18 +289,18 @@ function TransactionsPage() {
             <TransactionFilters
                 filters={filters}
                 accounts={accounts || []}
+                counterparties={counterparties || []} // ИСПРАВЛЕНО: Передаем контрагентов в фильтры
                 onFilterChange={handleFilterChange}
                 onResetFilters={handleResetFilters}
             />
 
             {error && <Alert type="error" className="my-4">{error}</Alert>}
             
-            <UniversalTable headers={headers} data={tableData} loading={loading} emptyMessage="Нет транзакций по выбранным фильтрам." />
+            <UniversalTable columns={columns} data={tableData} loading={loading} emptyMessage="Нет транзакций по выбранным фильтрам." />
             
             <Pagination
                 currentPage={currentPage}
-                // ИСПРАВЛЕНИЕ: Используем transactionsData?.total вместо transactionsData?.total_count
-                totalPages={Math.ceil((transactionsData?.total || 0) / ITEMS_PER_PAGE)} //
+                totalPages={Math.ceil((transactionsData?.total || 0) / ITEMS_PER_PAGE)} 
                 onPageChange={setCurrentPage}
             />
             
@@ -255,7 +310,6 @@ function TransactionsPage() {
                     onSubmit={handleTransactionSubmit}
                     onCancel={handleCloseFormModal}
                     accounts={accounts || []}
-                    articles={ddsArticles || []} 
                     defaultType={formType}
                     isSubmitting={isSubmitting}
                     error={submissionError}

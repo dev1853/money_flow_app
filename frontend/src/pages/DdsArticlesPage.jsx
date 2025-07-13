@@ -12,7 +12,7 @@ import Loader from '../components/Loader';
 import Alert from '../components/Alert';
 import EmptyState from '../components/EmptyState';
 import Modal from '../components/Modal';
-import ArticleForm from '../components/ArticleForm';
+import ArticleForm from '../components/forms/ArticleForm';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { PlusIcon } from '@heroicons/react/24/solid';
 

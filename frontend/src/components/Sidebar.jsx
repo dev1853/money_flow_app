@@ -5,12 +5,14 @@ import {
   HomeIcon,
   NewspaperIcon,
   CurrencyDollarIcon,
-  ChartBarIcon, // <-- Используем эту иконку для бюджетов
+  ChartBarIcon,
   Cog6ToothIcon, 
   ChevronRightIcon, 
   ReceiptPercentIcon,
   PowerIcon,
-  ScaleIcon,
+  SparklesIcon, 
+  DocumentTextIcon,
+  UserGroupIcon,
   CalculatorIcon,
   CalendarDaysIcon
 } from '@heroicons/react/24/outline';
@@ -26,6 +28,8 @@ const navigation = [
   { name: 'Операции', href: '/transactions', icon: NewspaperIcon, type: 'link' },
   { name: 'Счета', href: '/accounts', icon: CurrencyDollarIcon, type: 'link' },
   { name: 'Статьи', href: '/articles', icon: ReceiptPercentIcon, type: 'link' },
+  { name: 'Договоры', href: '/contracts', icon: DocumentTextIcon , type: 'link' },
+  { name: 'Контрагенты', href: '/counterparties', icon: UserGroupIcon , type: 'link' },
   { name: 'Бюджеты', href: '/budgets', icon: CalculatorIcon, type: 'link' },
   { name: 'Платежный календарь', href: '/payment-calendar', icon: CalendarDaysIcon, type: 'link' }, 
 

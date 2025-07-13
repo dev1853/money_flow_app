@@ -1,8 +1,8 @@
-# /backend/app/schemas/counterparty.py
+# backend/app/schemas/counterparty.py
 
 from __future__ import annotations 
 from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional
+from typing import Optional, List # Добавлен List
 from ..models.counterparty import CounterpartyType
 
 class CounterpartyBase(BaseModel):
@@ -27,3 +27,7 @@ class Counterparty(CounterpartyBase):
     workspace_id: int
     
     model_config = ConfigDict(from_attributes=True)
+
+class CounterpartyPage(BaseModel):
+    items: List[Counterparty]
+    total: int

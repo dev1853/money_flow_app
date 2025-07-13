@@ -1,10 +1,10 @@
 # /backend/app/crud/crud_account.py
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, lazyload
 from ..schemas.account import AccountCreate, AccountUpdate # Убедитесь, что импорт корректен
 from ..models import Account
 from typing import List, Optional
 from decimal import Decimal
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from .base import CRUDBase
 from .. import models, schemas
@@ -46,18 +46,19 @@ class CRUDAccount(CRUDBase[models.Account, AccountCreate, AccountUpdate]): # И�
 
     def update_balance(self, db: Session, *, account_id: int, amount_change: Decimal) -> models.Account:
         """
-        Атомарно обновляет баланс счета на указанную сумму.
-        Использует for_update() для блокировки строки на время транзакции,
-        чтобы предотвратить race conditions.
+        Обновляет баланс счета по его ID, используя FOR UPDATE для блокировки строки.
         """
-        account = db.query(models.Account).filter_by(id=account_id).with_for_update().one()
+        # Используем lazyload для account_type_ref, чтобы избежать LEFT OUTER JOIN
+        # и конфликта с FOR UPDATE на nullable стороне.
+        account = db.query(models.Account)\
+            .options(lazyload(models.Account.account_type_ref))\
+            .filter_by(id=account_id)\
+            .with_for_update()\
+            .one()
         
-        if account.balance + amount_change < 0:
-            raise ValueError("Недостаточно средств на счете.")
-
         account.balance += amount_change
-        
         db.add(account)
+        db.flush()
         return account
     
     def get_by_name_and_workspace(self, db: Session, *, name: str, workspace_id: int) -> Optional[models.Account]:

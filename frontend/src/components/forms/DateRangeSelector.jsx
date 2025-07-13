@@ -46,37 +46,44 @@ const datePresets = [
             return { startDate, endDate };
         },
     },
+    {
+        label: 'Все время',
+        getDates: () => ({
+            startDate: null,
+            endDate: null,
+        }),
+    },
 ];
 
-const DateRangeSelector = ({ onDatesChange }) => {
+const DateRangeSelector = ({ onSelectRange, selectedLabel }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedLabel, setSelectedLabel] = useState('Этот месяц');
-    const wrapperRef = useRef(null);
-
-    // Закрываем меню при клике вне его
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [wrapperRef]);
-
+    const dropdownRef = useRef(null);
 
     const handleSelect = (preset) => {
-        setSelectedLabel(preset.label);
-        onDatesChange(preset.getDates());
+        const { startDate, endDate } = preset.getDates();
+        onSelectRange(startDate, endDate, preset.label);
         setIsOpen(false);
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className="relative inline-block text-left" ref={wrapperRef}>
+        <div className="relative inline-block text-left" ref={dropdownRef}>
             <div>
                 <button
                     type="button"
-                    className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
+                    className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" // ИСПРАВЛЕНО: Изменено py-2 на py-2.5
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     {selectedLabel}

@@ -7,7 +7,7 @@ import Loader from '../components/Loader';
 import PageTitle from '../components/PageTitle';
 import Button from '../components/Button';
 import Modal from '../components/Modal';
-import BudgetForm from '../components/BudgetForm';
+import BudgetForm from '../components/forms/BudgetForm';
 import ConfirmationModal from '../components/ConfirmationModal';
 import Alert from '../components/Alert';
 

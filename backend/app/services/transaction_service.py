@@ -18,7 +18,7 @@ class TransactionService:
         transaction = crud.transaction.get(db, id=transaction_id)
         if not transaction:
             raise NotFoundError(resource="Транзакция", resource_id=transaction_id)
-        if transaction.workspace_id != workspace_id or transaction.created_by_user_id != user.id:
+        if transaction.workspace_id != workspace_id or transaction.user_id != user.id: # ИСПРАВЛЕНО: user_id вместо created_by_user_id
             raise PermissionDeniedError()
         return transaction
 
@@ -62,22 +62,22 @@ class TransactionService:
             raise ValueError("Для перевода должны быть указаны оба счета.")
 
         # 4. ОБНОВЛЯЕМ БАЛАНСЫ, СУММА ВСЕГДА ПОЛОЖИТЕЛЬНАЯ
-        amount = Decimal(abs(transaction_in.amount)) # ИСПРАВЛЕНИЕ: Преобразуем float в Decimal
-        logger.debug(f"Сумма транзакции (Decimal): {amount}") # Добавлено для отладки
+        amount = Decimal(abs(transaction_in.amount)) 
+        logger.debug(f"Сумма транзакции (Decimal): {amount}") 
 
         if transaction_in.transaction_type == models.TransactionType.EXPENSE:
-            from_account.balance -= amount
-            db.add(from_account)
+            # from_account.balance -= amount # ИСПРАВЛЕНО: Используем crud.account.update_balance
+            crud.account.update_balance(db, account_id=from_account.id, amount_change=-amount)
         
         elif transaction_in.transaction_type == models.TransactionType.INCOME:
-            to_account.balance += amount
-            db.add(to_account)
+            # to_account.balance += amount # ИСПРАВЛЕНО: Используем crud.account.update_balance
+            crud.account.update_balance(db, account_id=to_account.id, amount_change=amount)
 
         elif transaction_in.transaction_type == models.TransactionType.TRANSFER:
-            from_account.balance -= amount
-            to_account.balance += amount
-            db.add(from_account)
-            db.add(to_account)
+            # from_account.balance -= amount # ИСПРАВЛЕНО: Используем crud.account.update_balance
+            # to_account.balance += amount # ИСПРАВЛЕНО: Используем crud.account.update_balance
+            crud.account.update_balance(db, account_id=from_account.id, amount_change=-amount)
+            crud.account.update_balance(db, account_id=to_account.id, amount_change=amount)
 
         # 5. Создаем саму запись о транзакции
         db_transaction = crud.transaction.create_with_owner(
@@ -86,65 +86,94 @@ class TransactionService:
         
         return db_transaction
 
-    # --- НОВЫЙ МЕТОД ДЛЯ ОБНОВЛЕНИЯ ---
     def update_transaction(
         self,
         db: Session,
         *,
-        transaction_to_update: models.Transaction,
-        transaction_in: schemas.TransactionUpdate
+        transaction_to_update: models.Transaction, # Оригинальный объект из БД
+        transaction_in: schemas.TransactionUpdate # Входящие данные для обновления
     ) -> models.Transaction:
         """
-        Атомарно обновляет транзакцию и корректирует баланс счета.
+        Атомарно обновляет транзакцию и корректирует балансы счетов.
         """
         try:
-            # 1. Рассчитываем сумму для отката старой транзакции
+            # 1. Захватываем старое состояние транзакции для корректировки балансов
+            old_from_account_id = transaction_to_update.from_account_id
+            old_to_account_id = transaction_to_update.to_account_id
             old_amount = Decimal(transaction_to_update.amount)
-            if transaction_to_update.transaction_type == TransactionType.EXPENSE:
-                old_amount = -old_amount
-            
-            # 2. Обновляем саму транзакцию
-            updated_transaction = crud.transaction.update(db, db_obj=transaction_to_update, obj_in=transaction_in)
+            old_transaction_type = transaction_to_update.transaction_type
 
-            # 3. Рассчитываем новую сумму
-            new_amount = Decimal(updated_transaction.amount)
-            if updated_transaction.transaction_type == TransactionType.EXPENSE:
-                new_amount = -new_amount
-
-            # 4. Корректируем баланс счета: отменяем старую сумму и применяем новую
-            # ИСПРАВЛЕНИЕ: Убедитесь, что amount_change также является Decimal
-            balance_change = new_amount - old_amount
-            crud.account.update_balance(db, account_id=updated_transaction.account_id, amount_change=balance_change)
+            # 2. Обновляем саму запись о транзакции в базе данных
+            # crud.transaction.update обновит transaction_to_update in-place
+            updated_transaction_db_obj = crud.transaction.update(db, db_obj=transaction_to_update, obj_in=transaction_in)
             
+            # 3. Захватываем новое состояние транзакции для применения новых балансов
+            new_from_account_id = updated_transaction_db_obj.from_account_id
+            new_to_account_id = updated_transaction_db_obj.to_account_id
+            new_amount = Decimal(updated_transaction_db_obj.amount)
+            new_transaction_type = updated_transaction_db_obj.transaction_type
+
+            # --- Шаг 4: Откатываем влияние старой транзакции на балансы ---
+            if old_transaction_type == models.TransactionType.EXPENSE:
+                if old_from_account_id:
+                    crud.account.update_balance(db, account_id=old_from_account_id, amount_change=old_amount)
+            elif old_transaction_type == models.TransactionType.INCOME:
+                if old_to_account_id:
+                    crud.account.update_balance(db, account_id=old_to_account_id, amount_change=-old_amount)
+            elif old_transaction_type == models.TransactionType.TRANSFER:
+                if old_from_account_id:
+                    crud.account.update_balance(db, account_id=old_from_account_id, amount_change=old_amount)
+                if old_to_account_id:
+                    crud.account.update_balance(db, account_id=old_to_account_id, amount_change=-old_amount)
+
+            # --- Шаг 5: Применяем влияние новой транзакции на балансы ---
+            if new_transaction_type == models.TransactionType.EXPENSE:
+                if new_from_account_id:
+                    crud.account.update_balance(db, account_id=new_from_account_id, amount_change=-new_amount)
+            elif new_transaction_type == models.TransactionType.INCOME:
+                if new_to_account_id:
+                    crud.account.update_balance(db, account_id=new_to_account_id, amount_change=new_amount)
+            elif new_transaction_type == models.TransactionType.TRANSFER:
+                if new_from_account_id:
+                    crud.account.update_balance(db, account_id=new_from_account_id, amount_change=-new_amount)
+                if new_to_account_id:
+                    crud.account.update_balance(db, account_id=new_to_account_id, amount_change=new_amount)
+
             db.commit()
-            db.refresh(updated_transaction)
-            return updated_transaction
-        except Exception:
+            db.refresh(updated_transaction_db_obj)
+            return updated_transaction_db_obj
+        except Exception as e: # ИСПРАВЛЕНО: Логируем ошибку для диагностики
+            logger.error(f"Ошибка при обновлении транзакции ID {transaction_to_update.id}: {e}", exc_info=True)
             db.rollback()
             raise
 
-    # --- НОВЫЙ МЕТОД ДЛЯ УДАЛЕНИЯ ---
     def delete_transaction(self, db: Session, *, transaction_to_delete: models.Transaction) -> models.Transaction:
         """
         Атомарно удаляет транзакцию и откатывает ее влияние на баланс.
         """
         try:
-            # 1. Определяем сумму для отката
-            amount_to_revert = Decimal(transaction_to_delete.amount)
-            if transaction_to_delete.transaction_type == TransactionType.EXPENSE:
-                amount_to_revert = -amount_to_revert
-
-            # 2. Обновляем баланс, возвращая его в состояние до транзакции
-            # ИСПРАВЛЕНИЕ: Убедитесь, что amount_change также является Decimal
-            crud.account.update_balance(db, account_id=transaction_to_delete.account_id, amount_change=-amount_to_revert)
+            # Определяем сумму и счета для отката
+            amount = Decimal(transaction_to_delete.amount)
             
-            # 3. Удаляем транзакцию
+            if transaction_to_delete.transaction_type == models.TransactionType.EXPENSE:
+                if transaction_to_delete.from_account_id:
+                    crud.account.update_balance(db, account_id=transaction_to_delete.from_account_id, amount_change=amount) # Возвращаем сумму на счет-источник
+            elif transaction_to_delete.transaction_type == models.TransactionType.INCOME:
+                if transaction_to_delete.to_account_id:
+                    crud.account.update_balance(db, account_id=transaction_to_delete.to_account_id, amount_change=-amount) # Вычитаем сумму со счета-получателя
+            elif transaction_to_delete.transaction_type == models.TransactionType.TRANSFER:
+                if transaction_to_delete.from_account_id:
+                    crud.account.update_balance(db, account_id=transaction_to_delete.from_account_id, amount_change=amount) # Возвращаем на счет-источник
+                if transaction_to_delete.to_account_id:
+                    crud.account.update_balance(db, account_id=transaction_to_delete.to_account_id, amount_change=-amount) # Вычитаем со счета-получателя
+            
+            # Удаляем саму транзакцию
             crud.transaction.remove(db, id=transaction_to_delete.id)
             
             db.commit()
-            # Возвращаем удаленный объект, чтобы показать его в ответе API
             return transaction_to_delete
-        except Exception:
+        except Exception as e: # ИСПРАВЛЕНО: Логируем ошибку для диагностики
+            logger.error(f"Ошибка при удалении транзакции ID {transaction_to_delete.id}: {e}", exc_info=True)
             db.rollback()
             raise
 
