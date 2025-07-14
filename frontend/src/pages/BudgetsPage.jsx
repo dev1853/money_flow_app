@@ -74,7 +74,7 @@ const BudgetsPage = () => {
   if (error) return <Alert type="error">{error}</Alert>;
 
   return (
-    <div>
+    <div className="dark:text-gray-200">
       <div className="flex justify-between items-center mb-6">
         <PageTitle title="Бюджеты" />
         <Button onClick={() => handleOpenFormModal()}>Создать бюджет</Button>

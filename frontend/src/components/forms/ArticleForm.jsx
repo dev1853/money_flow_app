@@ -1,4 +1,4 @@
-// frontend/src/components/ArticleForm.jsx
+// frontend/src/components/forms/ArticleForm.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '../../services/apiService';
@@ -34,7 +34,6 @@ function ArticleForm({
   onSuccess,
   articlesTree,
   isVisible,
-  onCancel,
 }) {
   const { activeWorkspace } = useAuth();
   const [name, setName] = useState('');
@@ -43,50 +42,38 @@ function ArticleForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // 1. ОПТИМИЗАЦИЯ: `useMemo` кеширует список опций, чтобы не пересчитывать его на каждый рендер.
-  // Теперь он будет работать, так как `articlesTree` будет получен.
   const parentArticleOptions = useMemo(
     () => buildArticleOptions(articlesTree, '', articleToEdit?.id),
     [articlesTree, articleToEdit]
   );
 
-  // 2. УЛУЧШЕНИЕ: `useEffect` для корректного управления состоянием формы.
   useEffect(() => {
-    // Срабатывает только когда модальное окно видимо
     if (isVisible) {
-      setError(''); // Сбрасываем ошибку при каждом открытии
+      setError('');
       if (articleToEdit) {
-        // РЕЖИМ РЕДАКТИРОВАНИЯ: Заполняем поля из полученного объекта
         setName(articleToEdit.name);
         setArticleType(articleToEdit.article_type);
         setCurrentParentId(articleToEdit.parent_id);
       } else {
-        // РЕЖИМ СОЗДАНИЯ: Сбрасываем поля и устанавливаем родителя
         setName('');
         setArticleType('EXPENSE');
         setCurrentParentId(parentId);
       }
     }
-  }, [articleToEdit, parentId, isVisible]); // Зависимости для корректного обновления
+  }, [articleToEdit, parentId, isVisible]);
 
-  // 3. УЛУЧШЕНИЕ: Логика отправки формы
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!name.trim()) {
       setError('Название статьи не может быть пустым.');
       return;
     }
-    
     setLoading(true);
     setError('');
 
-    // 3. --- ГЛАВНОЕ ИСПРАВЛЕНИЕ ---
-    // Берем ID напрямую из activeWorkspace. Это самый надежный способ.
     const workspaceId = activeWorkspace?.id;
-
     if (!workspaceId) {
-      setError("Критическая ошибка: не удалось определить рабочее пространство. Обновите страницу.");
+      setError("Критическая ошибка: не удалось определить рабочее пространство.");
       setLoading(false);
       return;
     }
@@ -108,19 +95,16 @@ function ArticleForm({
     } catch (err) {
       const errorMsg = err.response?.data?.detail || 'Произошла неизвестная ошибка.';
       setError(errorMsg);
-      console.error(err);
     } finally {
       setLoading(false);
     }
   };
-  console.log("Текущий parent_id в состоянии:", currentParentId);
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <Alert type="error">{error}</Alert>}
       <div>
         <Label htmlFor="article_name">Название</Label>
-        {/* Используем 'name' и 'setName' */}
         <Input
           id="article_name"
           name="name"
@@ -130,21 +114,8 @@ function ArticleForm({
         />
       </div>
 
-      {/* Поле "Код", которого не было в логике. */}
-      {/* Если оно нужно, добавьте состояние: const [code, setCode] = useState(''); */}
-      {/* <div>
-        <Label htmlFor="article_code">Код</Label>
-        <Input
-          id="article_code"
-          name="code"
-          // value={code}
-          // onChange={(e) => setCode(e.target.value)}
-        />
-      </div> */}
-
       <div>
         <Label htmlFor="article_type">Тип</Label>
-        {/* Используем 'articleType' и 'setArticleType' */}
         <Select
           id="article_type"
           name="type"
@@ -152,6 +123,8 @@ function ArticleForm({
           onChange={(e) => setArticleType(e.target.value)}
           required
         >
+          {/* Мы не стилизуем <option> напрямую, так как их вид контролируется ОС,
+              но родительский <Select> уже адаптирован. */}
           <option value="group">Группа</option>
           <option value="INCOME">Доход</option>
           <option value="EXPENSE">Расход</option>
@@ -160,7 +133,6 @@ function ArticleForm({
 
       <div>
         <Label htmlFor="parent_id">Родительская статья</Label>
-        {/* Используем 'currentParentId' и 'setCurrentParentId' */}
         <Select
           id="parent_id"
           name="parent_id"
@@ -168,7 +140,6 @@ function ArticleForm({
           onChange={(e) => setCurrentParentId(e.target.value ? Number(e.target.value) : null)}
         >
           <option value="">-- Корневая статья --</option>
-          {/* Просто вставляем готовый массив опций */}
           {parentArticleOptions}
         </Select>
       </div>
@@ -179,4 +150,5 @@ function ArticleForm({
     </form>
   );
 }
+
 export default ArticleForm;

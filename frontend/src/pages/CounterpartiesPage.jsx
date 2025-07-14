@@ -221,7 +221,7 @@ function CounterpartiesPage() {
   };
 
   return (
-    <div>
+    <div className="dark:text-gray-200">
       <div className="flex justify-between items-center mb-4">
         <PageTitle title="Контрагенты" />
         <div className="flex space-x-2">
@@ -246,7 +246,7 @@ function CounterpartiesPage() {
         </div>
       </div>
 
-      <div className="mb-4 p-4 bg-white rounded-lg shadow">
+      <div className="mb-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Поиск по названию"

@@ -1,7 +1,5 @@
-// frontend/src/components/dashboard/LatestTransactionsWidget.jsx
-
 import React, { useMemo } from 'react';
-import UniversalTable from '../UniversalTable'; // Adjust path if needed
+import UniversalTable from '../UniversalTable';
 import { format, parseISO, isValid } from 'date-fns';
 import { formatCurrency } from '../../utils/formatting';
 import { ArrowUpCircleIcon, ArrowDownCircleIcon } from '@heroicons/react/24/solid';
@@ -16,8 +14,9 @@ const LatestTransactionsWidget = ({ transactions }) => {
         render: (row) => {
           const isIncome = row.transaction_type === 'INCOME';
           const StatusIcon = isIncome ? ArrowUpCircleIcon : ArrowDownCircleIcon;
-          const amountColor = isIncome ? 'text-green-600' : 'text-red-600';
-          return <StatusIcon className={`h-5 w-5 mx-auto ${amountColor}`} />;
+          // Адаптируем цвет иконки для темной темы
+          const iconColor = isIncome ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400';
+          return <StatusIcon className={`h-5 w-5 mx-auto ${iconColor}`} />;
         },
       },
       {
@@ -42,7 +41,8 @@ const LatestTransactionsWidget = ({ transactions }) => {
         render: (row) => {
           const isIncome = row.transaction_type === 'INCOME';
           const amountPrefix = isIncome ? '+' : '-';
-          const amountColor = isIncome ? 'text-green-600' : 'text-red-600';
+          // Адаптируем цвет суммы для темной темы
+          const amountColor = isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
           return (
             <span className={`font-medium ${amountColor}`}>
               {amountPrefix} {formatCurrency(row.amount, row.currency)}

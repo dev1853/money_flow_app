@@ -31,7 +31,7 @@ function LoginPage() {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-            <h2 className="mt-10 text-center text-xl font-bold leading-9 tracking-tight text-gray-900">
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
                 Вход в ваш аккаунт
             </h2>
         </div>
@@ -51,14 +51,14 @@ function LoginPage() {
                 </div>
                 {error && <Alert type="error">{error}</Alert>}
                 <div>
-                    <Button type="submit" variant="primary" disabled={isLoading} fullWidth>
+                    <Button type="submit" className="w-full" variant="primary" disabled={isLoading} fullWidth>
                         {isLoading ? 'Вход...' : 'Войти'}
                     </Button>
                 </div>
             </form>
-            <p className="mt-10 text-center text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 Нет аккаунта?{' '}
-                <Link to="/register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
                     Зарегистрироваться
                 </Link>
             </p>

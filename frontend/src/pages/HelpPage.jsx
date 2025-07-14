@@ -1,29 +1,56 @@
 // frontend/src/pages/HelpPage.jsx
 
-import React from 'react';
+import React, { useState } from 'react';
 import PageTitle from '../components/PageTitle';
 import { 
     HomeIcon, 
     BanknotesIcon, 
     CalendarDaysIcon, 
     CalculatorIcon, 
-    DocumentChartBarIcon 
-} from '@heroicons/react/24/outline';
+    DocumentChartBarIcon,
+    ChevronDownIcon
+} from '@heroicons/react/24/solid'; // Используем solid иконки для лучшей видимости
 
-// Вспомогательный компонент для одного "сообщения" в нашей ленте помощи
-const HelpTopic = ({ icon, question, children }) => {
+// --- УЛУЧШЕННЫЙ КОМПОНЕНТ HelpTopic (теперь это аккордеон) ---
+const HelpTopic = ({ icon: Icon, question, children, initiallyOpen = false }) => {
+    const [isOpen, setIsOpen] = useState(initiallyOpen);
+
     return (
-        <div className="flex items-start space-x-4 py-4">
-            {/* Аватар-иконка */}
-            <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-indigo-100 text-indigo-600">
-                {React.createElement(icon, { className: "h-6 w-6" })}
-            </div>
+        // Адаптируем фон, границу и тень контейнера
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-2xl dark:shadow-indigo-500/10 border border-gray-200 dark:border-gray-700">
+            {/* Кликабельный заголовок для открытия/закрытия */}
+            <button
+                className="flex justify-between items-center w-full p-4 text-left"
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <div className="flex items-center">
+                    {/* Адаптируем иконку */}
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400">
+                        <Icon className="h-6 w-6" />
+                    </div>
+                    {/* Адаптируем текст вопроса */}
+                    <h3 className="ml-4 font-bold text-gray-900 dark:text-gray-100 text-lg">
+                        {question}
+                    </h3>
+                </div>
+                <ChevronDownIcon
+                    className={`h-6 w-6 text-gray-500 dark:text-gray-400 transform transition-transform duration-300 ${
+                        isOpen ? 'rotate-180' : ''
+                    }`}
+                />
+            </button>
 
-            {/* "Сообщение" с ответом */}
-            <div className="flex-grow bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <h3 className="font-bold text-gray-900 text-lg mb-2">{question}</h3>
-                <div className="prose prose-sm max-w-none text-gray-600">
-                    {children}
+            {/* Раскрывающийся контент с плавной анимацией */}
+            <div
+                className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                    isOpen ? 'max-h-screen' : 'max-h-0'
+                }`}
+            >
+                <div className="p-4 pt-0">
+                    {/* Адаптируем стили текста ответа */}
+                    <div className="prose prose-sm max-w-none text-gray-600 dark:text-gray-300 dark:prose-invert">
+                        {children}
+                    </div>
                 </div>
             </div>
         </div>
@@ -35,13 +62,13 @@ function HelpPage() {
     return (
         <div>
             <PageTitle title="Центр помощи" />
-            <p className="mt-2 mb-8 text-gray-600">
+            <p className="mt-2 mb-8 text-gray-600 dark:text-gray-400">
                 Привет! Я ваш личный помощник. Ниже я ответил на самые популярные вопросы о работе с приложением.
             </p>
 
             <div className="space-y-4">
                 
-                <HelpTopic icon={HomeIcon} question="С чего начать? (Сводка)">
+                <HelpTopic icon={HomeIcon} question="С чего начать? (Сводка)" initiallyOpen={true}>
                     <p>Это ваш главный экран, который дает быстрый обзор финансового состояния. Обращайте внимание на:</p>
                     <ul>
                         <li><strong>Остатки на счетах:</strong> Общая сумма денег.</li>
@@ -67,7 +94,7 @@ function HelpPage() {
                         <li>Перейдите в <strong>"Платежный календарь"</strong> и выберите период.</li>
                         <li>Кликните по любому дню, чтобы <strong>запланировать</strong> будущий доход или расход (например, аренду, зарплату).</li>
                         <li>Следите за ячейками, подсвеченными <strong>красным</strong>. Это и есть кассовые разрывы — дни, когда денег на счетах может не хватить.</li>
-                    </ol>
+                     </ol>
                 </HelpTopic>
 
                 <HelpTopic icon={CalculatorIcon} question="Как контролировать расходы? (Бюджетирование)">

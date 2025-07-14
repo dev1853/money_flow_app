@@ -1,31 +1,22 @@
-// src/pages/AdminPanelPage.jsx
+// frontend/src/pages/AdminPanelPage.jsx
 import React from 'react';
-import UserManagement from '../components/admin/UserManagement'; //
-import PageTitle from '../components/PageTitle'; // <--- ДОБАВЛЕН ИМПОРТ
-
-// import RoleManagement from '../components/admin/RoleManagement'; // Для будущего
+import UserManagement from '../components/admin/UserManagement';
+import PageTitle from '../components/PageTitle';
 
 const AdminPanelPage = () => {
-  // Здесь можно добавить проверку роли пользователя, если ProtectedRoutesWithMainLayout этого не делает
-  // const { user } = useAuth();
-  // if (!user || user.role_id !== 1) {
-  //   return <div className="p-6 text-center text-red-500">Доступ запрещен. Только для администраторов.</div>;
-  // }
-
   return (
-    <div className="space-y-8"> {/* */}
+    <div className="space-y-8">
       <PageTitle title="Панель Администратора" />
 
-      {/* Секция Управления Пользователями */}
-      <div className="bg-white shadow-xl rounded-2xl p-6"> {/* */}
-        <UserManagement /> {/* */}
+      {/* Адаптируем фон, тень и границу для контейнера */}
+      <div className="bg-white dark:bg-gray-800 shadow-lg dark:shadow-2xl dark:shadow-indigo-500/10 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+        <UserManagement />
       </div>
 
-      {/* Заглушка для Управления Ролями */}
-      <div className="bg-white shadow-xl rounded-2xl p-6 mt-8"> {/* */}
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Управление Ролями</h3> {/* */}
-        <p className="text-gray-600">Здесь будет интерфейс для управления ролями.</p> {/* */}
-        {/* TODO: Вставить компонент RoleManagement */}
+      <div className="bg-white dark:bg-gray-800 shadow-lg dark:shadow-2xl dark:shadow-indigo-500/10 rounded-2xl p-6 mt-8 border border-gray-200 dark:border-gray-700">
+        {/* Адаптируем цвет текста */}
+        <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Управление Ролями</h3>
+        <p className="text-gray-600 dark:text-gray-400">Здесь будет интерфейс для управления ролями.</p>
       </div>
     </div>
   );

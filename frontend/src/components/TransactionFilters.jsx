@@ -1,5 +1,3 @@
-// frontend/src/components/TransactionFilters.jsx
-
 import React from 'react';
 
 // Импорты UI
@@ -26,7 +24,8 @@ const TransactionFilters = ({
   ];
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
+    // 1. Адаптируем фон, тень и границу контейнера
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm dark:shadow-2xl dark:shadow-indigo-500/10 mb-4 border border-gray-200 dark:border-gray-700">
       <div className="flex flex-wrap items-end gap-4">
         
         <div>
@@ -55,14 +54,13 @@ const TransactionFilters = ({
           />
         </div>
 
-        {/* ИСПРАВЛЕНО: Фильтр "Контрагент" теперь является Select */}
         <div>
           <Label htmlFor="counterparty_id">Контрагент</Label>
           <Select
             id="counterparty_id"
             value={filters.counterparty_id}
             onChange={e => onFilterChange('counterparty_id', e.target.value)}
-            options={counterpartyOptions} // Используем новые опции
+            options={counterpartyOptions}
           />
         </div>
 
@@ -87,7 +85,8 @@ const TransactionFilters = ({
         </div>
 
         <div className="ml-auto">
-          <Button variant="secondary" onClick={onResetFilters}>
+          {/* Этот Button уже должен быть адаптирован */}
+          <Button variant="icon" onClick={onResetFilters}>
             <XMarkIcon className="h-5 w-5 mr-2" />
             Сбросить
           </Button>

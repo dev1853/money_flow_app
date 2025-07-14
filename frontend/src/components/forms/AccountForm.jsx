@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '../../services/apiService';
 import { useApiMutation } from '../../hooks/useApiMutation';
@@ -10,8 +10,8 @@ import Select from './Select';
 import Alert from '../Alert';
 
 const ACCOUNT_TYPES = [
-  { value: 1, label: 'Банковский счет' }, // ПРИМЕР: используйте актуальный ID
-  { value: 2, label: 'Касса' },           // ПРИМЕР: используйте актуальный ID
+  { value: 1, label: 'Банковский счет' },
+  { value: 2, label: 'Касса' },
 ];
 
 const PREDEFINED_CURRENCIES = [
@@ -25,7 +25,6 @@ const validateForm = (formData, isEditMode) => {
     if (!formData.name.trim()) {
         errors.name = 'Название счета обязательно для заполнения.';
     }
-    // ИСПРАВЛЕНИЕ: Добавляем валидацию для account_type_id
     if (!formData.account_type_id) {
         errors.account_type_id = 'Тип счета обязателен для заполнения.';
     }
@@ -36,7 +35,6 @@ const validateForm = (formData, isEditMode) => {
 }
 
 function AccountForm({ account, onSuccess }) {
-  // ИСПРАВЛЕНИЕ: Изменено fetchAccounts на fetchDataForWorkspace
   const { activeWorkspace, fetchDataForWorkspace } = useAuth(); 
   const [formData, setFormData] = useState({
       name: account?.name || '',
@@ -56,9 +54,8 @@ function AccountForm({ account, onSuccess }) {
     }
   };
 
-  const [submitAccount, isSubmitting, submitError] = useApiMutation(mutationFn, {
+  const [submitAccount, { isLoading: isSubmitting, error: submitError }] = useApiMutation(mutationFn, {
       onSuccess: () => {
-          // ИСПРАВЛЕНИЕ: Вызываем fetchDataForWorkspace с ID активного рабочего пространства
           if (activeWorkspace?.id) { 
             fetchDataForWorkspace(activeWorkspace.id); 
           }
@@ -106,18 +103,17 @@ function AccountForm({ account, onSuccess }) {
       <div>
         <Label htmlFor="name">Название счета</Label>
         <Input id="name" name="name" value={formData.name} onChange={handleChange} required placeholder="Например, Карта Сбербанка"/>
-        {formErrors.name && <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>}
+        {/* 1. Adapt form error text */}
+        {formErrors.name && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{formErrors.name}</p>}
       </div>
       <div>
-        {/* ИСПРАВЛЕНИЕ: Изменено htmlFor и name на account_type_id */}
         <Label htmlFor="account_type_id">Тип счета</Label>
         <Select id="account_type_id" name="account_type_id" value={formData.account_type_id} onChange={handleChange} required>
           {ACCOUNT_TYPES.map(type => (
-            // ИСПРАВЛЕНИЕ: Используем type.value (числовой ID)
             <option key={type.value} value={type.value}>{type.label}</option>
           ))}
         </Select>
-        {formErrors.account_type_id && <p className="text-red-500 text-xs mt-1">{formErrors.account_type_id}</p>}
+        {formErrors.account_type_id && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{formErrors.account_type_id}</p>}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -128,14 +124,31 @@ function AccountForm({ account, onSuccess }) {
         </div>
         <div>
           <Label htmlFor="initial_balance">Начальный остаток</Label>
-          <Input type="number" id="initial_balance" name="initial_balance" value={formData.initial_balance} onChange={handleChange} step="0.01" required disabled={isEditMode} className={isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''} />
-           {formErrors.initial_balance && <p className="text-red-500 text-xs mt-1">{formErrors.initial_balance}</p>}
-        </div>
+          <Input 
+              type="number" 
+              id="initial_balance" 
+              name="initial_balance" 
+              value={formData.initial_balance} 
+              onChange={handleChange} 
+              step="0.01" 
+              required 
+              disabled={isEditMode} 
+              // 👇 ВОТ ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ 👇
+              // Мы явно переопределяем все нужные стили, включая базовые и для темной темы
+              className={isEditMode 
+                  ? 'bg-gray-100 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-700 cursor-not-allowed' 
+                  : ''
+              } 
+          />
+          {formErrors.initial_balance && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{formErrors.initial_balance}</p>}
+      </div>
       </div>
       {isEditMode && (
         <div className="flex items-center">
-          <input id="is_active" name="is_active" type="checkbox" checked={formData.is_active} onChange={handleChange} className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"/>
-          <Label htmlFor="is_active" className="ml-2">Счет активен</Label>
+          {/* 3. Adapt checkbox styles */}
+          <input id="is_active" name="is_active" type="checkbox" checked={formData.is_active} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 dark:bg-gray-700 focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:ring-offset-gray-800"/>
+          {/* Label component is already adapted */}
+          <Label htmlFor="is_active" className="ml-2 mb-0">Счет активен</Label>
         </div>
       )}
       <div className="flex justify-end pt-2">

@@ -81,8 +81,8 @@ function RegisterPage() {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="mt-10 text-center text-xl font-bold leading-9 tracking-tight text-gray-900">
-          Регистрация нового аккаунта
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+          Создание аккаунта
         </h2>
       </div>
 
@@ -161,9 +161,9 @@ function RegisterPage() {
           </div>
         </form>
 
-        <p className="mt-10 text-center text-sm text-gray-500">
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Уже есть аккаунт?{' '}
-          <Link to="/login" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
             Войти
           </Link>
         </p>

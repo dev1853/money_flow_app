@@ -140,10 +140,10 @@ const AccountBalancesReportPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 dark:text-gray-200">
       <PageTitle title='Отчет "Остатки денежных средств"' />
 
-      <div className="p-4 sm:p-6 bg-white shadow-xl rounded-lg">
+      <div className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-xl rounded-lg border border-gray-200 dark:border-gray-700">
         <div className="flex flex-wrap items-end gap-4">
           <div className="flex-grow min-w-[240px] sm:flex-none sm:w-64">
             <label htmlFor="reportDateBalances" className={commonLabelClasses}>На дату</label>
@@ -207,24 +207,24 @@ const AccountBalancesReportPage = () => {
       )}
       
       {!isLoading && !isAuthLoading && reportData && (
-        <div className="bg-white shadow-xl rounded-2xl p-6">
-          <h3 className="text-2xl font-semibold text-gray-900 mb-6 pb-3 border-b border-gray-200 text-center">
+        <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+          <h3 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6 pb-3 border-b border-gray-200 dark:border-gray-700 text-center">
             Остатки денежных средств на {reportData.report_date ? format(parseISO(reportData.report_date), "dd MMMM Geißler 'г.'", { locale: ru }) : '?'}
           </h3>
           
           {reportData.balances && reportData.balances.length > 0 ? (
-            <div className="overflow-x-auto rounded-lg border border-gray-200">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-100">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-100 dark:bg-gray-700/50">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-700 sm:pl-6">Счет/Касса</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-700">Тип</th>
-                    <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-700">Остаток</th>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 sm:pl-6">Счет/Касса</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">Тип</th>
+                    <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">Остаток</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                   {reportData.balances.map(item => (
-                    <tr key={item.account_id} className="even:bg-gray-50 hover:bg-indigo-50/50 transition-colors">
+                    <tr key={item.account_id} className="even:bg-gray-50 dark:even:bg-gray-900/50 hover:bg-indigo-50/50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                         <div className="flex items-center">
                           {item.account_type === 'bank_account' 
@@ -246,16 +246,16 @@ const AccountBalancesReportPage = () => {
               </table>
             </div>
           ) : (
-            <p className="text-sm text-gray-500 py-8 text-center">Нет данных по остаткам для выбранных параметров.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 py-8 text-center">Нет данных по остаткам.</p>
           )}
 
           {reportData.total_balances_by_currency && Object.keys(reportData.total_balances_by_currency).length > 0 && (
-            <div className="mt-8 pt-6 border-t-2 border-gray-200 space-y-3">
-              <h4 className="text-lg font-semibold text-gray-800 mb-3">Итоги по валютам:</h4>
+            <div className="mt-8 pt-6 border-t-2 border-gray-200 dark:border-gray-700 space-y-3">
+              <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">Итоги по валютам:</h4>
               {Object.entries(reportData.total_balances_by_currency).map(([currency, total]) => (
-                <div key={currency} className="flex justify-between items-center text-md p-3 bg-gray-50 rounded-lg shadow">
-                  <span className="font-medium text-gray-700">Всего {currency}:</span>
-                  <span className={`font-bold text-xl ${parseFloat(total) >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
+                <div key={currency} className="flex justify-between items-center text-md p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg shadow">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Всего {currency}:</span>
+                  <span className={`font-bold text-xl ${parseFloat(total) >= 0 ? 'text-gray-900 dark:text-gray-100' : 'text-red-600 dark:text-red-400'}`}>
                     {formatCurrency(total, currency)}
                   </span>
                 </div>

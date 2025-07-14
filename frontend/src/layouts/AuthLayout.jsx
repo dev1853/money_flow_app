@@ -1,28 +1,20 @@
-// src/layouts/AuthLayout.jsx
+// frontend/src/layouts/AuthLayout.jsx (Предполагаемый файл)
 
 import React from 'react';
-import { Link } from 'react-router-dom'; 
-import { CircleStackIcon } from '@heroicons/react/24/outline';
+import { Outlet } from 'react-router-dom';
 
-const AuthLayout = ({ title, children }) => {
+const AuthLayout = () => {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8">
-      {/* ИЗМЕНЕНО: Иконка и название в одном блоке, описание ниже */}
-      <div className="mb-8 text-center"> {/* Общий контейнер для логотипа и слогана */}
-        <div className="flex items-center justify-center group mb-2"> {/* Иконка и название в ряд, центрированы */}
-          <CircleStackIcon 
-            className="h-10 w-10 text-indigo-600 group-hover:text-indigo-500 transition-colors" // Увеличены h и w
-            aria-hidden="true" 
-          />
-          <span className="ml-3 text-3xl font-extrabold text-gray-900">БизнесПоток</span> {/* Увеличен размер текста */}
-        </div>
-        <p className="mt-1 text-center text-sm text-gray-600"> {/* Отдельный P для слогана, центрирован */}
-          Система учета финансов для бизнеса.
-        </p>
+    // Адаптируем фон и базовый цвет текста для гостевых страниц
+    <div className="flex min-h-screen flex-col justify-center bg-gray-100 dark:bg-gray-900 py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        {/* Здесь можно разместить логотип */}
       </div>
-        
-      <div className="w-full max-w-md"> 
-          {children}
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        {/* Адаптируем фон карточки */}
+        <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow-lg sm:rounded-lg sm:px-10 border border-gray-200 dark:border-gray-700">
+          <Outlet /> {/* Здесь будут LoginPage, RegisterPage */}
+        </div>
       </div>
     </div>
   );

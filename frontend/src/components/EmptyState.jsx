@@ -1,4 +1,3 @@
-// frontend/src/components/EmptyState.jsx
 import React from 'react';
 
 const EmptyState = ({
@@ -9,19 +8,21 @@ const EmptyState = ({
   className = '',
 }) => {
   return (
-    <div className={`text-center py-12 sm:py-16 bg-white shadow-lg rounded-xl ${className}`}>
+    // 1. Adapt the main container for dark mode
+    <div className={`text-center py-12 sm:py-16 bg-white dark:bg-gray-800/50 shadow-lg dark:shadow-2xl dark:shadow-indigo-500/10 rounded-xl border border-gray-200 dark:border-gray-700/50 ${className}`}>
       {Icon && (
-        typeof Icon === 'function' || (typeof Icon === 'object' && Icon.displayName) ? (
-          <Icon className="mx-auto h-12 w-12 text-gray-400" aria-hidden="true" />
-        ) : (
-          React.isValidElement(Icon) ? <div className="mx-auto h-12 w-12 flex items-center justify-center text-gray-400">{Icon}</div> : null
-        )
+        // 2. Adapt the icon color
+        <div className="mx-auto h-12 w-12 flex items-center justify-center text-gray-400 dark:text-gray-500">
+          {React.isValidElement(Icon) ? Icon : <Icon className="h-12 w-12" aria-hidden="true" />}
+        </div>
       )}
       {title && (
-        <h3 className="mt-2 text-lg font-semibold text-gray-900">{title}</h3>
+        // 3. Adapt the title text color
+        <h3 className="mt-2 text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
       )}
       {message && (
-        <p className="mt-1 text-sm text-gray-500">
+        // 4. Adapt the message text color
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {message}
         </p>
       )}

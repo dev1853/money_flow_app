@@ -1,11 +1,11 @@
-// frontend/src/components/forms/Label.jsx
 import React from 'react';
 
-const Label = ({ htmlFor, children, className = '' }) => { // Добавляем className = ''
+const Label = ({ htmlFor, children, className = '' }) => {
   return (
     <label
       htmlFor={htmlFor}
-      className={`block text-sm font-medium text-gray-700 ${className}`} // Объединяем базовые и переданные классы
+      // Добавляем цвет текста для темной темы
+      className={`block text-sm font-medium text-gray-700 dark:text-gray-300 ${className}`}
     >
       {children}
     </label>

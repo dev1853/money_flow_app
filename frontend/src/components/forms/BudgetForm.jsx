@@ -1,6 +1,4 @@
-// frontend/src/components/forms/BudgetForm.jsx
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '../../services/apiService';
 import { useApiMutation } from '../../hooks/useApiMutation';
@@ -13,7 +11,6 @@ import Select from './Select';
 import Alert from '../Alert';
 import { PlusIcon, MinusCircleIcon } from '@heroicons/react/24/solid';
 
-// Функция валидации остается без изменений
 const validateForm = (formData) => {
     const errors = {};
     if (!formData.name.trim()) errors.name = 'Название бюджета обязательно.';
@@ -39,18 +36,18 @@ const validateForm = (formData) => {
     return errors;
 };
 
-// Рекурсивная функция для "разглаживания" вложенных статей
 const flattenArticles = (articles) => {
     let flatList = [];
-    articles.forEach(article => {
-        flatList.push(article);
-        if (article.children && article.children.length > 0) {
-            flatList = flatList.concat(flattenArticles(article.children));
-        }
-    });
+    if (articles) {
+        articles.forEach(article => {
+            flatList.push(article);
+            if (article.children && article.children.length > 0) {
+                flatList = flatList.concat(flattenArticles(article.children));
+            }
+        });
+    }
     return flatList;
 };
-
 
 function BudgetForm({ budget, onSuccess, onCancel }) {
     const { activeWorkspace } = useAuth();
@@ -73,16 +70,16 @@ function BudgetForm({ budget, onSuccess, onCancel }) {
         [activeWorkspace?.id]
     );
 
-    // --- ГЛАВНОЕ ИСПРАВЛЕНИЕ ЗДЕСЬ ---
-    const ddsArticleOptions = ddsArticles
-        ? flattenArticles(ddsArticles) // 1. "Разглаживаем" древовидную структуру в плоский список
-            .filter(article => article.article_type === 'expense') // 2. Оставляем только расходы
-            .map(article => ({ // 3. Преобразуем в формат для выпадающего списка
-                value: article.id,
-                label: article.name,
-            }))
-        : [];
-
+    const ddsArticleOptions = useMemo(() => {
+        return ddsArticles
+            ? flattenArticles(ddsArticles)
+                .filter(article => article.article_type === 'expense')
+                .map(article => ({
+                    value: article.id,
+                    label: article.name,
+                }))
+            : [];
+    }, [ddsArticles]);
 
     const mutationFn = async (data) => {
         if (!activeWorkspace?.id) throw new Error('Активное рабочее пространство не выбрано.');
@@ -101,7 +98,7 @@ function BudgetForm({ budget, onSuccess, onCancel }) {
         }
     };
 
-    const [submitBudget, isSubmitting, submitError] = useApiMutation(mutationFn, {
+    const [submitBudget, { isLoading: isSubmitting, error: submitError }] = useApiMutation(mutationFn, {
         onSuccess: () => {
             if (onSuccess) onSuccess();
         },
@@ -123,22 +120,18 @@ function BudgetForm({ budget, onSuccess, onCancel }) {
             return item;
         });
         setFormData(prev => ({ ...prev, items: newItems }));
-        setFormErrors(prev => ({ ...prev, items: null, itemDetails: null }));
     };
 
     const handleAddBudgetItem = () => {
         setFormData(prev => ({ ...prev, items: [...prev.items, { dds_article_id: '', budgeted_amount: '' }] }));
-        setFormErrors(prev => ({ ...prev, items: null, itemDetails: null }));
     };
 
     const handleRemoveBudgetItem = (index) => {
         setFormData(prev => ({ ...prev, items: prev.items.filter((_, i) => i !== index) }));
-        setFormErrors(prev => ({ ...prev, items: null, itemDetails: null }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setFormErrors({});
         const validationErrors = validateForm(formData);
         if (Object.keys(validationErrors).length > 0) {
             setFormErrors(validationErrors);
@@ -148,52 +141,63 @@ function BudgetForm({ budget, onSuccess, onCancel }) {
     };
 
     return (
-        // --- JSX-разметка остается без изменений ---
         <form onSubmit={handleSubmit} className="space-y-6">
-            {submitError && <Alert type="error">{submitError}</Alert>}
+            {submitError && <Alert type="error">{submitError.message || 'Произошла ошибка'}</Alert>}
             {articlesError && <Alert type="error">Ошибка загрузки статей ДДС: {articlesError.message}</Alert>}
+            
             <div>
                 <Label htmlFor="name">Название бюджета</Label>
                 <Input id="name" name="name" value={formData.name} onChange={handleInputChange} required placeholder="Например, Бюджет на месяц"/>
-                {formErrors.name && <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>}
+                {formErrors.name && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{formErrors.name}</p>}
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <Label htmlFor="start_date">Дата начала</Label>
                     <Input type="date" id="start_date" name="start_date" value={formData.start_date} onChange={handleInputChange} required />
-                    {formErrors.start_date && <p className="text-red-500 text-xs mt-1">{formErrors.start_date}</p>}
+                    {formErrors.start_date && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{formErrors.start_date}</p>}
                 </div>
                 <div>
                     <Label htmlFor="end_date">Дата окончания</Label>
                     <Input type="date" id="end_date" name="end_date" value={formData.end_date} onChange={handleInputChange} required />
-                    {formErrors.end_date && <p className="text-red-500 text-xs mt-1">{formErrors.end_date}</p>}
+                    {formErrors.end_date && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{formErrors.end_date}</p>}
                 </div>
             </div>
-            <h3 className="text-lg font-semibold mt-6">Статьи бюджета</h3>
-            {formErrors.items && <p className="text-red-500 text-xs mt-1">{formErrors.items}</p>}
+
+            {/* Adapt section title */}
+            <h3 className="text-lg font-semibold mt-6 text-gray-900 dark:text-gray-100">Статьи бюджета</h3>
+            {formErrors.items && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{formErrors.items}</p>}
+            
             <div className="space-y-4">
                 {formData.items.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-3 bg-gray-50 p-3 rounded-md border border-gray-200">
+                    // Adapt budget item container
+                    <div key={index} className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-200 dark:border-gray-600">
                         <div className="flex-grow">
                             <Label htmlFor={`dds_article_id-${index}`} className="sr-only">Статья ДДС</Label>
                             <Select id={`dds_article_id-${index}`} name="dds_article_id" value={item.dds_article_id} onChange={(e) => handleBudgetItemChange(index, e)} required disabled={loadingArticles}>
-                                <option value="">{loadingArticles ? 'Загрузка...' : (ddsArticleOptions.length > 0 ? 'Выберите статью' : 'Нет доступных статей расхода')}</option>
+                                <option value="">{loadingArticles ? 'Загрузка...' : (ddsArticleOptions.length > 0 ? 'Выберите статью' : 'Нет статей расхода')}</option>
                                 {ddsArticleOptions.map(option => (
                                     <option key={option.value} value={option.value}>{option.label}</option>
                                 ))}
                             </Select>
-                            {formErrors.itemDetails && formErrors.itemDetails[index]?.dds_article_id && (<p className="text-red-500 text-xs mt-1">{formErrors.itemDetails[index].dds_article_id}</p>)}
+                            {formErrors.itemDetails?.[index]?.dds_article_id && (<p className="text-red-500 dark:text-red-400 text-xs mt-1">{formErrors.itemDetails[index].dds_article_id}</p>)}
                         </div>
                         <div className="w-1/3">
                             <Label htmlFor={`budgeted_amount-${index}`} className="sr-only">Запланированная сумма</Label>
                             <Input type="number" id={`budgeted_amount-${index}`} name="budgeted_amount" value={item.budgeted_amount} onChange={(e) => handleBudgetItemChange(index, e)} placeholder="Сумма" step="0.01" required />
-                            {formErrors.itemDetails && formErrors.itemDetails[index]?.budgeted_amount && (<p className="text-red-500 text-xs mt-1">{formErrors.itemDetails[index].budgeted_amount}</p>)}
+                            {formErrors.itemDetails?.[index]?.budgeted_amount && (<p className="text-red-500 dark:text-red-400 text-xs mt-1">{formErrors.itemDetails[index].budgeted_amount}</p>)}
                         </div>
-                        {formData.items.length > 1 && (<Button type="button" variant="danger" size="sm" onClick={() => handleRemoveBudgetItem(index)} icon={<MinusCircleIcon className="h-5 w-5" />} className="!p-1" />)}
+                        {formData.items.length > 1 && (
+                            <Button type="button" variant="danger" size="sm" onClick={() => handleRemoveBudgetItem(index)} className="!p-2">
+                                <MinusCircleIcon className="h-5 w-5" />
+                            </Button>
+                        )}
                     </div>
                 ))}
             </div>
+
             <Button type="button" variant="secondary" onClick={handleAddBudgetItem} icon={<PlusIcon className="h-5 w-5 mr-2" />} className="mt-2">Добавить статью</Button>
+            
             <div className="flex justify-end space-x-2 pt-4">
                 <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>Отмена</Button>
                 <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Сохранение...' : (isEditMode ? 'Сохранить изменения' : 'Создать бюджет')}</Button>

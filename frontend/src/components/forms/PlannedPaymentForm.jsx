@@ -1,6 +1,6 @@
 // frontend/src/components/forms/PlannedPaymentForm.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApiMutation } from '../../hooks/useApiMutation';
 import { apiService } from '../../services/apiService';
 import Button from '../Button';
@@ -9,20 +9,19 @@ import Label from './Label';
 import Select from './Select';
 import Alert from '../Alert';
 import Checkbox from './Checkbox';
-import DatePicker from './DatePicker'; // <-- 1. Импортируем DatePicker
-import { toISODateString } from '../../utils/dateUtils'; // Импортируем утилиту для формата даты
+import DatePicker from './DatePicker';
+import { toISODateString } from '../../utils/dateUtils';
 
 const PlannedPaymentForm = ({ payment, onSave, onCancel, selectedDate }) => {
     const isEditMode = Boolean(payment);
     
-    // Преобразуем строковую дату в объект Date для DatePicker
     const initialDate = payment?.payment_date ? new Date(payment.payment_date) : (selectedDate ? new Date(selectedDate) : null);
 
     const [formData, setFormData] = useState({
         description: payment?.description || '',
         amount: payment?.amount ? String(payment.amount) : '',
         payment_type: payment?.payment_type || 'EXPENSE',
-        payment_date: initialDate, // Используем объект Date для состояния
+        payment_date: initialDate,
         is_recurring: payment?.is_recurring || false,
         recurrence_rule: payment?.recurrence_rule || 'monthly',
     });
@@ -31,7 +30,6 @@ const PlannedPaymentForm = ({ payment, onSave, onCancel, selectedDate }) => {
         const dataToSend = { 
             ...data, 
             amount: parseFloat(data.amount),
-            // Перед отправкой в API форматируем дату в строку 'YYYY-MM-DD'
             payment_date: toISODateString(data.payment_date),
         };
 
@@ -46,7 +44,7 @@ const PlannedPaymentForm = ({ payment, onSave, onCancel, selectedDate }) => {
         }
     };
 
-    const [submitPayment, isSubmitting, error] = useApiMutation(mutationFn, {
+    const [submitPayment, { isLoading: isSubmitting, error }] = useApiMutation(mutationFn, {
         onSuccess: onSave,
     });
 
@@ -61,14 +59,16 @@ const PlannedPaymentForm = ({ payment, onSave, onCancel, selectedDate }) => {
         setFormData(prev => ({ ...prev, [name]: val }));
     };
 
-    // Отдельный обработчик для DatePicker
     const handleDateChange = (date) => {
         setFormData(prev => ({ ...prev, payment_date: date }));
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <h3 className="text-lg font-semibold">{isEditMode ? 'Редактировать платеж' : 'Новый запланированный платеж'}</h3>
+            {/* 1. Адаптируем заголовок формы */}
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {isEditMode ? 'Редактировать платеж' : 'Новый запланированный платеж'}
+            </h3>
             {error && <Alert type="error">{error.message}</Alert>}
 
             <div>
@@ -88,8 +88,7 @@ const PlannedPaymentForm = ({ payment, onSave, onCancel, selectedDate }) => {
                     </Select>
                 </div>
             </div>
-             <div>
-                {/* --- 2. ИСПОЛЬЗУЕМ DatePicker ВМЕСТО Input --- */}
+            <div>
                 <Label htmlFor="payment_date">Дата платежа</Label>
                 <DatePicker
                     selected={formData.payment_date}
@@ -97,7 +96,8 @@ const PlannedPaymentForm = ({ payment, onSave, onCancel, selectedDate }) => {
                 />
             </div>
             
-            <div className="space-y-2 rounded-md border border-gray-200 p-3">
+            {/* 2. Адаптируем контейнер для чекбокса */}
+            <div className="space-y-2 rounded-md border border-gray-200 dark:border-gray-700 p-3">
                 <Checkbox
                     id="is_recurring"
                     name="is_recurring"

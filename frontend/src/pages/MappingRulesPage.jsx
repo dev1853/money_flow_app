@@ -171,7 +171,7 @@ function MappingRulesPage() {
 
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-6"> 
+    <div className="dark:text-gray-200">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <PageTitle title="Правила разнесения платежей" />

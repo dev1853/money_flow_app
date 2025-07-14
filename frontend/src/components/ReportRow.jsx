@@ -1,7 +1,6 @@
-// frontend/src/components/ReportRow.jsx
 import React from 'react';
 
-const ReportRow = ({ item, level = 0, columns, formatCurrency, baseTdClasses, firstColTdClasses, onArticleClick }) => { // ДОБАВЛЕН onArticleClick
+const ReportRow = ({ item, level = 0, columns, formatCurrency, baseTdClasses, firstColTdClasses, onArticleClick }) => {
   const income = item.income || 0;
   const expense = item.expense || 0;
   const netFlow = income - expense;
@@ -11,53 +10,50 @@ const ReportRow = ({ item, level = 0, columns, formatCurrency, baseTdClasses, fi
   
   return (
     <>
-      <tr className={`border-b border-gray-200 odd:bg-white even:bg-gray-50 ${isGroup ? 'font-semibold text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`}>
+      {/* 1. Adapt row background, text and border colors */}
+      <tr className={`border-b border-gray-200 dark:border-gray-700 ${
+        isGroup 
+          ? 'font-semibold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700/50' 
+          : 'text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/40'
+      }`}>
         {columns.map((column, colIndex) => {
           let cellContent;
           let currentCellClasses = baseTdClasses; 
           let cellStyle = {}; 
 
           if (colIndex === 0) {
-            cellContent = isGroup ? item.article_name.toUpperCase() : item.article_name;
             cellStyle = indentationStyle;
-            currentCellClasses += ` ${isGroup ? 'font-semibold text-gray-900' : 'font-medium text-gray-900'} pl-4 sm:pl-6`;
+            currentCellClasses += ` ${isGroup ? 'font-semibold text-gray-900 dark:text-gray-100' : 'font-medium text-gray-800 dark:text-gray-200'} pl-4 sm:pl-6`;
             
-            // НОВОЕ: Делаем название статьи кликабельным, если это не группа
             if (!isGroup && onArticleClick) {
-                cellContent = (
-                    <span 
-                        className="text-indigo-600 hover:text-indigo-900 cursor-pointer" 
-                        onClick={() => onArticleClick(item.article_id, item.article_name, item.type)} // Передаем ID, имя, тип
-                    >
-                        {item.article_name}
-                    </span>
-                );
-            } else if (isGroup) {
-                cellContent = item.article_name.toUpperCase();
+              cellContent = (
+                  // 2. Adapt clickable link color
+                  <span 
+                    className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 cursor-pointer" 
+                    onClick={() => onArticleClick(item.article_id, item.article_name, item.type)}
+                  >
+                    {item.article_name}
+                  </span>
+              );
             } else {
-                cellContent = item.article_name;
+              cellContent = isGroup ? item.article_name.toUpperCase() : item.article_name;
             }
           } else if (column.accessor === 'income') {
             cellContent = formatCurrency(income);
-            currentCellClasses += ` text-right text-green-600`;
+            // 3. Adapt income text color
+            currentCellClasses += ` text-right text-green-600 dark:text-green-400`;
           } else if (column.accessor === 'expense') {
             cellContent = formatCurrency(expense);
-            currentCellClasses += ` text-right text-red-600`;
+            // 4. Adapt expense text color
+            currentCellClasses += ` text-right text-red-600 dark:text-red-400`;
           } else if (column.accessor === 'net_flow') {
             cellContent = formatCurrency(netFlow);
-            currentCellClasses += ` text-right ${netFlow >= 0 ? 'text-blue-600' : 'text-purple-600'}`;
-          } else if (column.render) {
-            cellContent = column.render(item);
-            currentCellClasses += ` ${column.align ? `text-${column.align}` : 'text-left'}`;
-            if (column.type === 'currency' || column.type === 'number') {
-                currentCellClasses += ' text-right';
-            }
+            // 5. Adapt net flow text color
+            currentCellClasses += ` text-right ${netFlow >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-purple-600 dark:text-purple-400'}`;
           } else {
-            cellContent = String(item[column.accessor]);
+            // This handles any other generic columns
+            cellContent = column.render ? column.render(item) : String(item[column.accessor]);
             currentCellClasses += ` ${column.align ? `text-${column.align}` : 'text-left'}`;
-            if (column.type === 'currency' || column.type === 'number') {
-                currentCellClasses += ' text-right';
-            }
           }
 
           return (
@@ -80,7 +76,7 @@ const ReportRow = ({ item, level = 0, columns, formatCurrency, baseTdClasses, fi
           formatCurrency={formatCurrency} 
           baseTdClasses={baseTdClasses} 
           firstColTdClasses={firstColTdClasses}
-          onArticleClick={onArticleClick} // <--- ПЕРЕДАЕМ ДАЛЬШЕ
+          onArticleClick={onArticleClick}
         />
       ))}
     </>

@@ -1,18 +1,16 @@
-// frontend/src/components/forms/DateRangePicker.jsx
-
-import React, { forwardRef } from 'react';
+import React from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
-import { getYear, getMonth } from 'date-fns'; // <-- Добавили getMonth
+import { getYear, getMonth } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { ChevronLeftIcon, ChevronRightIcon, CalendarIcon } from '@heroicons/react/24/solid';
-import CustomDateInput from './CustomDateInput';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import CustomDateInput from './CustomDateInput'; // This is already adapted
+import Button from '../Button'; // This is already adapted
 
 import 'react-datepicker/dist/react-datepicker.css';
-import './CustomDatePicker.css';
+import './CustomDatePicker.css'; // We will update this file next
 
 registerLocale('ru', ru);
 
-// --- ИЗМЕНЕНИЕ: Улучшаем CustomHeader, добавляя выпадающие списки ---
 const CustomHeader = ({
   date,
   changeYear,
@@ -22,51 +20,39 @@ const CustomHeader = ({
   prevMonthButtonDisabled,
   nextMonthButtonDisabled,
 }) => {
-  // Генерируем список лет (например, 10 лет назад и 5 вперед)
-  const years = Array.from(
-    { length: 16 },
-    (_, i) => getYear(new Date()) - 10 + i
-  );
-  
-  // Список месяцев на русском языке
-  const months = [
-    "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-    "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-  ];
+  const years = Array.from({ length: 16 }, (_, i) => getYear(new Date()) - 10 + i);
+  const months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
 
   return (
     <div className="custom-header-container">
-      <button type="button" onClick={decreaseMonth} disabled={prevMonthButtonDisabled} className="p-1 rounded-full hover:bg-gray-100">
+      {/* The Button component is already adapted */}
+      <Button type="button" variant="icon" onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
         <ChevronLeftIcon className="h-5 w-5" />
-      </button>
+      </Button>
       <div className="flex space-x-2">
+        {/* Adapt the <select> elements for dark mode */}
         <select
           value={months[getMonth(date)]}
           onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}
-          className="rounded-md border-gray-300 text-sm font-semibold focus:ring-0 focus:border-indigo-500"
+          className="rounded-md border-gray-300 text-sm font-semibold focus:ring-0 focus:border-indigo-500 bg-white dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
         >
           {months.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
+            <option key={option} value={option}>{option}</option>
           ))}
         </select>
         <select
           value={getYear(date)}
           onChange={({ target: { value } }) => changeYear(value)}
-          className="rounded-md border-gray-300 text-sm font-semibold focus:ring-0 focus:border-indigo-500"
+          className="rounded-md border-gray-300 text-sm font-semibold focus:ring-0 focus:border-indigo-500 bg-white dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
         >
           {years.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
+            <option key={option} value={option}>{option}</option>
           ))}
         </select>
       </div>
-
-      <button type="button" onClick={increaseMonth} disabled={nextMonthButtonDisabled} className="p-1 rounded-full hover:bg-gray-100">
+      <Button type="button" variant="icon" onClick={increaseMonth} disabled={nextMonthButtonDisabled}>
         <ChevronRightIcon className="h-5 w-5" />
-      </button>
+      </Button>
     </div>
   );
 };
@@ -89,14 +75,13 @@ const DateRangePicker = ({ startDate, endDate, onStartDateChange, onEndDateChang
       isClearable
       locale="ru"
       dateFormat="dd.MM.yyyy"
-      placeholderText="Выберите диапазон дат"
+      placeholderText="Выберите диапазон"
       customInput={<CustomDateInput />}
       renderCustomHeader={CustomHeader}
-
-      // --- ИЗМЕНЕНИЕ: Включаем встроенные выпадающие списки ---
-      showMonthDropdown
-      showYearDropdown
-      dropdownMode="select" // Стандартный <select> вместо скролла
+      // These props are not needed if you use renderCustomHeader
+      // showMonthDropdown
+      // showYearDropdown
+      // dropdownMode="select"
     />
   );
 };

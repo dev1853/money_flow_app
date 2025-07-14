@@ -93,7 +93,7 @@ function DdsArticlesPage() {
       return <EmptyState message="Нет статей ДДС." buttonText="Создать первую статью" onButtonClick={handleOpenCreateRootModal} />;
     }
     return (
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
         {(articlesTree || []).map(article => (
           <ArticleNode 
             key={article.id}
@@ -108,7 +108,7 @@ function DdsArticlesPage() {
   };
 
   return (
-    <div>
+    <div className="dark:text-gray-200">
       <div className="flex justify-between items-center mb-6">
         <PageTitle title="Статьи ДДС" />
         <Button onClick={handleOpenCreateRootModal} icon={<PlusIcon className="h-5 w-5 mr-2" />}>

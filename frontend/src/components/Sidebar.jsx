@@ -1,48 +1,60 @@
-// frontend/src/components/Sidebar.jsx
-import React, { useState, useEffect, Fragment, useCallback } from 'react';
-import { NavLink, useLocation, Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   HomeIcon,
   NewspaperIcon,
   CurrencyDollarIcon,
   ChartBarIcon,
   Cog6ToothIcon, 
-  ChevronRightIcon, 
+  ChevronRightIcon,
   ReceiptPercentIcon,
   PowerIcon,
-  SparklesIcon, 
   DocumentTextIcon,
   UserGroupIcon,
   CalculatorIcon,
-  CalendarDaysIcon
+  CalendarDaysIcon,
+  BookOpenIcon, // Новая иконка для Справочников
+  BriefcaseIcon, // Новая иконка для Операций
+  ScaleIcon, // Новая иконка для Планирования
 } from '@heroicons/react/24/outline';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { Menu, Transition } from '@headlessui/react'; 
-import { useAuth } from '../contexts/AuthContext';
-
 import QuickCashExpenseForm from './QuickCashExpenseForm';
 
 
+// ==================================================================
+// НОВАЯ СТРУКТУРА НАВИГАЦИИ
+// ==================================================================
 const navigation = [
   { name: 'Сводка', href: '/dashboard', icon: HomeIcon, type: 'link' },
-  { name: 'Операции', href: '/transactions', icon: NewspaperIcon, type: 'link' },
-  { name: 'Счета', href: '/accounts', icon: CurrencyDollarIcon, type: 'link' },
-  { name: 'Статьи', href: '/articles', icon: ReceiptPercentIcon, type: 'link' },
-  { name: 'Договоры', href: '/contracts', icon: DocumentTextIcon , type: 'link' },
-  { name: 'Контрагенты', href: '/counterparties', icon: UserGroupIcon , type: 'link' },
-  { name: 'Бюджеты', href: '/budgets', icon: CalculatorIcon, type: 'link' },
-  { name: 'Платежный календарь', href: '/payment-calendar', icon: CalendarDaysIcon, type: 'link' }, 
-
   {
-    name: 'Отчеты',
-    icon: ChartBarIcon,
+    name: 'Операции',
+    icon: BriefcaseIcon,
     type: 'parent',
     children: [
-      { name: 'Движение ДС', href: '/reports/dds' },
-      { name: 'Прибыли и Убытки', href: '/reports/pnl' },
+      { name: 'Все операции', href: '/transactions' },
+      { name: 'Платежный календарь', href: '/payment-calendar' },
     ],
   },
-
+  {
+    name: 'Планирование и Аналитика',
+    icon: ScaleIcon,
+    type: 'parent',
+    children: [
+      { name: 'Бюджеты', href: '/budgets' },
+      { name: 'Отчет ДДС', href: '/reports/dds' },
+      { name: 'Отчет ПиУ', href: '/reports/pnl' },
+    ],
+  },
+  {
+    name: 'Справочники',
+    icon: BookOpenIcon,
+    type: 'parent',
+    children: [
+      { name: 'Счета', href: '/accounts' },
+      { name: 'Статьи', href: '/articles' },
+      { name: 'Контрагенты', href: '/counterparties' },
+      { name: 'Договоры', href: '/contracts' },
+    ],
+  },
   {
     name: 'Настройки',
     icon: Cog6ToothIcon,
@@ -54,6 +66,7 @@ const navigation = [
   },
 ];
 
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
@@ -62,14 +75,11 @@ export default function Sidebar({ setSidebarOpen }) {
   const location = useLocation();
   const [openStates, setOpenStates] = useState(new Map());
 
-  // Вспомогательная функция для определения, активен ли родительский пункт
   const isParentActive = useCallback((item) => {
     if (!item.children) return false;
-    // Проверяем, если URL текущей страницы начинается с href любого из дочерних элементов
     return item.children.some(child => location.pathname.startsWith(child.href));
   }, [location.pathname]);
 
-  // Обновляем состояние раскрытия при первой загрузке или смене маршрута
   useEffect(() => {
     const initialOpenStates = new Map();
     navigation.forEach(item => {
@@ -80,7 +90,6 @@ export default function Sidebar({ setSidebarOpen }) {
     setOpenStates(initialOpenStates);
   }, [location.pathname, isParentActive]);
 
-  // Универсальная функция для переключения состояния раскрытия родительских элементов
   const toggleParentMenu = useCallback((itemName) => {
     setOpenStates(prev => {
       const newStates = new Map(prev);
@@ -89,21 +98,17 @@ export default function Sidebar({ setSidebarOpen }) {
     });
   }, []); 
 
-  const { isAuthenticated, user, logout } = useAuth();
-
-  // Общие классы для ссылок навигации
   const baseNavLinkClasses = "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6";
 
-
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 pb-4">
       <div className="flex h-16 shrink-0 items-center">
         <div className="flex items-center group">
           <PowerIcon 
             className="h-8 w-8 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
             aria-hidden="true" 
           />
-          <span className="ml-3 text-2xl font-extrabold text-gray-900">ФинансПРО</span>
+          <span className="ml-3 text-2xl font-extrabold text-gray-900 dark:text-gray-100">ФинансПРО</span>
         </div>
       </div>
       <nav className="flex flex-1 flex-col">
@@ -118,8 +123,8 @@ export default function Sidebar({ setSidebarOpen }) {
                         onClick={() => toggleParentMenu(item.name)} 
                         className={classNames(
                           isParentActive(item)
-                            ? 'bg-gray-50 text-indigo-600'
-                            : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                            ? 'bg-gray-100 dark:bg-gray-700 text-indigo-500' 
+                            : 'text-gray-700 dark:text-gray-300 hover:text-indigo-500 hover:bg-gray-100 dark:hover:bg-gray-700',
                           baseNavLinkClasses, 
                           'cursor-pointer'
                         )}
@@ -127,8 +132,8 @@ export default function Sidebar({ setSidebarOpen }) {
                         <item.icon
                           className={classNames(
                             isParentActive(item)
-                              ? 'text-indigo-600'
-                              : 'text-gray-400 group-hover:text-indigo-600',
+                              ? 'text-indigo-500'
+                              : 'text-gray-400 dark:text-gray-500 group-hover:text-indigo-500',
                             'h-6 w-6 shrink-0'
                           )}
                           aria-hidden="true"
@@ -144,7 +149,7 @@ export default function Sidebar({ setSidebarOpen }) {
                       </div>
                       <ul 
                         className={classNames(
-                          'ml-10 mt-1 space-y-1 overflow-hidden transition-all duration-300',
+                          'ml-4 pl-4 border-l border-gray-200 dark:border-gray-600 mt-1 space-y-1 overflow-hidden transition-all duration-300',
                           openStates.get(item.name) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0' 
                         )}
                       >
@@ -152,11 +157,11 @@ export default function Sidebar({ setSidebarOpen }) {
                           <li key={child.name}>
                             <NavLink
                               to={child.href}
-                              onClick={() => setSidebarOpen(false)} 
+                              onClick={() => setSidebarOpen && setSidebarOpen(false)} 
                               className={({ isActive }) => classNames( 
                                 isActive
-                                  ? 'bg-gray-50 text-indigo-600'
-                                  : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                                  ? 'bg-gray-100 dark:bg-gray-700 text-indigo-500'
+                                  : 'text-gray-700 dark:text-gray-300 hover:text-indigo-500 hover:bg-gray-100 dark:hover:bg-gray-700',
                                 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                               )}
                             >
@@ -169,17 +174,19 @@ export default function Sidebar({ setSidebarOpen }) {
                   ) : ( 
                     <NavLink
                       to={item.href}
-                      onClick={() => setSidebarOpen(false)} 
+                      onClick={() => setSidebarOpen && setSidebarOpen(false)} 
                       className={({ isActive }) => classNames( 
                         isActive
-                          ? 'bg-gray-50 text-indigo-600'
-                          : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                          ? 'bg-gray-100 dark:bg-gray-700 text-indigo-500'
+                          : 'text-gray-700 dark:text-gray-300 hover:text-indigo-500 hover:bg-gray-100 dark:hover:bg-gray-700',
                         baseNavLinkClasses 
                       )}
                     >
                       <item.icon
                         className={classNames(
-                          location.pathname === item.href ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                          location.pathname === item.href 
+                            ? 'text-indigo-500' 
+                            : 'text-gray-400 dark:text-gray-500 group-hover:text-indigo-500',
                           'h-6 w-6 shrink-0'
                         )}
                         aria-hidden="true"
@@ -194,7 +201,7 @@ export default function Sidebar({ setSidebarOpen }) {
         </ul>
       </nav>
 
-      <div className="flex flex-col gap-y-3 border-t border-gray-200 pt-4 mt-auto">
+      <div className="flex flex-col gap-y-3 border-t border-gray-200 dark:border-gray-700 pt-4 mt-auto">
         <div className="flex items-center justify-between"> 
           <QuickCashExpenseForm />
         </div>

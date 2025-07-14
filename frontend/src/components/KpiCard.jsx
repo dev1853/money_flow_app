@@ -1,54 +1,56 @@
-// frontend/src/components/KpiCard.jsx
-
 import React from 'react';
-// ИСПРАВЛЕНО: Импортируем solid версии иконок для единообразия
-import { ArrowTrendingUpIcon, ArrowTrendingDownIcon } from '@heroicons/react/24/solid';
+
+// Этот компонент уже получает цвета как props,
+// поэтому основные изменения были в DashboardPage.
+// Здесь мы адаптируем только базовые цвета текста и фона самой карточки.
 
 const KpiCard = ({
-    title,
-    value,
-    icon: IconComponent, // Иконка для отображения
-    iconBgColor = 'bg-gray-100', // Цвет фона для иконки
-    iconColor = 'text-gray-600', // Цвет самой иконки
-    valueColor = 'text-gray-900', // Цвет основного значения
-    description = '', // Опциональное описание под основным значением
-    trendPercentage = null, // Опциональный процент изменения (например, '+3.2%')
-    trendColorClass = 'text-gray-500', // Цвет текста для процента изменения
-    trendIcon: TrendIconComponent = null, // Опциональная иконка тренда (например, стрелка вверх/вниз)
-    className = '', // Дополнительные классы для контейнера карточки
+  title,
+  value,
+  icon: Icon,
+  iconBgColor,
+  iconColor,
+  valueColor,
+  trendPercentage,
+  trendColorClass,
+  trendIcon: TrendIcon,
 }) => {
-    return (
-        <div className={`relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow transition-shadow duration-300 hover:shadow-lg ${className}`}>
-            <dt className="truncate text-sm font-medium text-gray-500" title={title}>
-                {title}
-            </dt>
-            <dd className={`mt-1 text-3xl font-semibold tracking-tight ${valueColor}`}>
-                {value}
-            </dd>
-
-            {/* Опциональное описание под основным значением */}
-            {description && (
-                <div className="text-xs text-gray-500 mt-1">
-                    {description}
-                </div>
-            )}
-
-            {/* Процент изменения/тренд, если передан */}
-            {trendPercentage !== null && (
-                <div className={`absolute bottom-0 left-0 px-4 py-2 text-sm font-medium ${trendColorClass}`}>
-                    {TrendIconComponent && <TrendIconComponent className="h-4 w-4 inline mr-1" aria-hidden="true" />}
-                    {trendPercentage}
-                </div>
-            )}
-            
-            {/* Иконка в нижнем правом углу */}
-            {IconComponent && (
-                <div className={`absolute bottom-0 right-0 p-3 rounded-tl-lg ${iconBgColor}`}>
-                    <IconComponent className={`h-6 w-6 ${iconColor}`} aria-hidden="true" />
-                </div>
-            )}
+  return (
+    // Адаптируем фон, границу и тень карточки
+    <div className="relative overflow-hidden rounded-lg bg-white dark:bg-gray-800 p-5 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center">
+        <div className={`rounded-full p-3 ${iconBgColor}`}>
+          <Icon className={`h-6 w-6 ${iconColor}`} aria-hidden="true" />
         </div>
-    );
+        <div className="ml-5 w-0 flex-1">
+          <dl>
+            {/* Адаптируем цвет заголовка */}
+            <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
+              {title}
+            </dt>
+            <dd>
+              <div className={`text-lg font-bold ${valueColor}`}>
+                {value}
+              </div>
+            </dd>
+          </dl>
+        </div>
+      </div>
+      {trendPercentage && (
+        <div className="mt-2 flex items-baseline">
+          <p className={`flex items-baseline text-sm font-semibold ${trendColorClass}`}>
+            {TrendIcon && (
+              <TrendIcon
+                className="mr-1.5 h-4 w-4 flex-shrink-0 self-center"
+                aria-hidden="true"
+              />
+            )}
+            {trendPercentage}
+          </p>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default KpiCard;

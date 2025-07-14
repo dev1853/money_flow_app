@@ -1,25 +1,30 @@
 // frontend/src/components/forms/Input.jsx
-
 import React from 'react';
-import Label from './Label'; // Импортируем компонент Label
+import Label from './Label'; // Предполагаем, что Label уже адаптирован
 
-const Input = React.forwardRef(({ label, id, type = 'text', className, ...props }, ref) => {
-  const inputId = id || props.name; // Используем переданный id или имя для связки с лейблом
-  // ИСПРАВЛЕНО: Изменено py-2 на py-2.5 для унификации высоты
-  const baseStyles = "mt-1 relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2.5 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm";
-  
+const Input = ({ type = 'text', label, name, value, onChange, placeholder, error, ...props }) => {
+  const hasError = Boolean(error);
   return (
-    <div>
-      {label && <Label htmlFor={inputId}>{label}</Label>} {/* Рендерим Label, если он есть */}
+    <div className="w-full">
+      {label && <Label htmlFor={name}>{label}</Label>}
       <input
-        id={inputId} // Связываем input с label через id
+        id={name}
+        name={name}
         type={type}
-        className={`${baseStyles} ${className}`}
-        ref={ref}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        // Адаптируем фон, текст, границу и плейсхолдер
+        className={`mt-1 block w-full rounded-md border shadow-sm px-3 py-2 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-indigo-500 ${
+          hasError 
+          ? 'border-red-500 dark:border-red-600' 
+          : 'border-gray-300 dark:border-gray-600'
+        }`}
         {...props}
       />
+      {hasError && <p className="mt-1 text-xs text-red-600 dark:text-red-500">{error}</p>}
     </div>
   );
-});
+};
 
 export default Input;

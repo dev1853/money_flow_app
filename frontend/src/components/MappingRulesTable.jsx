@@ -1,4 +1,3 @@
-// frontend/src/components/MappingRulesTable.jsx
 import React from 'react';
 import Button from './Button';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
@@ -14,9 +13,9 @@ const MappingRulesTable = ({ rules, onEdit, onDelete }) => {
     },
     {
       label: 'Статья ДДС',
-      key: 'dds_article_name', // Простой ключ для React
+      key: 'dds_article_name',
       className: 'text-left',
-      render: (row) => ( // Используем render для доступа к вложенному объекту dds_article
+      render: (row) => (
         <span>{row.dds_article ? row.dds_article.name : 'Неизвестно'}</span>
       ),
     },
@@ -24,7 +23,7 @@ const MappingRulesTable = ({ rules, onEdit, onDelete }) => {
       label: 'Тип транзакции',
       key: 'transaction_type',
       className: 'text-left',
-      render: (row) => ( // Кастомный рендер для преобразования значения
+      render: (row) => (
         <span>
           {row.transaction_type === 'INCOME' ? 'Доход' : (row.transaction_type === 'EXPENSE' ? 'Расход' : 'Не указан')}
         </span>
@@ -39,11 +38,16 @@ const MappingRulesTable = ({ rules, onEdit, onDelete }) => {
       label: 'Активно',
       key: 'is_active',
       className: 'text-center',
-      render: (row) => ( // Кастомный рендер для отображения "Да"/"Нет"
+      render: (row) => (
+        // 1. Адаптируем метки статуса "Да" / "Нет"
         row.is_active ? (
-          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Да</span>
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200">
+            Да
+          </span>
         ) : (
-          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Нет</span>
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200">
+            Нет
+          </span>
         )
       ),
     },
@@ -51,12 +55,13 @@ const MappingRulesTable = ({ rules, onEdit, onDelete }) => {
       label: 'Действия',
       key: 'actions',
       className: 'text-right',
-      render: (row) => ( // Кастомизированный рендер для кнопок действий
+      render: (row) => (
         <div className="flex justify-end space-x-2">
+          {/* Компонент Button уже адаптирован */}
           <Button variant="icon" onClick={() => onEdit(row)} title="Редактировать">
             <PencilSquareIcon className="h-5 w-5"/>
           </Button>
-          <Button variant="icon" onClick={() => onDelete(row)} className="text-red-600 hover:text-red-800" title="Удалить">
+          <Button variant="icon" onClick={() => onDelete(row)} className="text-red-600 hover:text-red-800 dark:text-red-500 dark:hover:text-red-400" title="Удалить">
             <TrashIcon className="h-5 w-5"/>
           </Button>
         </div>
@@ -65,6 +70,8 @@ const MappingRulesTable = ({ rules, onEdit, onDelete }) => {
   ];
 
   return (
+    // Этот компонент просто возвращает UniversalTable,
+    // который уже адаптирован и будет выглядеть правильно.
     <UniversalTable 
       data={rules} 
       headers={headers} 

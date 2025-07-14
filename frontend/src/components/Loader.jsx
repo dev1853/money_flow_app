@@ -1,12 +1,12 @@
-// frontend/src/components/Loader.jsx
 import React from 'react';
 
 const Loader = ({
-  message,                                // Сообщение под спиннером (необязательно)
-  size = 'h-12 w-12',                     // Размер спиннера (Tailwind классы)
-  spinnerColor = 'text-indigo-600',       // Цвет спиннера (Tailwind класс)
-  messageColor = 'text-gray-500',         // Цвет сообщения (Tailwind класс)
-  containerClassName = 'flex flex-col items-center justify-center py-4' // Классы для контейнера лоадера
+  message,
+  size = 'h-12 w-12',
+  // 1. Update default colors to include dark mode variants
+  spinnerColor = 'text-indigo-600 dark:text-indigo-400',
+  messageColor = 'text-gray-500 dark:text-gray-400',
+  containerClassName = 'flex flex-col items-center justify-center py-4'
 }) => {
   return (
     <div className={containerClassName}>
@@ -17,6 +17,7 @@ const Loader = ({
         viewBox="0 0 24 24"
       >
         <circle
+          // 2. The spinner's background track can be slightly lighter in dark mode
           className="opacity-25"
           cx="12"
           cy="12"
@@ -30,7 +31,7 @@ const Loader = ({
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
         ></path>
       </svg>
-      {message && <p className={`mt-3 ${messageColor}`}>{message}</p>}
+      {message && <p className={`mt-3 text-sm ${messageColor}`}>{message}</p>}
     </div>
   );
 };

@@ -48,13 +48,13 @@ function ProfitLossReportPage() {
 
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-6">
+    <div className="dark:text-gray-200">
       <div className="sm:flex sm:items-center sm:flex-wrap">
         <div className="sm:flex-auto sm:min-w-0">
           <PageTitle title="Отчет ОПиУ" className="mb-6" />
         </div>
         <div className="mt-4 w-full sm:w-auto sm:mt-0 sm:ml-auto sm:flex-none">
-          <div className="p-4 bg-white rounded-xl shadow-sm">
+          <div className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
               <DatePicker label="Начало периода" selected={startDate} onChange={date => setStartDate(date)} />
               <DatePicker label="Конец периода" selected={endDate} onChange={date => setEndDate(date)} />
@@ -85,7 +85,7 @@ function ProfitLossReportPage() {
         (parseFloat(reportData.total_expense) || 0) === 0 &&
         !loading &&
         !error && (
-          <div className="mt-6 text-center text-gray-500">
+        <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             <p>Нет данных о прибылях и убытках за выбранный период.</p>
           </div>
         )}

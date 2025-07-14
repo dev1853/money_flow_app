@@ -92,11 +92,11 @@ function DdsReportPage() {
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-6">
+    <div className="px-4 sm:px-6 lg:px-8 py-6 dark:text-gray-200">
       <div className="sm:flex sm:items-center sm:flex-wrap">
         <PageTitle title="Отчет ДДС" className="mb-6" />
         <div className="mt-4 w-full sm:w-auto sm:mt-0 sm:ml-auto sm:flex-none">
-          <div className="p-3 bg-white rounded-xl shadow-sm">
+          <div className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-3 gap-y-2 items-end">
               <DatePicker label="Начало периода" selected={startDate} onChange={date => setStartDate(date)} />
               <DatePicker label="Конец периода" selected={endDate} onChange={date => setEndDate(date)} />
@@ -128,7 +128,7 @@ function DdsReportPage() {
       )}
 
       {(reportData === null || (Array.isArray(reportData) && reportData.length === 0)) && !loading && !error && (
-        <div className="mt-6 text-center text-gray-500">
+        <div className="mt-6 text-center text-gray-500 dark:text-gray-400">
           <p>Нет данных для выбранного периода.</p>
         </div>
       )}

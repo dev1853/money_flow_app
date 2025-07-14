@@ -1,8 +1,5 @@
-// frontend/src/components/AccountCard.jsx (Исправленная версия)
-
 import React from 'react';
-// ИСПРАВЛЕНО: Импортируем PencilSquareIcon (solid) и TrashIcon (solid)
-import { BanknotesIcon, BuildingLibraryIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid'; 
+import { BanknotesIcon, BuildingLibraryIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Button from './Button';
 
 const formatCurrency = (amount, currency) => {
@@ -16,56 +13,56 @@ const formatCurrency = (amount, currency) => {
 const accountTypeDetails = {
   bank_account: {
     label: 'Банковский счет',
-    icon: <BuildingLibraryIcon className="h-5 w-5 mr-2 text-gray-500" />,
+    icon: BuildingLibraryIcon, // Pass the component itself
   },
   cash: {
     label: 'Касса',
-    icon: <BanknotesIcon className="h-5 w-5 mr-2 text-gray-500" />,
+    icon: BanknotesIcon, // Pass the component itself
   },
 };
 
 const AccountCard = ({ account, onEdit, onDelete }) => {
-
-  console.log("Данные счета в AccountCard:", account); 
   if (!account) return null;
 
-  const details = account.account_type_ref ? accountTypeDetails[account.account_type_ref.code] : null;
-  const balanceColor = account.balance > 0 ? 'text-green-600' : account.balance < 0 ? 'text-red-700' : 'text-gray-700';
+  const details = accountTypeDetails[account.account_type_ref?.code] || { label: account.account_type_ref?.name || 'Неизвестный тип', icon: null };
+  const TypeIcon = details.icon; // Get the icon component
+
+  const balanceColor = account.balance > 0
+    ? 'text-green-600 dark:text-green-400'
+    : account.balance < 0
+    ? 'text-red-600 dark:text-red-400'
+    : 'text-gray-700 dark:text-gray-300';
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between transition-all hover:shadow-xl hover:-translate-y-1">
+    // 1. Адаптируем фон, тень и границу карточки
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-2xl dark:shadow-indigo-500/10 p-6 flex flex-col justify-between transition-all hover:shadow-xl hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
       <div>
         <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center text-sm text-gray-500">
-            {details.icon}
+          {/* 2. Адаптируем цвет текста и иконки типа счета */}
+          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+            {TypeIcon && <TypeIcon className="h-5 w-5 mr-2" />}
             <span>{details.label}</span>
           </div>
           <div className="flex space-x-2">
-            {/* ИСПРАВЛЕНО: Убрано size="sm" и PencilIcon заменена на PencilSquareIcon, размер h-5 w-5 */}
-            <Button variant="icon" onClick={() => onEdit(account)} title="Редактировать">
-              <PencilSquareIcon className="h-5 w-5" />
+            {/* Компонент Button уже должен быть адаптирован */}
+            <Button variant="icon" size="sm" onClick={() => onEdit(account)}>
+              <PencilIcon className="h-4 w-4" />
             </Button>
-            {/* ИСПРАВЛЕНО: Убрано size="sm", размер h-5 w-5 */}
-            <Button variant="icon" onClick={() => onDelete(account)} className="text-red-600 hover:text-red-800" title="Удалить">
-              <TrashIcon className="h-5 w-5" />
+            <Button variant="icon" size="sm" onClick={() => onDelete(account)} className="text-red-500 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400">
+              <TrashIcon className="h-4 w-4" />
             </Button>
           </div>
         </div>
-
-        <h3 className="text-xl font-semibold text-gray-800 mb-1">{account.name}</h3>
-        <p className={`text-3xl font-bold ${balanceColor}`}>
+        {/* 3. Адаптируем цвет названия счета */}
+        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 truncate mb-4">{account.name}</h3>
+      </div>
+      <div>
+        {/* 4. Адаптируем цвет текста подписи */}
+        <p className="text-sm text-gray-400 dark:text-gray-500 mb-1">Актуальный баланс</p>
+        {/* 5. Динамический цвет баланса уже адаптирован в переменной balanceColor */}
+        <p className={`text-3xl font-semibold ${balanceColor}`}>
           {formatCurrency(account.balance, account.currency)}
         </p>
-      </div>
-
-      <div className="mt-4 text-sm text-gray-500">
-        {account.description && <p className="mb-1">{account.description}</p>}
-        <p>Активен: {account.is_active ? 'Да' : 'Нет'}</p>
-        <p>Рабочее пространство: {account.workspace?.name || 'Н/Д'}</p>
-        {/* Отображаем информацию о типе счета, если она доступна */}
-        {account.account_type_ref && (
-          <p>Тип счета: {account.account_type_ref.name}</p>
-        )}
       </div>
     </div>
   );

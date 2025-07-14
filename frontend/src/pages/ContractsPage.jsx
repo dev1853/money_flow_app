@@ -41,7 +41,7 @@ function ContractsPage() {
     console.log("ContractsPage: Данные из API для договоров:", result); // <-- ДОБАВЛЕН ЛОГ
     return result;
   }, [activeWorkspace]);
-  
+
   const { data: contractsData, loading: isLoadingContracts, error: contractsError, refetch: refetchContracts } = useDataFetching(
     fetchContracts,
     [fetchContracts, activeWorkspace],
@@ -136,11 +136,11 @@ function ContractsPage() {
             const statusLabel = getStatusLabel(row.status);
             let statusClasses = '';
             switch (row.status) {
-                case ContractStatus.ACTIVE: statusClasses = 'bg-green-100 text-green-800'; break;
-                case ContractStatus.COMPLETED: statusClasses = 'bg-blue-100 text-blue-800'; break;
-                case ContractStatus.ARCHIVED: statusClasses = 'bg-gray-100 text-gray-800'; break;
-                case ContractStatus.PENDING: statusClasses = 'bg-yellow-100 text-yellow-800'; break;
-                default: statusClasses = 'bg-gray-100 text-gray-800';
+                case ContractStatus.ACTIVE: statusClasses = 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'; break;
+                case ContractStatus.COMPLETED: statusClasses = 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200'; break;
+                case ContractStatus.ARCHIVED: statusClasses = 'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200'; break;
+                case ContractStatus.PENDING: statusClasses = 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200'; break;
+                default: statusClasses = 'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200';
             }
             return (
                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusClasses}`}>
@@ -209,17 +209,17 @@ function ContractsPage() {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {contracts.map(contract => (
-            <div key={contract.id} className="bg-white p-4 rounded-lg shadow">
-              <h3 className="font-semibold">{contract.name}</h3>
-              <p className="text-sm text-gray-600">{formatCurrency(contract.amount, contract.currency)}</p>
-              <p className="text-sm text-gray-600">Начало: {formatDate(contract.start_date)}</p>
-              <p className="text-sm text-gray-600">Окончание: {formatDate(contract.end_date)}</p>
-              <p className="text-sm text-gray-600">Статус: {getStatusLabel(contract.status)}</p>
-              <p className="text-sm text-gray-600">Контрагент: {contract.counterparty?.name || 'Без контрагента'}</p>
+            <div key={contract.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+              <h3 className="font-semibold dark:text-gray-100">{contract.name}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{formatCurrency(contract.amount, contract.currency)}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Начало: {formatDate(contract.start_date)}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Окончание: {formatDate(contract.end_date)}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Статус: {getStatusLabel(contract.status)}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Контрагент: {contract.counterparty?.name || 'Без контрагента'}</p>
               <div className="flex space-x-2 mt-4">
                 {/* ИСПРАВЛЕНО: Кнопки действий унифицированы в Grid View */}
                 <Button variant="icon" onClick={() => handleOpenEditModal(contract)} title="Редактировать"><PencilSquareIcon className="h-5 w-5"/></Button>
-                <Button variant="icon" onClick={() => handleDeleteRequest(contract)} className="text-red-600 hover:text-red-800" title="Удалить"><TrashIcon className="h-5 w-5"/></Button>
+                <Button variant="icon" onClick={() => handleDeleteRequest(contract)} className="text-red-600 hover:text-red-800 dark:text-red-500 dark:hover:text-red-400" title="Удалить"><TrashIcon className="h-5 w-5"/></Button>
               </div>
             </div>
           ))}
@@ -229,7 +229,7 @@ function ContractsPage() {
   };
 
   return (
-    <div>
+    <div className="dark:text-gray-200">
       <div className="flex justify-between items-center mb-4">
         <PageTitle title="Договоры" />
         <div className="flex space-x-2">

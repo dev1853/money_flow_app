@@ -12260,3 +12260,128 @@ NameError: name 'lazyload' is not defined
 2025-07-13 18:18:42 - INFO - uvicorn.error - Application startup complete. None
 2025-07-13 18:25:51 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
 2025-07-13 18:25:51 - INFO - app.routers.transactions - Транзакция с ID 13 успешно создана для workspace 1. None
+2025-07-13 18:46:31 - INFO - uvicorn.error - Started server process [10] None
+2025-07-13 18:46:31 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-13 18:46:31 - INFO - uvicorn.error - Application startup complete. None
+2025-07-13 18:58:17 - INFO - uvicorn.error - Started server process [10] None
+2025-07-13 18:58:17 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-13 18:58:17 - INFO - uvicorn.error - Application startup complete. None
+2025-07-13 20:16:32 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'TypeError'>, TypeError("unsupported operand type(s) for -: 'float' and 'decimal.Decimal'"), <traceback object at 0x7d551e4137c0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 51, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/dashboard.py", line 29, in get_dashboard_summary
+    return crud.dashboard_crud.get_summary_data( # ИСПРАВЛЕНО: Используем экземпляр dashboard_crud
+  File "/app/app/crud/crud_dashboard.py", line 38, in get_summary_data
+    net_profit_loss = total_income_result - total_expense_result
+TypeError: unsupported operand type(s) for -: 'float' and 'decimal.Decimal'
+2025-07-13 20:16:35 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'TypeError'>, TypeError("unsupported operand type(s) for -: 'float' and 'decimal.Decimal'"), <traceback object at 0x7d551e402f40>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 51, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/dashboard.py", line 29, in get_dashboard_summary
+    return crud.dashboard_crud.get_summary_data( # ИСПРАВЛЕНО: Используем экземпляр dashboard_crud
+  File "/app/app/crud/crud_dashboard.py", line 38, in get_summary_data
+    net_profit_loss = total_income_result - total_expense_result
+TypeError: unsupported operand type(s) for -: 'float' and 'decimal.Decimal'
+2025-07-13 22:04:00 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
+2025-07-13 22:04:00 - INFO - app.routers.transactions - Транзакция с ID 14 успешно создана для workspace 1. None
+2025-07-14 07:19:56 - INFO - uvicorn.error - Started server process [10] None
+2025-07-14 07:19:56 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-14 07:19:56 - INFO - uvicorn.error - Application startup complete. None
+2025-07-14 07:23:13 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
+2025-07-14 07:23:14 - INFO - app.routers.transactions - Транзакция с ID 15 успешно создана для workspace 1. None
+2025-07-14 07:50:36 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
+2025-07-14 07:50:36 - INFO - app.routers.transactions - Транзакция с ID 16 успешно создана для workspace 1. None
+2025-07-14 07:54:13 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 1 пользователем true1853@yandex.ru None
+2025-07-14 07:54:13 - INFO - app.routers.transactions - Транзакция с ID 17 успешно создана для workspace 1. None
