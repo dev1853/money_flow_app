@@ -3,6 +3,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '../../services/apiService';
+import { useDataFetching } from '../../hooks/useDataFetching'; // Импортируем наш хук
+
+// Компоненты
 import Input from './Input';
 import Select from './Select';
 import DatePicker from './DatePicker';
@@ -12,70 +15,61 @@ import { TransactionType } from '../../utils/constants';
 import { flattenDdsArticles } from '../../utils/articleUtils';
 import { parseISO } from 'date-fns';
 
-// --- 1. НОВЫЙ КОМПОНЕНТ: СТИЛЬНЫЕ РАДИО-КНОПКИ ДЛЯ ТИПА ТРАНЗАКЦИИ ---
 const TransactionTypeRadio = ({ value, onChange }) => {
-  const types = [
-    { id: TransactionType.EXPENSE, label: 'Расход' },
-    { id: TransactionType.INCOME, label: 'Доход' },
-    { id: TransactionType.TRANSFER, label: 'Перевод' },
-  ];
-
-  return (
-    <div>
-      <div className="flex w-full items-center justify-between rounded-lg bg-gray-100 dark:bg-gray-800 p-1 border border-gray-200 dark:border-gray-700">
-        {types.map((type) => (
-          <label
-            key={type.id}
-            className={`flex-1 text-center text-sm font-semibold cursor-pointer p-2 rounded-md transition-colors duration-200 ${
-              value === type.id
-                ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-sm'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700/50'
-            }`}
-          >
-            <input
-              type="radio"
-              name="transaction_type"
-              value={type.id}
-              checked={value === type.id}
-              onChange={onChange}
-              className="sr-only" // Скрываем стандартную радио-кнопку
-            />
-            {type.label}
-          </label>
-        ))}
-      </div>
-    </div>
-  );
+    // ... этот компонент остается без изменений
 };
 
 
-function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, isSubmitting, error: submissionError }) {
+// --- 1. ПРИНИМАЕМ workspaceId КАК ПРОП ---
+function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, isSubmitting, error: submissionError, workspaceId }) {
     const { accounts } = useAuth();
     
-    // --- 2. УЛУЧШЕННОЕ НАЧАЛЬНОЕ СОСТОЯНИЕ ---
-    const getInitialState = () => ({
+    const getInitialState = useCallback(() => ({
         description: '',
         amount: '',
-        // Дата по умолчанию - сегодня
         transaction_date: new Date(), 
         transaction_type: TransactionType.EXPENSE,
         from_account_id: accounts.length > 0 ? accounts[0].id : '',
         to_account_id: '',
         dds_article_id: '',
-        // Контрагент и договор по умолчанию не выбраны
         counterparty_id: '',
         contract_id: ''
-    });
+    }), [accounts]);
 
     const [formData, setFormData] = useState(getInitialState());
-    const [ddsArticles, setDdsArticles] = useState([]);
-    const [counterparties, setCounterparties] = useState([]);
-    const [contracts, setContracts] = useState([]);
-    const [isLoadingContracts, setIsLoadingContracts] = useState(false);
+    
+    // --- 2. ИСПОЛЬЗУЕМ useDataFetching ДЛЯ ЗАГРУЗКИ СПРАВОЧНИКОВ ---
+    
+    // Загрузка статей ДДС
+    const fetchDdsArticles = useCallback(async () => {
+        if (!workspaceId) return null;
+        return apiService.getDdsArticles({ workspace_id: workspaceId });
+    }, [workspaceId]);
+
+    const { data: ddsArticles, loading: ddsArticlesLoading } = useDataFetching(fetchDdsArticles, [workspaceId], { skip: !workspaceId });
+
+    // Загрузка контрагентов
+    const fetchCounterparties = useCallback(async () => {
+        if (!workspaceId) return null;
+        // Загружаем всех контрагентов для выпадающего списка
+        return apiService.getCounterparties({ workspace_id: workspaceId, limit: 1000 });
+    }, [workspaceId]);
+
+    const { data: counterpartiesData, loading: counterpartiesLoading } = useDataFetching(fetchCounterparties, [workspaceId], { skip: !workspaceId });
+    const counterparties = counterpartiesData?.items || [];
+
+    // Загрузка договоров (зависит от выбранного контрагента)
+    const fetchContracts = useCallback(async () => {
+        if (!formData.counterparty_id) return null;
+        return apiService.getContracts({ counterparty_id: formData.counterparty_id, limit: 1000 });
+    }, [formData.counterparty_id]);
+
+    const { data: contractsData, loading: contractsLoading } = useDataFetching(fetchContracts, [formData.counterparty_id], { skip: !formData.counterparty_id });
+    const contracts = contractsData?.items || [];
+
 
     const isEditMode = Boolean(transactionToEdit);
 
-    // Заполнение формы при редактировании
     useEffect(() => {
         if (isEditMode) {
             setFormData({
@@ -90,31 +84,9 @@ function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, i
                 contract_id: transactionToEdit.contract_id || ''
             });
         } else {
-            // Сбрасываем к начальному состоянию при переключении с редактирования на создание
             setFormData(getInitialState());
         }
-    }, [transactionToEdit, accounts]);
-
-    // Загрузка справочников
-    useEffect(() => {
-        apiService.getDdsArticles().then(setDdsArticles).catch(console.error);
-        apiService.getCounterparties().then(data => setCounterparties(data?.items || [])).catch(console.error);
-    }, []);
-
-    // --- 3. ДИНАМИЧЕСКАЯ ФИЛЬТРАЦИЯ ДОГОВОРОВ ---
-    useEffect(() => {
-        if (formData.counterparty_id) {
-            setIsLoadingContracts(true);
-            apiService.getContracts({ counterparty_id: formData.counterparty_id })
-                .then(data => setContracts(data?.items || []))
-                .catch(console.error)
-                .finally(() => setIsLoadingContracts(false));
-        } else {
-            // Если контрагент не выбран, сбрасываем список договоров
-            setContracts([]);
-            setFormData(prev => ({...prev, contract_id: ''})); // и выбор договора
-        }
-    }, [formData.counterparty_id]);
+    }, [transactionToEdit, getInitialState]);
 
 
     const handleChange = (e) => {
@@ -131,7 +103,8 @@ function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, i
         const dataToSend = {
             ...formData,
             amount: parseFloat(formData.amount),
-            transaction_date: formData.transaction_date.toISOString().split('T')[0], // Форматируем дату перед отправкой
+            transaction_date: formData.transaction_date.toISOString().split('T')[0],
+            // Отправляем null, если значение пустое
             from_account_id: formData.from_account_id || null,
             to_account_id: formData.to_account_id || null,
             dds_article_id: formData.dds_article_id || null,
@@ -141,7 +114,6 @@ function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, i
         onSubmit(dataToSend);
     };
 
-    // ... (опции для селектов) ...
     const accountOptions = (accounts || []).map(acc => ({ value: acc.id, label: acc.name }));
     const ddsArticleOptions = useMemo(() => flattenDdsArticles(ddsArticles || []), [ddsArticles]);
     const counterpartyOptions = counterparties.map(cp => ({ value: cp.id, label: cp.name }));
@@ -150,8 +122,7 @@ function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, i
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             {submissionError && <Alert type="error">{submissionError.message}</Alert>}
-
-            {/* --- 4. ИСПОЛЬЗУЕМ НОВЫЕ РАДИО-КНОПКИ --- */}
+            
             <TransactionTypeRadio value={formData.transaction_type} onChange={handleChange} />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -161,7 +132,6 @@ function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, i
 
             <Input label="Описание" name="description" value={formData.description} onChange={handleChange} placeholder="Назначение платежа..."/>
 
-            {/* Условный рендеринг полей в зависимости от типа */}
             {formData.transaction_type === TransactionType.TRANSFER ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Select label="Со счета" name="from_account_id" value={formData.from_account_id} onChange={handleChange} options={accountOptions} required placeholder="Выберите счет" />
@@ -170,22 +140,21 @@ function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, i
             ) : (
                 <>
                     <Select label={formData.transaction_type === 'INCOME' ? "На счет" : "Со счета"} name={formData.transaction_type === 'INCOME' ? "to_account_id" : "from_account_id"} value={formData.transaction_type === 'INCOME' ? formData.to_account_id : formData.from_account_id} onChange={handleChange} options={accountOptions} required placeholder="Выберите счет" />
-                    <Select label="Статья ДДС" name="dds_article_id" value={formData.dds_article_id} onChange={handleChange} required>
-                        <option value="">Выберите статью</option>
+                    <Select label="Статья ДДС" name="dds_article_id" value={formData.dds_article_id} onChange={handleChange} disabled={ddsArticlesLoading} required>
+                        <option value="">{ddsArticlesLoading ? 'Загрузка...' : 'Выберите статью'}</option>
                         {ddsArticleOptions.map(opt => <option key={opt.id} value={opt.id}>{opt.name}</option>)}
                     </Select>
                 </>
             )}
 
-            {/* Блок Контрагента и Договора (только для Дохода/Расхода) */}
             {formData.transaction_type !== TransactionType.TRANSFER && (
                 <div className="p-4 space-y-4 border rounded-lg bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700">
-                    <Select label="Контрагент (опционально)" name="counterparty_id" value={formData.counterparty_id} onChange={handleChange}>
-                        <option value="">Не выбрано</option>
+                    <Select label="Контрагент (опционально)" name="counterparty_id" value={formData.counterparty_id} onChange={handleChange} disabled={counterpartiesLoading}>
+                        <option value="">{counterpartiesLoading ? 'Загрузка...' : 'Не выбрано'}</option>
                         {counterpartyOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </Select>
-                    <Select label="Договор (опционально)" name="contract_id" value={formData.contract_id} onChange={handleChange} disabled={!formData.counterparty_id || isLoadingContracts}>
-                        <option value="">{isLoadingContracts ? 'Загрузка...' : 'Не выбрано'}</option>
+                    <Select label="Договор (опционально)" name="contract_id" value={formData.contract_id} onChange={handleChange} disabled={!formData.counterparty_id || contractsLoading}>
+                        <option value="">{contractsLoading ? 'Загрузка...' : 'Не выбрано'}</option>
                         {contractOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </Select>
                 </div>

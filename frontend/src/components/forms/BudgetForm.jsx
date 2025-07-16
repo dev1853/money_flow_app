@@ -1,3 +1,5 @@
+// /frontend/src/components/forms/BudgetForm.jsx
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '../../services/apiService';
@@ -66,32 +68,40 @@ function BudgetForm({ budget, onSuccess, onCancel }) {
     const [formErrors, setFormErrors] = useState({});
 
     const { data: ddsArticles, isLoading: loadingArticles, error: articlesError } = useDataFetching(
-        () => activeWorkspace?.id ? apiService.getDdsArticles(activeWorkspace.id) : Promise.resolve([]),
+        // --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
+        // Передаем объект с параметрами, а не просто ID
+        () => activeWorkspace?.id 
+            ? apiService.getDdsArticles({ workspace_id: activeWorkspace.id }) 
+            : Promise.resolve([]),
         [activeWorkspace?.id]
     );
 
     const ddsArticleOptions = useMemo(() => {
         return ddsArticles
             ? flattenArticles(ddsArticles)
-                .filter(article => article.article_type === 'expense')
+                // .filter(article => article.article_type === 'expense') // <--- ВРЕМЕННО УБИРАЕМ ФИЛЬТР
                 .map(article => ({
                     value: article.id,
-                    label: article.name,
+                    label: `(${article.article_type}) ${article.name}`, // Добавим тип для наглядности
                 }))
             : [];
     }, [ddsArticles]);
 
     const mutationFn = async (data) => {
         if (!activeWorkspace?.id) throw new Error('Активное рабочее пространство не выбрано.');
+        
         const dataToSend = {
             ...data,
+            workspace_id: activeWorkspace.id, // ЯВНО ДОБАВЛЯЕМ ID ВОРКСПЕЙСА
             items: data.items.map(item => ({
                 dds_article_id: parseInt(item.dds_article_id, 10),
                 budgeted_amount: parseFloat(item.budgeted_amount),
                 ...(item.id && { id: item.id })
             }))
         };
+
         if (isEditMode) {
+            // Для update метода также может понадобиться workspace_id в зависимости от вашей логики
             await apiService.updateBudget(budget.id, dataToSend);
         } else {
             await apiService.createBudget(dataToSend);
@@ -164,13 +174,11 @@ function BudgetForm({ budget, onSuccess, onCancel }) {
                 </div>
             </div>
 
-            {/* Adapt section title */}
             <h3 className="text-lg font-semibold mt-6 text-gray-900 dark:text-gray-100">Статьи бюджета</h3>
             {formErrors.items && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{formErrors.items}</p>}
             
             <div className="space-y-4">
                 {formData.items.map((item, index) => (
-                    // Adapt budget item container
                     <div key={index} className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border border-gray-200 dark:border-gray-600">
                         <div className="flex-grow">
                             <Label htmlFor={`dds_article_id-${index}`} className="sr-only">Статья ДДС</Label>
@@ -196,7 +204,7 @@ function BudgetForm({ budget, onSuccess, onCancel }) {
                 ))}
             </div>
 
-            <Button type="button" variant="secondary" onClick={handleAddBudgetItem} icon={<PlusIcon className="h-5 w-5 mr-2" />} className="mt-2">Добавить статью</Button>
+            <Button type="button" variant="secondary" onClick={handleAddBudgetItem} icon={<PlusIcon className="h-5 w-5 mr-2" />}>Добавить статью</Button>
             
             <div className="flex justify-end space-x-2 pt-4">
                 <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>Отмена</Button>

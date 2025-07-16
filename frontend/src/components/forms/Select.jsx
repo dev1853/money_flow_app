@@ -20,8 +20,6 @@ const Select = ({ label, name, value, onChange, options, children, error, ...pro
         }`}
         {...props}
       >
-        {/* 👇 ВОТ КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ 👇 */}
-        {/* Если передан массив options, используем его. Иначе - используем дочерние элементы. */}
         {options 
           ? options.map((option) => (
               <option key={option.value} value={option.value}>

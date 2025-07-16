@@ -39,7 +39,7 @@ const UniversalTable = ({ columns, data, emptyMessage }) => {
                 >
                   {/* Цвет текста для обычных ячеек */}
                   <span className="text-gray-800 dark:text-gray-200">
-                    {column.render ? column.render(row) : row[column.accessor]}
+                    {column.render ? column.render(row) : row[column.key]}
                   </span>
                 </td>
               ))}

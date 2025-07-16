@@ -1,120 +1,140 @@
 // frontend/src/pages/BudgetsPage.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
-import BudgetCard from '../components/BudgetCard';
-import Loader from '../components/Loader';
+
+// Импорт хуков и компонентов
+import { useDataFetching } from '../hooks/useDataFetching';
 import PageTitle from '../components/PageTitle';
 import Button from '../components/Button';
+import Loader from '../components/Loader';
+import Alert from '../components/Alert';
 import Modal from '../components/Modal';
 import BudgetForm from '../components/forms/BudgetForm';
 import ConfirmationModal from '../components/ConfirmationModal';
-import Alert from '../components/Alert';
+import BudgetCard from '../components/BudgetCard'; // Убедитесь, что этот компонент существует
 
 const BudgetsPage = () => {
-  const [budgets, setBudgets] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+    // 1. Получаем все необходимое из контекста useAuth
+    const { activeWorkspace, loading: authLoading } = useAuth();
+    const workspaceId = activeWorkspace?.id;
 
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedBudget, setSelectedBudget] = useState(null);
-  const [mutationError, setMutationError] = useState(null);
+    // 2. Убираем ручное управление состоянием загрузки (isLoading, error, budgets)
+    // Этим теперь будет заниматься useDataFetching
 
-  const fetchBudgets = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await apiService.getBudgets();
-      setBudgets(data);
-    } catch (err) {
-      setError('Ошибка загрузки бюджетов.');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedBudget, setSelectedBudget] = useState(null);
+    const [mutationError, setMutationError] = useState(null);
 
-  useEffect(() => {
-    fetchBudgets();
-  }, []);
+    // 3. Создаем правильную функцию для загрузки данных, которая зависит от workspaceId
+    const fetchBudgets = useCallback(async () => {
+        if (!workspaceId) return null; // Не делаем запрос, если нет ID
 
-  const handleOpenFormModal = (budget = null) => {
-    setSelectedBudget(budget);
-    setMutationError(null);
-    setIsFormModalOpen(true);
-  };
+        return apiService.getBudgets({ workspace_id: workspaceId });
+    }, [workspaceId]);
 
-  const handleOpenDeleteModal = (budget) => {
-    setSelectedBudget(budget);
-    setMutationError(null);
-    setIsDeleteModalOpen(true);
-  };
-  
-  const handleCloseModals = () => {
-      setIsFormModalOpen(false);
-      setIsDeleteModalOpen(false);
-      setSelectedBudget(null);
-  };
+    // 4. Используем наш надежный хук useDataFetching
+    const { 
+        data: budgets, 
+        loading, 
+        error, 
+        refetch: refetchBudgets 
+    } = useDataFetching(
+        fetchBudgets,
+        [workspaceId], // Зависимость, чтобы перезагружать данные при смене воркспейса
+        { skip: authLoading || !workspaceId } // Пропускаем запрос, пока нет ID
+    );
 
-  const handleDelete = async () => {
-    if (!selectedBudget) return;
-    try {
-      setMutationError(null);
-      await apiService.deleteBudget(selectedBudget.id);
-      handleCloseModals();
-      fetchBudgets();
-    } catch (err) {
-      console.error("Ошибка удаления бюджета:", err);
-      setMutationError(err.message || 'Не удалось удалить бюджет.');
-    }
-  };
+    const handleOpenFormModal = (budget = null) => {
+        setSelectedBudget(budget);
+        setMutationError(null);
+        setIsFormModalOpen(true);
+    };
 
-  if (isLoading) return <Loader />;
-  if (error) return <Alert type="error">{error}</Alert>;
+    const handleOpenDeleteModal = (budget) => {
+        setSelectedBudget(budget);
+        setMutationError(null);
+        setIsDeleteModalOpen(true);
+    };
+    
+    const handleCloseModals = () => {
+        setIsFormModalOpen(false);
+        setIsDeleteModalOpen(false);
+        setSelectedBudget(null);
+    };
 
-  return (
-    <div className="dark:text-gray-200">
-      <div className="flex justify-between items-center mb-6">
-        <PageTitle title="Бюджеты" />
-        <Button onClick={() => handleOpenFormModal()}>Создать бюджет</Button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {budgets.map(budget => (
-          <BudgetCard 
-            key={budget.id} 
-            budget={budget} 
-            onEdit={handleOpenFormModal} 
-            onDelete={handleOpenDeleteModal} 
-          />
-        ))}
-      </div>
-
-      {/* --- ГЛАВНОЕ ИСПРАВЛЕНИЕ ЗДЕСЬ --- */}
-      {/* Убираем условный рендеринг '&&' и передаем isFormModalOpen в проп isOpen */}
-      <Modal isOpen={isFormModalOpen} onClose={handleCloseModals}>
-        <BudgetForm
-          budget={selectedBudget}
-          onSuccess={() => {
+    const handleDelete = async () => {
+        if (!selectedBudget) return;
+        try {
+            setMutationError(null);
+            await apiService.deleteBudget(selectedBudget.id);
             handleCloseModals();
-            fetchBudgets();
-          }}
-          onCancel={handleCloseModals}
-        />
-      </Modal>
+            refetchBudgets(); // Используем refetch из хука
+        } catch (err) {
+            console.error("Ошибка удаления бюджета:", err);
+            setMutationError(err.message || 'Не удалось удалить бюджет.');
+        }
+    };
 
-      {/* То же самое делаем для модального окна подтверждения */}
-      <ConfirmationModal
-        isOpen={isDeleteModalOpen} // Передаем состояние в isOpen
-        title="Подтвердите удаление"
-        message={`Вы уверены, что хотите удалить бюджет "${selectedBudget?.name}"?`}
-        onConfirm={handleDelete}
-        onCancel={handleCloseModals}
-        errorMessage={mutationError}
-      />
-    </div>
-  );
+    const handleCreateBudget = async (budgetData) => {
+      return await apiService.createBudget(budgetData, { workspace_id: activeWorkspace?.id });
+    };
+
+    // 5. Добавляем защиту на случай отсутствия воркспейса или во время загрузки контекста
+    if (authLoading) return <Loader text="Загрузка приложения..." />;
+    if (!activeWorkspace) return <Alert type="info">Выберите рабочее пространство для просмотра бюджетов.</Alert>;
+
+    return (
+        <div className="dark:text-gray-200">
+            <div className="flex justify-between items-center mb-6">
+                <PageTitle title="Бюджеты" />
+                <Button onClick={() => handleOpenFormModal()}>Создать бюджет</Button>
+            </div>
+
+            {error && <Alert type="error">{error.message}</Alert>}
+            {loading && !budgets ? (
+                <Loader text="Загрузка бюджетов..." />
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {budgets && budgets.length > 0 ? (
+                        budgets.map(budget => (
+                            <BudgetCard 
+                                key={budget.id} 
+                                budget={budget} 
+                                onEdit={handleOpenFormModal} 
+                                onDelete={handleOpenDeleteModal} 
+                            />
+                        ))
+                    ) : (
+                        <Alert type="info">Бюджеты еще не созданы.</Alert>
+                    )}
+                </div>
+            )}
+
+            <Modal isOpen={isFormModalOpen} onClose={handleCloseModals}>
+                <BudgetForm
+                    budget={selectedBudget}
+                    onSuccess={() => {
+                        handleCloseModals();
+                        refetchBudgets();
+                    }}
+                    onCancel={handleCloseModals}
+                    workspaceId={workspaceId} 
+                />
+            </Modal>
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                title="Подтвердите удаление"
+                message={`Вы уверены, что хотите удалить бюджет "${selectedBudget?.name}"?`}
+                onConfirm={handleDelete}
+                onCancel={handleCloseModals}
+                errorMessage={mutationError}
+            />
+        </div>
+    );
 };
 
 export default BudgetsPage;

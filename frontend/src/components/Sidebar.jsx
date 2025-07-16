@@ -60,7 +60,7 @@ const navigation = [
     icon: Cog6ToothIcon,
     type: 'parent',
     children: [
-      { name: 'Правила разнесения', href: '/mapping-rules' },
+      // { name: 'Правила разнесения', href: '/mapping-rules' },
       { name: 'Помощь', href: '/help' },
     ],
   },

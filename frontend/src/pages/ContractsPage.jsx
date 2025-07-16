@@ -57,9 +57,9 @@ function ContractsPage() {
   const [createUpdateContract, { isLoading: isMutating, error: mutationError }] = useApiMutation(
     async (contractData) => {
       if (contractToEdit) {
-        return await apiService.updateContract(contractToEdit.id, contractData);
+        return await apiService.updateContract(contractToEdit.id, contractData, { workspace_id: activeWorkspace?.id });
       } else {
-        return await apiService.createContract(contractData);
+        return await apiService.createContract(contractData, { workspace_id: activeWorkspace?.id });
       }
     },
     {
@@ -75,7 +75,7 @@ function ContractsPage() {
 
   const [deleteContractMutation, { isLoading: isDeleting, error: deleteError }] = useApiMutation(
     async (id) => {
-      return await apiService.deleteContract(id);
+      return await apiService.deleteContract(id, { workspace_id: activeWorkspace?.id });
     },
     {
       onSuccess: () => {
@@ -150,7 +150,7 @@ function ContractsPage() {
           }
       },
       { key: 'name', label: 'Название', className: 'w-48', accessor: 'name' },
-      { key: 'amount', label: 'Сумма', className: 'w-28 text-right', render: (row) => formatCurrency(row.amount, row.currency) },
+      { key: 'value', label: 'Сумма', className: 'w-28 text-right', render: (row) => formatCurrency(row.value, row.currency) },
       { key: 'start_date', label: 'Начало', className: 'w-24', render: (row) => formatDate(row.start_date) },
       { key: 'end_date', label: 'Окончание', className: 'w-24', render: (row) => formatDate(row.end_date) },
       { key: 'counterparty_name', label: 'Контрагент', className: 'flex-grow', accessor: 'counterparty.name' }, // Предполагаем, что counterparty.name доступен
@@ -261,7 +261,13 @@ function ContractsPage() {
         onClose={handleCloseModal} 
         title={contractToEdit ? 'Редактировать договор' : 'Новый договор'}
       >
-        <ContractForm contract={contractToEdit} onSuccess={handleCloseModal} />
+        <ContractForm 
+          contract={contractToEdit}
+          onSubmit={createUpdateContract}
+          onCancel={handleCloseModal}
+          isSubmitting={isMutating}
+          error={mutationError}
+        />
       </Modal>
 
       <ConfirmationModal

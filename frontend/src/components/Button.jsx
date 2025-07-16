@@ -6,17 +6,16 @@ const Button = ({
   type = 'button',
   variant = 'primary',
   small = false,
+  fullWidth = false, // <-- 1. Добавили свойство fullWidth
   icon,
   className,
   disabled,
-  ...props
+  ...rest // <-- 2. Собираем все остальные стандартные атрибуты <button>
 }) => {
   // --- БАЗОВЫЕ СТИЛИ ---
-  // Добавляем transform для анимации и убираем стандартную рамку
   const baseClasses = `inline-flex items-center justify-center font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 ease-in-out transform hover:-translate-y-px active:scale-[0.98] border-transparent`;
 
   // --- СТИЛИ ВАРИАНТОВ ---
-  // Улучшаем тени, добавляем градиенты и более сочные цвета
   const variantClasses = {
     primary: 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg hover:shadow-xl hover:from-indigo-600 hover:to-purple-700 focus:ring-indigo-500 disabled:from-indigo-400 disabled:to-purple-500 dark:focus:ring-offset-gray-900',
     secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:ring-gray-500',
@@ -26,23 +25,26 @@ const Button = ({
   };
 
   // --- РАЗМЕРЫ ---
-  // Немного увеличиваем вертикальный padding для лучшего вида
   const sizeClasses = small 
     ? "px-3 py-2 text-xs" 
     : "px-5 py-2.5 text-sm";
-
-  // --- ОТКЛЮЧЕННОЕ СОСТОЯНИЕ ---
-  const disabledClasses = disabled ? "opacity-60 cursor-not-allowed shadow-none" : "";
+  
+  // --- ДОПОЛНИТЕЛЬНЫЕ КЛАССЫ ---
+  const otherClasses = [
+    disabled ? "opacity-60 cursor-not-allowed shadow-none" : "", // Состояние "отключено"
+    fullWidth ? "w-full" : "", // 3. Используем fullWidth для добавления класса
+    className || "" // Добавляем любые классы, переданные извне
+  ].join(' ');
 
   return (
     <button
       type={type}
       onClick={onClick}
-      // Объединяем классы. Обратите внимание, что variantClasses теперь применяется напрямую, а не через переменную.
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses} ${disabledClasses} ${className || ''}`}
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses} ${otherClasses}`}
       disabled={disabled}
-      {...props}
+      {...rest} // <-- 4. Передаем только "родные" атрибуты HTML, а не наши кастомные
     >
+      {/* Если есть иконка, добавляем отступ, только если есть и текст */}
       {icon && <span className={children ? "mr-2" : ""}>{icon}</span>}
       {children}
     </button>

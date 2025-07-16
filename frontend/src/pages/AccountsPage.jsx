@@ -1,126 +1,122 @@
-// frontend/src/pages/AccountsPage.jsx
-import React, { useState, useEffect } from 'react';
+// /frontend/src/pages/AccountsPage.jsx
+
+import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/apiService';
-import Modal from '../components/Modal';
-import AccountForm from '../components/forms/AccountForm';
-import AccountCard from '../components/AccountCard'; 
-import ConfirmationModal from '../components/ConfirmationModal';
+
+// Компоненты
 import PageTitle from '../components/PageTitle';
-import Button from '../components/Button'; 
+import Button from '../components/Button';
+import AccountCard from '../components/AccountCard'; 
 import Loader from '../components/Loader';
 import EmptyState from '../components/EmptyState';
+import Modal from '../components/Modal';
+import AccountForm from '../components/forms/AccountForm';
+import ConfirmationModal from '../components/ConfirmationModal';
 import { PlusIcon } from '@heroicons/react/24/solid';
 
 function AccountsPage() {
-  const { accounts, fetchDataForWorkspace, activeWorkspace, isLoading: authLoading } = useAuth();
-  // ... (остальная логика остается без изменений) ...
+    // 1. Получаем все напрямую из контекста. `loading` теперь называется `authLoading`
+    const { accounts, activeWorkspace, loading: authLoading } = useAuth();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [accountToEdit, setAccountToEdit] = useState(null);
-  const [accountToDelete, setAccountToDelete] = useState(null);
+    // 2. Убираем лишние локальные состояния. Оставляем только для UI модальных окон
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [accountToEdit, setAccountToEdit] = useState(null);
+    const [accountToDelete, setAccountToDelete] = useState(null);
+    // Для ошибки можно оставить локальное состояние, если она специфична для этой страницы
+    const [error, setError] = useState('');
 
-  useEffect(() => {
-    setLoading(authLoading);
-  }, [authLoading]);
+    const handleOpenCreateModal = () => {
+        setAccountToEdit(null);
+        setIsModalOpen(true);
+    };
 
-  const handleOpenCreateModal = () => {
-    setAccountToEdit(null);
-    setIsModalOpen(true);
-    setError('');
-  };
+    const handleOpenEditModal = (account) => {
+        setAccountToEdit(account);
+        setIsModalOpen(true);
+    };
 
-  const handleOpenEditModal = (account) => {
-    setAccountToEdit(account);
-    setIsModalOpen(true);
-    setError('');
-  };
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setAccountToEdit(null);
+    };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setAccountToEdit(null);
-    setError('');
-  };
+    // Логика удаления остается здесь, т.к. она специфична для этой страницы
+    const handleDeleteRequest = (account) => {
+        setAccountToDelete(account);
+        setError('');
+    };
 
-  const handleDeleteRequest = (account) => {
-    setAccountToDelete(account);
-    setError('');
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!accountToDelete) return;
-    try {
-      await apiService.deleteAccount(accountToDelete.id);
-      if (activeWorkspace?.id) {
-        await fetchDataForWorkspace(activeWorkspace.id);
-      }
-      setAccountToDelete(null);
-      setError('');
-    } catch (err) {
-      let errorMessage = err.detail || err.message || 'Не удалось архивировать счет';
-      if (errorMessage.includes("Нельзя архивировать счет с ненулевым балансом")) {
-        errorMessage = `Невозможно архивировать счет "${accountToDelete.name}", так как его баланс не равен нулю.`;
-      }
-      setError(errorMessage);
+    const handleDeleteConfirm = async () => {
+        if (!accountToDelete) return;
+        try {
+            await apiService.deleteAccount(accountToDelete.id);
+            // Прямой вызов refetch из AuthContext больше не нужен,
+            // т.к. форма сама инициирует обновление.
+            // Но для надежности можно оставить, если форма не используется.
+            setAccountToDelete(null);
+        } catch (err) {
+            setError(err.message || 'Не удалось удалить счет');
+        }
+    };
+    
+    // 3. Проверяем состояние загрузки НАПРЯМУЮ из контекста
+    if (authLoading) {
+        return <Loader text="Загрузка счетов..." />;
     }
-  };
 
+    return (
+        <div className="dark:text-gray-200">
+            <div className="flex justify-between items-center mb-8">
+                <PageTitle title="Ваши счета" />
+                <Button onClick={handleOpenCreateModal}>
+                    <PlusIcon className="h-5 w-5 mr-2" />
+                    Добавить счет
+                </Button>
+            </div>
 
-  if (loading) {
-    return <Loader text="Загрузка счетов..." />;
-  }
+            {/* Логика отображения теперь использует `accounts` напрямую из контекста */}
+            {accounts && accounts.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {accounts.map((account) => (
+                        <AccountCard 
+                            key={account.id} 
+                            account={account}
+                            onEdit={handleOpenEditModal}
+                            onDelete={handleDeleteRequest}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <EmptyState 
+                    message="У вас еще нет ни одного счета."
+                    buttonText="Создать первый счет"
+                    onButtonClick={handleOpenCreateModal}
+                />
+            )}
 
-  return (
-    // Добавляем базовый цвет текста для страницы
-    <div className="dark:text-gray-200">
-      <div className="flex justify-between items-center mb-8">
-        <PageTitle title="Ваши счета" />
-        <Button onClick={handleOpenCreateModal} icon={<PlusIcon className="h-5 w-5 mr-2" />}>
-          Добавить счет
-        </Button>
-      </div>
+            <Modal 
+                isOpen={isModalOpen} 
+                onClose={handleCloseModal} 
+                title={accountToEdit ? 'Редактировать счет' : 'Новый счет'}
+            >
+                <AccountForm 
+                    account={accountToEdit} 
+                    onSuccess={handleCloseModal}
+                    onCancel={handleCloseModal} 
+                />
+            </Modal>
 
-      {accounts && accounts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {accounts.map((account) => (
-            <AccountCard 
-              key={account.id} 
-              account={account}
-              onEdit={handleOpenEditModal}
-              onDelete={handleDeleteRequest}
+            <ConfirmationModal
+                isOpen={Boolean(accountToDelete)}
+                onClose={() => setAccountToDelete(null)}
+                onConfirm={handleDeleteConfirm}
+                title="Архивировать счет" 
+                message={`Вы уверены, что хотите архивировать счет "${accountToDelete?.name}"?`}
+                errorAlertMessage={error}
             />
-          ))}
         </div>
-      ) : (
-        // EmptyState уже должен быть адаптирован
-        <EmptyState 
-          message="У вас еще нет ни одного счета."
-          buttonText="Создать первый счет"
-          onButtonClick={handleOpenCreateModal}
-        />
-      )}
-
-      {/* Modal и ConfirmationModal уже должны быть адаптированы */}
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
-        title={accountToEdit ? 'Редактировать счет' : 'Новый счет'}
-      >
-        <AccountForm account={accountToEdit} onSuccess={handleCloseModal} />
-      </Modal>
-
-      <ConfirmationModal
-        isOpen={Boolean(accountToDelete)}
-        onClose={() => { setAccountToDelete(null); setError(''); }}
-        onConfirm={handleDeleteConfirm}
-        title="Архивировать счет" 
-        message={`Вы уверены, что хотите архивировать счет "${accountToDelete?.name}"?`}
-        errorAlertMessage={error} 
-      />
-    </div>
-  );
+    );
 }
 
 export default AccountsPage;

@@ -1,55 +1,67 @@
-// frontend/src/components/dashboard/ExpensesByCounterpartiesWidget.jsx
-
 import React, { useMemo } from 'react';
-import UniversalTable from '../UniversalTable'; // Adjust path if needed
-import { formatCurrency } from '../../utils/formatting';
+import * as Recharts from 'recharts';
+import KpiCard from '../KpiCard';
 
-const ExpensesByCounterpartiesWidget = ({ transactions }) => {
-  const aggregatedData = useMemo(() => {
-    if (!transactions || transactions.length === 0) return [];
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919'];
 
-    const expensesByCounterparty = {};
-
-    transactions.forEach(transaction => {
-      // Агрегируем только расходы
-      if (transaction.transaction_type === 'EXPENSE') {
-        const counterpartyName = transaction.counterparty?.name || 'Без контрагента';
-        const counterpartyId = transaction.counterparty?.id || 'no_counterparty'; // Уникальный ID для контрагента
-        const amount = parseFloat(transaction.amount) || 0;
-
-        if (!expensesByCounterparty[counterpartyId]) {
-          expensesByCounterparty[counterpartyId] = {
-            id: counterpartyId, // Используем ID для ключа React
-            name: counterpartyName,
-            total_expense: 0,
-            currency: transaction.currency || 'RUB', // Берем валюту из первой транзакции
-          };
-        }
-        expensesByCounterparty[counterpartyId].total_expense += amount;
-      }
-    });
-
-    // Преобразуем объект в массив и форматируем
-    return Object.values(expensesByCounterparty).map(item => ({
-      ...item,
-      total_expense_formatted: formatCurrency(item.total_expense, item.currency),
-    })).sort((a, b) => b.total_expense - a.total_expense); // Сортировка по убыванию суммы
-  }, [transactions]);
-
-  const columns = useMemo(
-    () => [
-      { key: 'name', label: 'Контрагент', className: 'flex-grow', accessor: 'name' },
-      { key: 'total_expense_formatted', label: 'Сумма', className: 'w-28 text-right', accessor: 'total_expense_formatted' },
-    ],
-    []
-  );
+// Виджет теперь принимает isLoading и error от родителя
+const ExpensesByCounterpartiesWidget = ({ data, isLoading, error }) => {
+  const chartData = useMemo(() => {
+    if (!Array.isArray(data)) return [];
+    return data
+      .filter(item => item && typeof item.total_amount === 'number' && item.total_amount < 0)
+      .map(item => ({
+        name: item.counterparty_name || 'Без названия',
+        value: Math.abs(item.total_amount),
+      }));
+  }, [data]);
 
   return (
-    <UniversalTable
-      columns={columns}
-      data={aggregatedData}
-      emptyMessage="Нет данных о расходах по контрагентам за выбранный период."
-    />
+    // Передаем новые свойства в KpiCard
+    <KpiCard
+      title="Расходы по контрагентам"
+      isLoading={isLoading}
+      error={error}
+    >
+      {/* KpiCard сам решит, когда показывать этот блок */}
+      {chartData.length > 0 ? (
+        <Recharts.ResponsiveContainer width="100%" height={300}>
+          <Recharts.PieChart>
+            <Recharts.Tooltip formatter={(value) => `${value.toLocaleString('ru-RU')} ₽`} />
+            <Recharts.Legend />
+            <Recharts.Pie
+              data={chartData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              outerRadius={100}
+              fill="#8884d8"
+              dataKey="value"
+              nameKey="name"
+              label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                if (percent === 0) return '';
+                const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
+                const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
+                return (
+                  <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central">
+                    {`${(percent * 100).toFixed(0)}%`}
+                  </text>
+                );
+              }}
+            >
+              {chartData.map((entry, index) => (
+                <Recharts.Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Recharts.Pie>
+          </Recharts.PieChart>
+        </Recharts.ResponsiveContainer>
+      ) : (
+        <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">Нет данных о расходах</p>
+        </div>
+      )}
+    </KpiCard>
   );
 };
 

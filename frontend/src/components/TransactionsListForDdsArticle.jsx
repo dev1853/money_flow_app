@@ -51,7 +51,13 @@ const TransactionsListForDdsArticle = ({ articleId, articleName, startDate, endD
 
   // useMemo for columns to prevent re-creation on every render
   const columns = useMemo(() => [
-    { key: 'transaction_date', label: 'Дата', render: (row) => format(parseISO(row.transaction_date), 'dd.MM.yyyy') },
+    { key: 'transaction_date', label: 'Дата', render: (row) => {
+        if (typeof row.transaction_date === 'string') {
+          return format(parseISO(row.transaction_date), 'dd.MM.yyyy');
+        }
+        return '—';
+      }
+    },
     { key: 'description', label: 'Описание', className: 'flex-grow' },
     { 
       key: 'amount', 

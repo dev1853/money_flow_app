@@ -1,24 +1,23 @@
-// frontend/src/services/apiService.js
-
 import axios from 'axios';
 
-const API_URL = '/api/'; 
-
-const api = axios.create({
-    baseURL: API_URL,
+// 1. Создаем единый экземпляр axios
+const apiClient = axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api',
+    headers: { 'Content-Type': 'application/json' },
 });
 
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('authToken'); 
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
+// 2. Функции для управления токеном
+export const setAuthHeader = (token) => {
+    if (token) {
+        apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+};
 
+export const removeAuthHeader = () => {
+    delete apiClient.defaults.headers.common['Authorization'];
+};
+
+// 3. Кастомный класс для ошибок API
 export class ApiError extends Error {
     constructor(message, status, details = null) {
         super(message);
@@ -28,117 +27,118 @@ export class ApiError extends Error {
     }
 }
 
+// 4. Централизованный обработчик ответов и ошибок (interceptor)
+apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const status = error.response?.status || 500;
+        let message = 'Произошла непредвиденная ошибка';
+        let details = null;
+        if (error.response?.data?.detail) {
+            if (status === 422 && Array.isArray(error.response.data.detail)) {
+                message = "Ошибка валидации.";
+                details = error.response.data.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('; ');
+            } else {
+                message = error.response.data.detail;
+            }
+        } else if (error.message) {
+            message = error.message;
+        }
+        console.error(`API Ошибка [${status}]:`, message, details || '');
+        throw new ApiError(message, status, details);
+    }
+);
+
+// 5. Универсальная функция для выполнения запросов
 async function request(method, url, data = null, params = null) {
     try {
-        const config = { method, url, data, params }; 
-        // --- ИСПРАВЛЕНО: Добавлены отладочные логи перед отправкой запроса ---
-        console.log(`API Service: Sending ${config.method} request to ${config.url}`);
-        if (config.params) {
-            console.log("API Service: Request parameters:", config.params);
-        }
-        if (config.data) {
-            console.log("API Service: Request data:", config.data);
-        }
-        // --- КОНЕЦ ОТЛАДОЧНЫХ ЛОГОВ ---
-        const response = await api(config);
+        const response = await apiClient({ method, url, data, params });
         return response.data;
     } catch (error) {
-        const status = error.response ? error.response.status : 500;
-        let message = 'Network Error';
-        let details = null;
-
-        if (error.response) {
-            if (status === 422 && error.response.data && Array.isArray(error.response.data.detail)) {
-                message = "Ошибка валидации. Проверьте введенные данные.";
-                details = error.response.data.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('; ');
-                console.error("Validation errors:", details);
-            } else {
-                message = error.response.data?.detail || 'API Error'; 
-            }
-        }
-        
-        console.error(`API Request Failed:`, new ApiError(message, status, details));
-        throw new ApiError(message, status, details);
+        // Interceptor уже обработал ошибку, просто пробрасываем ее дальше
+        throw error;
     }
 }
 
-// 5. Экспорт всех методов API
+// 6. Экспорт всех методов API в едином стиле
 export const apiService = {
-    login: (username, password) => request('post', 'auth/token', new URLSearchParams({ username, password })),
-    register: (userData) => request('post', 'users/', userData),
-    getUserMe: () => request('get', 'users/me'),
+    setAuthHeader,
+    removeAuthHeader,
 
-    // Workspace
+    // --- АУТЕНТИФИКАЦИЯ И РЕГИСТРАЦИЯ ---
+    login: async (username, password) => {
+        const params = new URLSearchParams();
+        params.append('username', username);
+        params.append('password', password);
+        // Этот запрос специфичный, поэтому используем apiClient напрямую
+        const response = await apiClient.post('auth/token', params, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        });
+        return response.data;
+    },
+    register: (userData) => request('post', 'users/', userData),
+
+    // --- ПОЛЬЗОВАТЕЛИ И ПРОСТРАНСТВА ---
+    getUserMe: () => request('get', 'users/me'),
     getWorkspaces: () => request('get', 'workspaces/'),
     createWorkspace: (workspaceData) => request('post', 'workspaces/', workspaceData),
     setActiveWorkspace: (workspaceId) => request('post', `workspaces/${workspaceId}/set-active`),
-    getActiveWorkspace: () => request('get', 'workspaces/active'),
 
-    // Transactions
+    // --- ТРАНЗАКЦИИ ---
     getTransactions: (params) => request('get', 'transactions/', null, params),
-    createTransaction: (transactionData) => request('post', 'transactions/', transactionData),
-    updateTransaction: (id, transactionData) => request('put', `transactions/${id}`, transactionData),
+    createTransaction: (data, params) => request('post', 'transactions/', data, params),
+    updateTransaction: (id, data, params) => request('put', `transactions/${id}`, data, params),
     deleteTransaction: (id) => request('delete', `transactions/${id}`),
+    // --- СЧЕТА ---
+    getAccounts: (params) => request('get', 'accounts/', null, params),
+    createAccount: (data) => request('post', 'accounts/', data),
+    updateAccount: (id, data) => request('put', `accounts/${id}`, data),
+    deleteAccount: (id) => request('delete', `accounts/${id}`),
 
-    // Accounts
-    getAccounts: (workspaceId) => request('get', 'accounts/', null, { workspace_id: workspaceId }),
-    createAccount: (accountData) => request('post', 'accounts/', accountData),
-    updateAccount: (id, accountData) => request('put', `accounts/${id}`, accountData),
-    deleteAccount: (id) => request('delete', `accounts/${id}`), 
+    // --- СТАТЬИ ДДС ---
+    getDdsArticles: (params) => request('get', 'dds-articles/', null, params),
+    createDdsArticle: (data) => request('post', 'dds-articles/', data),
+    updateDdsArticle: (id, data) => request('put', `dds-articles/${id}`, data),
+    deleteDdsArticle: (id) => request('delete', `dds-articles/${id}`),
 
-    // DDS Articles
-    getDdsArticleById: (articleId) => request('get', `dds-articles/${articleId}`),
-    getDdsArticles: (workspaceId) => request('get', `dds-articles/?workspace_id=${workspaceId}`),
-    createDdsArticle: (articleData) => request('post', 'dds-articles/', articleData),
-    updateDdsArticle: (articleId, articleData) => request('put', `dds-articles/${articleId}`, articleData),
-    deleteDdsArticle: (articleId) => request('delete', `dds-articles/${articleId}`),
-
-    // Reports
-    getDdsReport: (params) => request('get', 'reports/dds', null, params), // Этот вызов был проблемным
-
-    // Dashboard
-    getProfitLossReport: (params) => request('get', 'reports/profit-loss', null, params),
-    getDashboardSummary: (workspaceId, startDate, endDate) =>
-        request('get', 'dashboard/summary', null, { workspace_id: workspaceId, start_date: startDate, end_date: endDate }),
-    getDashboardCashflowTrend: (workspaceId, startDate, endDate, periodType) =>
-        request('get', 'dashboard/cashflow-trend', null, { workspace_id: workspaceId, start_date: startDate, end_date: endDate, period_type: periodType }),
-
-    // Budgets 
-    getBudgets: (params) => request('get', 'budgets/', null, params), 
-    createBudget: (budgetData) => request('post', 'budgets/', budgetData), 
-    getBudgetStatus: (budgetId) => request('get', `budgets/${budgetId}/status`), 
-    updateBudget: (budgetId, budgetData) => request('put', `budgets/${budgetId}`, budgetData), 
-    deleteBudget: (budgetId) => request('delete', `budgets/${budgetId}`), 
-
-
-    // Методы для запланированных платежей
-    getPlannedPayments: (params) => request('get', 'planned-payments/', null, params),
-    createPlannedPayment: (paymentData) => request('post', 'planned-payments/', paymentData),
-    updatePlannedPayment: (paymentId, paymentData) => request('put', `planned-payments/${paymentId}`, paymentData),
-    deletePlannedPayment: (paymentId) => request('delete', `planned-payments/${paymentId}`),
-
-    // Методы для платежного календаря
-    getPaymentCalendar: (params) => request('get', 'payment-calendar/', null, params),
-
-
-    // Statement
-    uploadStatement: (formData) => request('post', 'statement/upload', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
-    }),
-
-    // Методы для Контрагентов (Counterparties)
+    // --- КОНТРАГЕНТЫ ---
     getCounterparties: (params) => request('get', 'counterparties/', null, params),
-    createCounterparty: (counterpartyData) => request('post', 'counterparties/', counterpartyData),
-    getCounterpartyById: (id) => request('get', `counterparties/${id}`),
-    updateCounterparty: (id, counterpartyData) => request('put', `counterparties/${id}`, counterpartyData),
-    deleteCounterparty: (id) => request('delete', `counterparties/${id}`),
+    createCounterparty: (data, params) => request('post', 'counterparties/', data, params),
+    updateCounterparty: (id, data, params) => request('put', `counterparties/${id}`, data, params),
+    deleteCounterparty: (id, params) => request('delete', `counterparties/${id}`, null, params),
+    
+    // --- БЮДЖЕТЫ (ИСПРАВЛЕНО) ---
+    getBudgets: (params) => request('get', '/budgets/', null, params),
+    createBudget: (budgetData) => request('post', '/budgets/', budgetData),
+    updateBudget: (budgetId, budgetData) => request('put', `/budgets/${budgetId}`, budgetData),
+    deleteBudget: (budgetId) => request('delete', `/budgets/${budgetId}`),
+    getBudgetStatus: (budgetId) => request('get', `/budgets/${budgetId}/status`),
+    getBudgetItems: (budgetId) => request('get', `/budgets/${budgetId}/items`),
+    
+    // --- ОТЧЕТЫ И ДАШБОРД ---
+    getDdsReport: (params) => request('get', 'reports/dds', null, params),
+    getProfitLossReport: (params) => request('get', 'reports/profit-loss', null, params),
+    getDashboardSummary: (params) => request('get', 'dashboard/summary', null, params),
+    getDashboardCashflowTrend: (params) => request('get', 'dashboard/cashflow-trend', null, params),
+    getPaymentCalendar: (params) => request('get', '/payment-calendar/', null, params),
 
-    // Методы для Договоров (Contracts)
-    getContracts: (params) => request('get', 'contracts/', null, params), 
-    createContract: (contractData) => request('post', 'contracts/', contractData),
-    getContractById: (id) => request('get', `contracts/${id}`),
-    updateContract: (id, contractData) => request('put', `contracts/${id}`, contractData),
-    deleteContract: (id) => request('delete', `contracts/${id}`),
+    // --- ВЫПИСКИ ---
+    uploadStatement: (formData) => apiClient.post('statement/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+    // --- ОБЩИЕ ---
+    getCategories: () => request('get', 'categories/'),
+    getCurrencies: () => request('get', 'currencies/'),
+    getTags: () => request('get', 'tags/'),
+    // --- ДОГОВОРЫ ---
+    getContracts: (params) => request('get', 'contracts/', null, params),
+    createContract: (data, params) => request('post', 'contracts/', data, params),
+    updateContract: (id, data, params) => request('put', `contracts/${id}`, data, params),
+    deleteContract: (id, params) => request('delete', `contracts/${id}`, null, params),
+
+    // --- ЗАПЛАНИРОВАННЫЕ ПЛАТЕЖИ ---
+    getPlannedPayments: (params) => request('get', 'planned-payments/', null, params),
+    createPlannedPayment: (data, params) => request('post', 'planned-payments/', data, params),
+    updatePlannedPayment: (id, data, params) => request('put', `planned-payments/${id}`, data, params),
+    deletePlannedPayment: (id, params) => request('delete', `planned-payments/${id}`, null, params),
 };

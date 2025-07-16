@@ -65,9 +65,9 @@ function CounterpartiesPage() {
   const [createUpdateCounterparty, { isLoading: isMutating, error: mutationError }] = useApiMutation(
     async (cpData) => {
       if (counterpartyToEdit) {
-        return await apiService.updateCounterparty(counterpartyToEdit.id, cpData);
+        return await apiService.updateCounterparty(counterpartyToEdit.id, cpData, { workspace_id: activeWorkspace?.id });
       } else {
-        return await apiService.createCounterparty(cpData);
+        return await apiService.createCounterparty(cpData, { workspace_id: activeWorkspace?.id });
       }
     },
     {
@@ -83,7 +83,7 @@ function CounterpartiesPage() {
 
   const [deleteCounterpartyMutation, { isLoading: isDeleting, error: deleteError }] = useApiMutation(
     async (id) => {
-      return await apiService.deleteCounterparty(id);
+      return await apiService.deleteCounterparty(id, { workspace_id: activeWorkspace?.id });
     },
     {
       onSuccess: () => {

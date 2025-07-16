@@ -1,4 +1,4 @@
-// frontend/src/pages/TransactionsPage.jsx
+// /frontend/src/pages/TransactionsPage.jsx
 
 import React, { useState, useEffect, useCallback, useReducer, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
@@ -29,7 +29,7 @@ const initialFilters = {
     start_date: null,
     end_date: null,
     account_id: 'all',
-    counterparty_id: 'all', // ИСПРАВЛЕНО: Добавлен фильтр по контрагенту
+    counterparty_id: 'all',
     amount_from: '',
     amount_to: '',
 };
@@ -46,9 +46,11 @@ function filtersReducer(state, action) {
 }
 
 function TransactionsPage() {
-    const { activeWorkspace, accounts, ddsArticles, fetchDataForWorkspace } = useAuth();
-    const [formType, setFormType] = React.useState('expense');
+    // --- ИСПРАВЛЕНИЕ 1: Получаем activeWorkspace и authLoading из useAuth ---
+    const { activeWorkspace, accounts, ddsArticles, fetchDataForWorkspace, loading: authLoading } = useAuth();
+    const workspaceId = activeWorkspace?.id; // Безопасно извлекаем ID
 
+    const [formType, setFormType] = React.useState('expense');
     const [currentPage, setCurrentPage] = useState(1);
     const [filters, dispatchFilters] = useReducer(filtersReducer, initialFilters);
     
@@ -56,19 +58,15 @@ function TransactionsPage() {
     const [editingTransaction, setEditingTransaction] = useState(null);
     const [isUploadModalOpen, setUploadModalOpen] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState(null);
-
-    // ИСПРАВЛЕНО: Добавлен стейт для контрагентов для фильтра
     const [counterparties, setCounterparties] = useState([]); 
 
-    // ИСПРАВЛЕНО: Загрузка контрагентов для фильтра
     useEffect(() => {
         const loadCounterparties = async () => {
-            if (activeWorkspace?.id) {
+            if (workspaceId) { // Используем workspaceId для проверки
                 try {
                     const fetchedCounterparties = await apiService.getCounterparties({
-                        workspace_id: activeWorkspace.id
+                        workspace_id: workspaceId
                     });
-                    // Убедитесь, что apiService.getCounterparties возвращает { items: [], total: 0 }
                     setCounterparties(fetchedCounterparties?.items || []); 
                 } catch (err) {
                     console.error("Ошибка загрузки контрагентов для фильтра:", err);
@@ -76,10 +74,14 @@ function TransactionsPage() {
             }
         };
         loadCounterparties();
-    }, [activeWorkspace]);
+    }, [workspaceId]); // Зависимость от workspaceId
 
+    // --- ИСПРАВЛЕНИЕ 2: Обновляем функцию загрузки транзакций ---
     const fetchTransactions = useCallback(async () => {
+        if (!workspaceId) return null; // Защита от вызова без ID
+
         const params = {
+            workspace_id: workspaceId, // Явно добавляем ID рабочего пространства
             page: currentPage,
             size: ITEMS_PER_PAGE,
             start_date: filters.start_date ? format(filters.start_date, 'yyyy-MM-dd') : undefined,
@@ -90,54 +92,48 @@ function TransactionsPage() {
         if (filters.account_id && filters.account_id !== 'all') {
             params.account_id = filters.account_id;
         }
-        // ИСПРАВЛЕНО: Добавляем counterparty_id в параметры запроса
         if (filters.counterparty_id && filters.counterparty_id !== 'all') {
             params.counterparty_id = filters.counterparty_id;
         }
         return apiService.getTransactions(params);
-    }, [currentPage, filters]);
+    }, [currentPage, filters, workspaceId]); // Добавляем workspaceId в зависимости
 
-    const { data: transactionsData, loading, error, refetch: refetchTransactions } = useDataFetching(
+    // --- ИСПРАВЛЕНИЕ 3: Обновляем хук useDataFetching ---
+    const { 
+        data: transactionsData, 
+        loading, 
+        error, 
+        refetch: refetchTransactions 
+    } = useDataFetching(
         fetchTransactions,
-        [fetchTransactions, activeWorkspace],
-        { skip: !activeWorkspace }
+        [workspaceId, currentPage, filters], // Массив зависимостей теперь включает workspaceId
+        { skip: authLoading || !workspaceId } // Пропускаем запрос, пока нет ID или идет загрузка контекста
     );
-    console.log("TransactionsPage: Получены данные транзакций ->", transactionsData);
-
-    console.log("TransactionsPage: Accounts ->", accounts); 
-    console.log("TransactionsPage: DdsArticles ->", ddsArticles); 
-
 
     const transactionMutationFn = (transactionData) => {
         if (editingTransaction) {
-            return apiService.updateTransaction(editingTransaction.id, transactionData);
+            return apiService.updateTransaction(editingTransaction.id, transactionData, { workspace_id: activeWorkspace?.id });
         }
-        return apiService.createTransaction(transactionData);
+        return apiService.createTransaction(transactionData, { workspace_id: activeWorkspace?.id });
     };
 
     const [submitTransaction, { isLoading: isSubmitting, error: submissionError }] = useApiMutation(transactionMutationFn, {
-        onSuccess: (data) => {
-            console.log("TransactionsPage (useApiMutation onSuccess): Мутация успешна! Ответ сервера ->", data);
+        onSuccess: () => {
             handleResetFilters();
             if (activeWorkspace) {
                 fetchDataForWorkspace(activeWorkspace.id);
             }
-            console.log("TransactionsPage (useApiMutation onSuccess): Вызываю handleCloseFormModal...");
             handleCloseFormModal();
-            console.log("TransactionsPage (useApiMutation onSuccess): Вызываю refetchTransactions...");
             refetchTransactions();
-            console.log("TransactionsPage (useApiMutation onSuccess): Все действия по успеху вызваны.");
         }
     });
 
     const handleCloseFormModal = () => {
         setFormModalOpen(false);
         setEditingTransaction(null);
-        console.log("TransactionsPage: handleCloseFormModal вызван, isFormModalOpen ->", false);
     };
 
     const handleTransactionSubmit = (transactionData) => {
-        console.log("TransactionsPage: Вызов мутации с данными ->", transactionData);
         submitTransaction(transactionData);
     };
 
@@ -164,114 +160,109 @@ function TransactionsPage() {
         dispatchFilters({ type: 'SET_FILTER', filterName, value });
         setCurrentPage(1);
     }, []);
+
     const handleResetFilters = useCallback(() => {
         dispatchFilters({ type: 'RESET_FILTERS' });
         setCurrentPage(1);
     }, []);
+
     const handleOpenFormModal = (transaction = null) => {
         setEditingTransaction(transaction);
         setFormModalOpen(true);
     };
+
     const handleDeleteRequest = (transaction) => {
         setTransactionToDelete(transaction);
     };
 
-    // ИСПРАВЛЕНО: Добавлены accessor или render для каждого столбца
     const columns = useMemo(() => [
-        { 
-            key: 'status', 
-            label: '', 
-            className: 'w-12 text-center',
-            render: (row) => row.status 
-        },
-        { 
-            key: 'date', 
-            label: 'Дата', 
-            className: 'w-24', 
-            accessor: 'date' 
-        },
-        { 
-            key: 'account', 
-            label: 'Счет', 
-            className: 'w-32', 
-            accessor: 'account' 
-        },
-        { 
-            key: 'amount', 
-            label: 'Сумма', 
-            className: 'w-28 text-right',
-            render: (row) => row.amount 
-        },
-        { 
-            key: 'description', 
-            label: 'Описание', 
-            className: 'flex-grow', 
-            accessor: 'description' 
-        },
-        { // ИСПРАВЛЕНО: Колонка "Контрагент"
-            key: 'counterparty', 
-            label: 'Контрагент', 
-            className: 'w-40', 
-            accessor: 'counterparty.name', // Предполагается, что данные приходят вложенно
-            render: (row) => row.counterparty?.name || 'Без контрагента'
-        },
-        { // ИСПРАВЛЕНО: Колонка "Договор"
-            key: 'contract', 
-            label: 'Договор', 
-            className: 'w-40', 
-            accessor: 'contract.name', // Предполагается, что данные приходят вложенно
-            render: (row) => row.contract?.name || 'Без договора'
-        },
-        { 
-            key: 'dds_article', 
-            label: 'Статья ДДС', 
-            className: 'w-48', 
-            accessor: 'dds_article' 
-        },
-        { 
-            key: 'actions', 
-            label: 'Действия', 
-            className: 'w-28 text-center',
-            render: (row) => row.actions 
-        }
-    ], []);
-
-    const tableData = useMemo(() => {
-        const flatDdsArticles = flattenDdsArticles(ddsArticles || []); 
-        console.log("TransactionsPage: Сглаженные DDS Articles ->", flatDdsArticles);
-
-        return (transactionsData?.items || []).map(item => { 
-            const isIncome = item.transaction_type === 'INCOME';
-            const amountColor = isIncome ? 'text-green-600' : 'text-red-600';
-            const amountPrefix = isIncome ? '+' : '-';
-            const StatusIcon = isIncome ? ArrowUpCircleIcon : ArrowDownCircleIcon;
-            
-            const account = accounts.find(acc => acc.id === item.from_account_id || acc.id === item.to_account_id);
-            const ddsArticle = flatDdsArticles.find(art => art.id === item.dds_article_id); 
-
-            return {
-                ...item,
-                status: <StatusIcon className={`h-6 w-6 mx-auto ${amountColor}`} />,
-                date: item.transaction_date && isValid(parseISO(item.transaction_date)) ? format(parseISO(item.transaction_date), 'dd.MM.yyyy') : 'Н/Д',
-                account: account ? account.name : 'Неизвестный счет',
-                dds_article: item.dds_article_id && ddsArticle ? ddsArticle.name : 'Без статьи', 
-                amount: (
-                    <span className={`font-medium ${amountColor}`}>
-                        {amountPrefix} {item.amount} {account?.currency || ''}
+        {
+            key: 'transaction_type',
+            label: 'ТИП',
+            render: row =>
+                row.transaction_type === 'INCOME' ? (
+                    <span className="flex items-center text-green-600">
+                        <ArrowUpCircleIcon className="h-5 w-5 mr-1" /> 
+                    </span>
+                ) : (
+                    <span className="flex items-center text-red-600">
+                        <ArrowDownCircleIcon className="h-5 w-5 mr-1" /> 
                     </span>
                 ),
-                actions: (
-                    <div className="flex justify-end space-x-2">
-                        <Button variant="icon" onClick={() => handleOpenFormModal(item)}><PencilSquareIcon className="h-5 w-5"/></Button>
-                        <Button variant="icon" onClick={() => handleDeleteRequest(item)} className="text-red-600 hover:text-red-800"><TrashIcon className="h-5 w-5"/></Button>
-                    </div>
-                )
-            };
-        });
-    }, [transactionsData, accounts, ddsArticles, handleOpenFormModal, handleDeleteRequest]); 
+        },
+        {
+            key: 'transaction_date',
+            label: 'Дата',
+            render: row => row.transaction_date ? new Date(row.transaction_date).toLocaleDateString('ru-RU') : '',
+        },
+        {
+            key: 'account_name',
+            label: 'Счет',
+            render: row => row.account_name || '',
+        },
+        {
+            key: 'amount',
+            label: 'Сумма',
+            render: row =>
+                <span className={row.transaction_type === 'INCOME' ? 'text-green-600' : 'text-red-600'}>
+                    {row.amount ? row.amount.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' }) : ''}
+                </span>,
+        },
+        { key: 'description', label: 'Описание' },
+        {
+            key: 'contractor',
+            label: 'Контрагент',
+            render: row => row.contractor || '',
+        },
+        {
+            key: 'contract',
+            label: 'Договор',
+            render: row => row.contract || '',
+        },
+        {
+            key: 'dds_article_name',
+            label: 'Статья',
+            render: row => row.dds_article_name || '',
+        },
+        {
+            key: 'actions',
+            label: 'Действия',
+            render: row => (
+                <div className="flex gap-2">
+                    <button
+                        className="text-blue-600 hover:text-blue-800"
+                        title="Редактировать"
+                        onClick={() => handleOpenFormModal(row)}
+                    >
+                        <PencilSquareIcon className="h-5 w-5" />
+                    </button>
+                    <button
+                        className="text-red-600 hover:text-red-800"
+                        title="Удалить"
+                        onClick={() => handleDeleteRequest(row)}
+                    >
+                        <TrashIcon className="h-5 w-5" />
+                    </button>
+                </div>
+            ),
+        },
+    ], [handleOpenFormModal, handleDeleteRequest]);
+
+    const tableData = useMemo(() => {
+        const items = Array.isArray(transactionsData) ? transactionsData : (transactionsData?.items || []);
+        console.log('transactionsData:', transactionsData);
+        console.log('tableData items:', items);
+        return items.map(item => item);
+    }, [transactionsData]); 
+
+    // Отображаем главный лоадер, если контекст еще не загрузился
+    if (authLoading) {
+        return <Loader text="Инициализация..." />;
+    }
 
     return (
         <React.Fragment>
+            {/* Ваш JSX без изменений */}
             <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
                 <PageTitle title="Транзакции" />
                 <div className="flex items-center space-x-2">
@@ -289,12 +280,12 @@ function TransactionsPage() {
             <TransactionFilters
                 filters={filters}
                 accounts={accounts || []}
-                counterparties={counterparties || []} // ИСПРАВЛЕНО: Передаем контрагентов в фильтры
+                counterparties={counterparties || []}
                 onFilterChange={handleFilterChange}
                 onResetFilters={handleResetFilters}
             />
 
-            {error && <Alert type="error" className="my-4">{error}</Alert>}
+            {error && <Alert type="error" className="my-4">{error.message}</Alert>}
             
             <UniversalTable columns={columns} data={tableData} loading={loading} emptyMessage="Нет транзакций по выбранным фильтрам." />
             
@@ -313,6 +304,7 @@ function TransactionsPage() {
                     defaultType={formType}
                     isSubmitting={isSubmitting}
                     error={submissionError}
+                    workspaceId={workspaceId}
                 />
             </Modal>
             

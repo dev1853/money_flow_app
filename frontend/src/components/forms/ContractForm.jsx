@@ -32,6 +32,7 @@ function ContractForm({ contract: contractToEdit, onSubmit, onCancel, isSubmitti
         counterparty_id: ''
     });
     const [counterparties, setCounterparties] = useState([]); 
+    const [showError, setShowError] = useState(false);
 
     useEffect(() => {
         if (contractToEdit) {
@@ -76,7 +77,10 @@ function ContractForm({ contract: contractToEdit, onSubmit, onCancel, isSubmitti
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({
+            ...prev,
+            [name]: name === "counterparty_id" ? (value ? Number(value) : "") : value,
+        }));
     };
 
     const handleDateChange = (name, date) => {
@@ -85,7 +89,7 @@ function ContractForm({ contract: contractToEdit, onSubmit, onCancel, isSubmitti
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        console.log('formData.counterparty_id:', formData.counterparty_id, typeof formData.counterparty_id); 
         try {
             const dataToSend = {
                 ...formData,
@@ -101,8 +105,10 @@ function ContractForm({ contract: contractToEdit, onSubmit, onCancel, isSubmitti
                 throw new Error("Дата начала договора обязательна.");
             }
             if (!dataToSend.counterparty_id) {
+                setShowError(true);
                 throw new Error("Контрагент обязателен.");
             }
+            setShowError(false);
 
             // ИСПРАВЛЕНО: Вызываем пропс onSubmit, делегируя API-вызов родительскому компоненту
             await onSubmit(dataToSend);
@@ -123,9 +129,9 @@ function ContractForm({ contract: contractToEdit, onSubmit, onCancel, isSubmitti
         }[status]
     }));
 
-    const counterpartyOptions = counterparties.map(cp => ({
+    const counterpartyOptions = counterparties.map((cp) => ({
         value: cp.id,
-        label: cp.name
+        label: cp.name,
     }));
 
     if (isSubmitting) { 
@@ -152,14 +158,14 @@ function ContractForm({ contract: contractToEdit, onSubmit, onCancel, isSubmitti
             <DatePicker
                 label="Дата начала договора"
                 name="start_date"
-                selectedDate={formData.start_date ? parseISO(formData.start_date) : null} 
+                selected={formData.start_date && !isNaN(Date.parse(formData.start_date)) ? parseISO(formData.start_date) : null}
                 onChange={(date) => handleDateChange('start_date', date)}
                 required
             />
             <DatePicker
                 label="Дата окончания договора (опционально)"
                 name="end_date"
-                selectedDate={formData.end_date ? parseISO(formData.end_date) : null} 
+                selected={formData.end_date && !isNaN(Date.parse(formData.end_date)) ? parseISO(formData.end_date) : null}
                 onChange={(date) => handleDateChange('end_date', date)}
             />
             <Input
@@ -187,8 +193,18 @@ function ContractForm({ contract: contractToEdit, onSubmit, onCancel, isSubmitti
                 options={counterpartyOptions}
                 required
                 placeholder="Выберите контрагента"
-                disabled={isSubmitting || !activeWorkspace?.id || counterparties.length === 0} 
+                disabled={isSubmitting || !activeWorkspace?.id || counterparties.length === 0}
             />
+            {showError && !formData.counterparty_id && (
+                <div className="text-red-600 text-sm mt-1">
+                    Пожалуйста, выберите контрагента
+                </div>
+            )}
+            {counterparties.length === 0 && (
+                <div className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">
+                    Сначала создайте хотя бы одного контрагента, чтобы добавить договор.
+                </div>
+            )}
             <Button 
                 type="submit" 
                 className="w-full" 

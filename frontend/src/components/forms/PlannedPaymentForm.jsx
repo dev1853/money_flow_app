@@ -11,8 +11,10 @@ import Alert from '../Alert';
 import Checkbox from './Checkbox';
 import DatePicker from './DatePicker';
 import { toISODateString } from '../../utils/dateUtils';
+import { useAuth } from '../../contexts/AuthContext';
 
 const PlannedPaymentForm = ({ payment, onSave, onCancel, selectedDate }) => {
+    const { activeWorkspace } = useAuth();
     const isEditMode = Boolean(payment);
     
     const initialDate = payment?.payment_date ? new Date(payment.payment_date) : (selectedDate ? new Date(selectedDate) : null);
@@ -38,9 +40,9 @@ const PlannedPaymentForm = ({ payment, onSave, onCancel, selectedDate }) => {
         }
         
         if (isEditMode) {
-            await apiService.updatePlannedPayment(payment.id, dataToSend);
+            await apiService.updatePlannedPayment(payment.id, dataToSend, { workspace_id: activeWorkspace?.id });
         } else {
-            await apiService.createPlannedPayment(dataToSend);
+            await apiService.createPlannedPayment(dataToSend, { workspace_id: activeWorkspace?.id });
         }
     };
 

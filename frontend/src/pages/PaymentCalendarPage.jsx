@@ -14,6 +14,7 @@ import { formatCurrency, formatDate } from '../utils/formatting';
 import { PlusIcon, PencilIcon, TrashIcon, TableCellsIcon, CalendarDaysIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import PaymentCalendarView from '../components/PaymentCalendarView';
 import PaymentCalendarTable from '../components/PaymentCalendarTable';
+import { useAuth } from '../contexts/AuthContext';
 
 // Компонент PlannedPaymentItem остается без изменений, но с адаптированными стилями
 const PlannedPaymentItem = ({ payment, onEdit, onDelete }) => (
@@ -34,6 +35,7 @@ const PlannedPaymentItem = ({ payment, onEdit, onDelete }) => (
 
 
 function PaymentCalendarPage() {
+    const { activeWorkspace } = useAuth();
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [calendarData, setCalendarData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -53,6 +55,7 @@ function PaymentCalendarPage() {
             const startDate = getFirstDayOfMonth(date);
             const endDate = getLastDayOfMonth(date);
             const params = { 
+                workspace_id: activeWorkspace?.id,
                 start_date: toISODateString(startDate), 
                 end_date: toISODateString(endDate),
                 ...(startBalanceOverride !== null && { start_balance: startBalanceOverride })
@@ -64,7 +67,7 @@ function PaymentCalendarPage() {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [activeWorkspace]);
 
     // Первичная загрузка данных - запускается только один раз при монтировании
     useEffect(() => {

@@ -90,7 +90,8 @@ function CounterpartyForm({ counterparty: counterpartyToEdit, onSubmit, onCancel
 
         try {
             const dataToSend = {
-                ...formData
+                ...formData,
+                inn: formData.inn ? formData.inn : null, // отправляем null вместо пустой строки
             };
 
             // Валидация
