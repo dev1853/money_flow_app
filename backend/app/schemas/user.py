@@ -4,6 +4,8 @@ from __future__ import annotations # Важно для отложенных сс
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr, Field
 
+# Мы предполагаем, что у вас есть BaseSchema, от которого наследуются другие.
+# Если нет, замените 'BaseSchema' на 'BaseModel'.
 from .base import BaseSchema
 
 class UserBase(BaseSchema):
@@ -13,6 +15,10 @@ class UserBase(BaseSchema):
 
 class UserCreate(UserBase):
     password: str
+    # --- ВОТ ИСПРАВЛЕНИЕ ---
+    # Добавляем это поле. Оно не требуется от пользователя при регистрации,
+    # но позволяет нашему коду присвоить его внутри сервиса.
+    role_id: Optional[int] = None
 
 class UserInDB(UserBase):
     id: int
@@ -25,11 +31,11 @@ class User(UserInDB):
     pass
 
 class UserWithRole(User):
-    role: Optional["Role"] = None # Отложенная ссылка
+    role: Optional["Role"] = None
 
 class UserWithWorkspace(User):
-    active_workspace: Optional["Workspace"] = None # Отложенная ссылка
-    workspaces: List["Workspace"] = [] # Отложенная ссылка
+    active_workspace: Optional["Workspace"] = None
+    workspaces: List["Workspace"] = []
 
 class UserUpdate(BaseModel):
     password: Optional[str] = None

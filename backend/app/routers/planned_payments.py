@@ -7,7 +7,7 @@ from typing import List
 from datetime import date
 
 from .. import crud, models, schemas
-from ..dependencies import get_db, get_current_active_user, get_current_active_workspace
+from ..dependencies import get_db, get_current_active_user, get_workspace_from_query
 
 router = APIRouter(
     tags=["planned-payments"],
@@ -21,14 +21,14 @@ def update_planned_payment(
     db: Session = Depends(get_db),
     payment_id: int,
     payment_in: schemas.PlannedPaymentUpdate,
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ):
     """
     Обновить запланированный платеж.
     """
     # 1. Получаем объект из базы
     payment = crud.planned_payment.get(db=db, id=payment_id)
-    if not payment or payment.workspace_id != current_workspace.id:
+    if not payment or payment.workspace_id != workspace.id:
         raise HTTPException(status_code=404, detail="Запланированный платеж не найден")
 
     # 2. Обновляем его поля в сессии (этот метод не возвращает объект, он просто меняет его)
@@ -54,11 +54,11 @@ def create_planned_payment(
     db: Session = Depends(get_db),
     payment_in: schemas.PlannedPaymentCreate,
     current_user: models.User = Depends(get_current_active_user),
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ):
     try:
         return crud.planned_payment.create_with_owner(
-            db=db, obj_in=payment_in, owner_id=current_user.id, workspace_id=current_workspace.id
+            db=db, obj_in=payment_in, owner_id=current_user.id, workspace_id=workspace.id
         )
     except SQLAlchemyError as e:
         db.rollback()
@@ -71,10 +71,10 @@ def delete_planned_payment(
     *,
     db: Session = Depends(get_db),
     payment_id: int,
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ):
     payment_to_delete = crud.planned_payment.get(db=db, id=payment_id)
-    if not payment_to_delete or payment_to_delete.workspace_id != current_workspace.id:
+    if not payment_to_delete or payment_to_delete.workspace_id != workspace.id:
         raise HTTPException(status_code=404, detail="Запланированный платеж не найден")
     
     try:
@@ -92,9 +92,9 @@ def read_planned_payments(
     db: Session = Depends(get_db),
     start_date: date = None,
     end_date: date = None,
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ):
     # ... (код этого эндпоинта без изменений)
     if start_date and end_date:
-        return crud.planned_payment.get_multi_by_workspace_and_period(db=db, workspace_id=current_workspace.id, start_date=start_date, end_date=end_date)
-    return crud.planned_payment.get_multi_by_owner(db=db, owner_id=current_workspace.id)
+        return crud.planned_payment.get_multi_by_workspace_and_period(db=db, workspace_id=workspace.id, start_date=start_date, end_date=end_date)
+    return crud.planned_payment.get_multi_by_owner(db=db, owner_id=workspace.id)

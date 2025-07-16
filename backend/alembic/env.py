@@ -1,62 +1,56 @@
 import os
 import sys
 from logging.config import fileConfig
+from dotenv import load_dotenv
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
 
-# --- НАЧАЛО ИСПРАВЛЕНИЙ ---
+# --- ШАГ 1: Загружаем переменные окружения ---
+# Надежно находим и загружаем файл .env из корневой папки бэкенда.
+# Это гарантирует, что переменная SQLALCHEMY_DATABASE_URL будет доступна.
+dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path=dotenv_path)
+else:
+    print(f"ПРЕДУПРЕЖДЕНИЕ: .env файл не найден по пути {dotenv_path}")
 
-# 1. Добавляем путь к нашему приложению (папку backend), чтобы импорты работали.
-# Это гарантирует, что Python найдет пакет 'app'.
+
+# --- ШАГ 2: Добавляем путь к нашему приложению (папку backend) ---
+# Это нужно, чтобы Python мог найти и импортировать 'app.models' и 'app.database'.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# 2. Импортируем нашу базовую модель из `database.py`.
-# Alembic будет использовать ее метаданные как "цель" для сравнения с БД.
-from app.database import Base
-
-# 3. Импортируем ВСЕ модели из `models.py`.
-# Это КРАЙНЕ ВАЖНЫЙ шаг. Эта строка заставляет Python "увидеть"
-# все ваши классы (User, Account, Workspace и т.д.), чтобы Alembic
-# мог их проанализировать.
-from app import models
-
-# This is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+# --- ШАГ 3: Настраиваем конфигурацию Alembic ---
+# Это стандартный объект конфигурации Alembic.
 config = context.config
 
-db_url = os.getenv("DATABASE_URL")
-if db_url:
-    config.set_main_option("sqlalchemy.url", db_url)
+# Получаем URL базы данных, который мы загрузили из .env,
+# и устанавливаем его как основную опцию для Alembic.
+sqlalchemy_url = os.getenv("SQLALCHEMY_DATABASE_URL")
+if sqlalchemy_url:
+    config.set_main_option("sqlalchemy.url", sqlalchemy_url)
+else:
+    # Эта ошибка теперь не должна появляться, но оставляем ее для диагностики.
+    raise ValueError("Не удалось найти SQLALCHEMY_DATABASE_URL в .env файле!")
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
+# Подключаем логирование.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+# --- ШАГ 4: Указываем Alembic, какие модели отслеживать ---
+# Импортируем базовый класс и все модели, чтобы Alembic их "увидел".
+from app.database import Base
+from app import models  # <-- Обязательно импортируем все модели.
 
-# --- НАЧАЛО ИСПРАВЛЕНИЙ ---
-
-# 4. Указываем Alembic на метаданные наших импортированных моделей.
+# Устанавливаем метаданные наших моделей как цель для автогенерации миграций.
 target_metadata = Base.metadata
 
-# --- КОНЕЦ ИСПРАВЛЕНИЙ ---
-
+# --- ДАЛЕЕ ИДЕТ СТАНДАРТНЫЙ КОД ALEMBIC БЕЗ ИЗМЕНЕНИЙ ---
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
-
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
-    """
+    """Run migrations in 'offline' mode."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -70,14 +64,7 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
-    """
-    # Этот блок кода изменен, чтобы использовать URL из вашей конфигурации
-    # и корректно работать с асинхронным движком, если он используется.
+    """Run migrations in 'online' mode."""
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",

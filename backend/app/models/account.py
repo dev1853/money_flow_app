@@ -5,6 +5,7 @@ from decimal import Decimal as PythonDecimal
 
 from ..database import Base
 from .mixins import TimestampMixin
+from .account_type import AccountType 
 
 class Account(Base, TimestampMixin):
     __tablename__ = "accounts"

@@ -7,7 +7,7 @@ from datetime import date
 from enum import Enum
 
 from app import crud, models, schemas
-from app.dependencies import get_db, get_current_active_user, get_current_active_workspace
+from app.dependencies import get_db, get_current_active_user, get_workspace_from_query
 
 class PeriodType(str, Enum):
     DAY = "day"
@@ -25,7 +25,7 @@ router = APIRouter(
 def get_dds_report(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
     start_date: date = Query(..., description="Дата начала периода (ГГГГ-ММ-ДД)"),
     end_date: date = Query(..., description="Дата окончания периода (ГГГГ-ММ-ДД)"),
 ):
@@ -35,7 +35,7 @@ def get_dds_report(
     return crud.report_crud.get_dds_report(
         db=db,
         owner_id=current_user.id, # Убедитесь, что owner_id передается
-        workspace_id=current_workspace.id,
+        workspace_id=workspace.id,
         start_date=start_date,
         end_date=end_date
     )
@@ -44,7 +44,7 @@ def get_dds_report(
 def get_profit_loss_report(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
     start_date: date = Query(..., description="Дата начала периода (ГГГГ-ММ-ДД)"),
     end_date: date = Query(..., description="Дата окончания периода (ГГГГ-ММ-ДД)"),
     # <-- НОВЫЕ ПАРАМЕТРЫ ЗАПРОСА
@@ -67,7 +67,7 @@ def get_profit_loss_report(
     return crud.report_crud.get_profit_loss_report(
         db=db,
         owner_id=current_user.id,
-        workspace_id=current_workspace.id,
+        workspace_id=workspace.id,
         start_date=start_date,
         end_date=end_date,
         # <-- ПЕРЕДАЕМ НОВЫЕ ПАРАМЕТРЫ В CRUD

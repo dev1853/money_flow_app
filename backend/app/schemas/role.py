@@ -1,22 +1,29 @@
-# schemas/role.py
-from __future__ import annotations # Важно для отложенных ссылок
+# backend/app/schemas/role.py
 
-from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from typing import Optional # <-- 1. Импортируем Optional
 
-from .base import BaseSchema
+# --- Базовая схема Role ---
+class RoleBase(BaseModel):
+    name: str
+    # 2. Используем Optional[str] вместо str | None
+    description: Optional[str] = None
 
-class RoleBase(BaseSchema):
-    name: Optional[str] = None
 
+# --- Схема для создания Role ---
 class RoleCreate(RoleBase):
-    pass
-
-class RoleInDB(RoleBase):
     id: int
 
-class Role(RoleInDB):
-    users: List["User"] = [] # Отложенная ссылка
 
-# УДАЛИТЕ все вызовы model_rebuild() отсюда. Они будут в __init__.py
-# Role.model_rebuild()
+# --- Схема для обновления Role ---
+class RoleUpdate(BaseModel):
+    # 2. Используем Optional[str] вместо str | None
+    name: Optional[str] = None
+    description: Optional[str] = None
+
+
+# --- Схема для чтения Role ---
+class Role(RoleBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)

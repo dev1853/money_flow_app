@@ -1,70 +1,77 @@
 [
   {
-    "name": "Операционная деятельность",
+    "name": "Доходы",
     "article_type": "group",
     "children": [
-      {
-        "name": "Поступления",
-        "article_type": "group",
-        "children": [
-          { "name": "Поступления от клиентов", "article_type": "income", "children": [] },
-          { "name": "Авансы от покупателей", "article_type": "income", "children": [] }
-        ]
-      },
-      {
-        "name": "Платежи",
-        "article_type": "group",
-        "children": [
-          { "name": "Платежи поставщикам", "article_type": "expense", "children": [] },
-          { "name": "Оплата труда", "article_type": "expense", "children": [] },
-          { "name": "Налоги и взносы", "article_type": "expense", "children": [] },
-          { "name": "Аренда", "article_type": "expense", "children": [] },
-          { "name": "Прочие операционные расходы", "article_type": "expense", "children": [] }
-        ]
-      }
+      { "name": "Продажи товаров/услуг", "article_type": "income", "children": [] },
+      { "name": "Авансы от клиентов", "article_type": "income", "children": [] },
+      { "name": "Возвраты от поставщиков", "article_type": "income", "children": [] },
+      { "name": "Проценты по депозитам", "article_type": "income", "children": [] },
+      { "name": "Прочие доходы", "article_type": "income", "children": [] }
     ]
   },
   {
-    "name": "Инвестиционная деятельность",
+    "name": "Операционные расходы",
     "article_type": "group",
     "children": [
-      {
-        "name": "Поступления",
-        "article_type": "group",
-        "children": [
-          { "name": "Продажа основных средств", "article_type": "income", "children": [] },
-          { "name": "Продажа нематериальных активов", "article_type": "income", "children": [] },
-          { "name": "Полученные дивиденды", "article_type": "income", "children": [] }
-        ]
-      },
-      {
-        "name": "Платежи",
-        "article_type": "group",
-        "children": [
-          { "name": "Покупка основных средств", "article_type": "expense", "children": [] },
-          { "name": "Покупка нематериальных активов", "article_type": "expense", "children": [] }
-        ]
-      }
+      { "name": "Закупка товаров и материалов", "article_type": "expense", "children": [] },
+      { "name": "Оплата поставщикам", "article_type": "expense", "children": [] },
+      { "name": "Зарплата и выплаты сотрудникам", "article_type": "expense", "children": [] },
+      { "name": "Налоги и взносы", "article_type": "expense", "children": [] },
+      { "name": "Аренда офиса/помещений", "article_type": "expense", "children": [] },
+      { "name": "Коммунальные услуги", "article_type": "expense", "children": [] },
+      { "name": "Связь и интернет", "article_type": "expense", "children": [] },
+      { "name": "Транспорт и логистика", "article_type": "expense", "children": [] },
+      { "name": "Реклама и маркетинг", "article_type": "expense", "children": [] },
+      { "name": "Обучение и развитие", "article_type": "expense", "children": [] },
+      { "name": "Канцелярия и хозяйственные расходы", "article_type": "expense", "children": [] },
+      { "name": "Прочие операционные расходы", "article_type": "expense", "children": [] }
     ]
   },
   {
-    "name": "Финансовая деятельность",
+    "name": "ИТ расходы",
     "article_type": "group",
     "children": [
-      {
-        "name": "Поступления",
-        "article_type": "group",
-        "children": [
-          { "name": "Получение кредитов и займов", "article_type": "income", "children": [] }
-        ]
-      },
-      {
-        "name": "Платежи",
-        "article_type": "group",
-        "children": [
-          { "name": "Выплаты по кредитам и займам", "article_type": "expense", "children": [] }
-        ]
-      }
+      { "name": "Покупка техники и оборудования", "article_type": "expense", "children": [] },
+      { "name": "Программное обеспечение и сервисы", "article_type": "expense", "children": [] },
+      { "name": "Обслуживание и поддержка", "article_type": "expense", "children": [] }
+    ]
+  },
+  {
+    "name": "Маркетинг",
+    "article_type": "group",
+    "children": [
+      { "name": "Реклама (онлайн и офлайн)", "article_type": "expense", "children": [] },
+      { "name": "Продвижение в соцсетях", "article_type": "expense", "children": [] },
+      { "name": "Дизайн и полиграфия", "article_type": "expense", "children": [] },
+      { "name": "Организация мероприятий", "article_type": "expense", "children": [] }
+    ]
+  },
+  {
+    "name": "Инвестиционные расходы",
+    "article_type": "group",
+    "children": [
+      { "name": "Покупка основных средств", "article_type": "expense", "children": [] },
+      { "name": "Покупка нематериальных активов", "article_type": "expense", "children": [] },
+      { "name": "Модернизация и ремонт", "article_type": "expense", "children": [] }
+    ]
+  },
+  {
+    "name": "Финансовые расходы",
+    "article_type": "group",
+    "children": [
+      { "name": "Выплаты по кредитам и займам", "article_type": "expense", "children": [] },
+      { "name": "Проценты по кредитам", "article_type": "expense", "children": [] },
+      { "name": "Банковские комиссии", "article_type": "expense", "children": [] }
+    ]
+  },
+  {
+    "name": "Прочие расходы",
+    "article_type": "group",
+    "children": [
+      { "name": "Благотворительность и пожертвования", "article_type": "expense", "children": [] },
+      { "name": "Штрафы и пени", "article_type": "expense", "children": [] },
+      { "name": "Прочее", "article_type": "expense", "children": [] }
     ]
   }
 ]

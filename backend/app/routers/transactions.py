@@ -10,7 +10,7 @@ from .. import crud, models, schemas
 from ..dependencies import (
     get_db,
     get_current_active_user,
-    get_current_active_workspace
+    get_workspace_from_query
 )
 from ..services.transaction_service import transaction_service
 from ..core.exceptions import (
@@ -30,7 +30,7 @@ router = APIRouter(
 @router.get("/", response_model=schemas.TransactionPage) # <-- ИСПОЛЬЗУЕМ ПРАВИЛЬНУЮ СХЕМУ
 def read_transactions(
     db: Session = Depends(get_db),
-    workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     start_date: Optional[date] = Query(None),
@@ -65,11 +65,11 @@ def create_transaction(
     db: Session = Depends(get_db),
     transaction_in: schemas.TransactionCreate, # Теперь user_id и workspace_id здесь необязательны
     current_user: models.User = Depends(get_current_active_user),
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ) -> Any:
     logger.info(
         "Попытка создания транзакции для workspace %d пользователем %s",
-        current_workspace.id,
+        workspace.id,
         current_user.email,
     )
     logger.debug("Входящие данные транзакции: %s", transaction_in.model_dump_json())
@@ -78,7 +78,7 @@ def create_transaction(
     if transaction_in.user_id is None: #
         transaction_in.user_id = current_user.id #
     if transaction_in.workspace_id is None: #
-        transaction_in.workspace_id = current_workspace.id #
+        transaction_in.workspace_id = workspace.id #
 
     # Теперь transaction_in содержит все необходимые поля, и нам не нужно создавать новый объект
     # full_transaction_in, что было причиной TypeError.
@@ -88,7 +88,7 @@ def create_transaction(
             db=db,
             transaction_in=transaction_in, # Передаем измененную схему
             current_user=current_user,
-            workspace_id=current_workspace.id
+            workspace_id=workspace.id
         )
 
         db.commit() 
@@ -97,21 +97,21 @@ def create_transaction(
         logger.info(
             "Транзакция с ID %d успешно создана для workspace %d.",
             transaction.id,
-            current_workspace.id
+            workspace.id
         )
         return transaction
     except (AccountNotFoundError, DdsArticleNotFoundError) as e:
         logger.warning(
             "Ошибка создания транзакции (404 - Not Found): %s. Workspace: %d",
             e.detail,
-            current_workspace.id
+            workspace.id
         )
         db.rollback() 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.detail)
     except Exception as e:
         logger.error(
             "Непредвиденная ошибка при создании транзакции для workspace %d: %s",
-            current_workspace.id,
+            workspace.id,
             e,
             exc_info=True
         )
@@ -125,11 +125,11 @@ def update_transaction(
     transaction_id: int,
     transaction_in: schemas.TransactionUpdate,
     current_user: models.User = Depends(get_current_active_user),
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ) -> Any:
     try:
         transaction_to_update = transaction_service.get_transaction_by_id(
-            db, transaction_id=transaction_id, user=current_user, workspace_id=current_workspace.id
+            db, transaction_id=transaction_id, user=current_user, workspace_id=workspace.id
         )
         return transaction_service.update_transaction(
             db, transaction_to_update=transaction_to_update, transaction_in=transaction_in
@@ -147,11 +147,11 @@ def delete_transaction(
     db: Session = Depends(get_db),
     transaction_id: int,
     current_user: models.User = Depends(get_current_active_user),
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ) -> Any:
     try:
         transaction_to_delete = transaction_service.get_transaction_by_id(
-            db, transaction_id=transaction_id, user=current_user, workspace_id=current_workspace.id
+            db, transaction_id=transaction_id, user=current_user, workspace_id=workspace.id
         )
         return transaction_service.delete_transaction(db, transaction_to_delete=transaction_to_delete)
     except NotFoundError as e:

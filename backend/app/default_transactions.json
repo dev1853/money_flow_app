@@ -1,27 +1,27 @@
 [
   {
-    "account_name": "Кошелек", 
-    "dds_article_name": "Поступления от клиентов",
+    "account_name": "Кошелек",
+    "dds_article_name": "Продажи товаров/услуг",
     "date": "2025-07-01",
-    "amount": 15000.00,
+    "amount": 55000.00,
     "description": "Оплата за услуги",
     "contractor": "ИП Иванов",
     "employee": null,
     "type": "INCOME"
   },
   {
-    "account_name": "Карта Tinkoff", 
-    "dds_article_name": "Оплата труда",
-    "date": "2025-07-05",
-    "amount": 5000.00,
-    "description": "Оплата за услуги",
-    "contractor": null,
-    "employee": "Петров А.А.",
+    "account_name": "Карта Tinkoff",
+    "dds_article_name": "Авансы от клиентов",
+    "date": "2025-07-03",
+    "amount": 45000.00,
+    "description": "Аванс за проект",
+    "contractor": "ООО Ромашка",
+    "employee": null,
     "type": "INCOME"
   },
   {
-    "account_name": "Кошелек", 
-    "dds_article_name": "Платежи поставщикам",
+    "account_name": "Кошелек",
+    "dds_article_name": "Закупка товаров и материалов",
     "date": "2025-07-10",
     "amount": 3000.00,
     "description": "Покупка канцтоваров",
@@ -30,13 +30,73 @@
     "type": "EXPENSE"
   },
   {
-    "account_name": "Карта Tinkoff", 
-    "dds_article_name": "Аренда",
-    "date": "2025-05-15",
+    "account_name": "Карта Tinkoff",
+    "dds_article_name": "Зарплата и выплаты сотрудникам",
+    "date": "2025-07-05",
+    "amount": 5000.00,
+    "description": "Зарплата за июль",
+    "contractor": null,
+    "employee": "Петров А.А.",
+    "type": "EXPENSE"
+  },
+  {
+    "account_name": "Карта Tinkoff",
+    "dds_article_name": "Аренда офиса/помещений",
+    "date": "2025-07-15",
     "amount": 10000.00,
     "description": "Оплата аренды офиса",
     "contractor": "Арендодатель ООО",
     "employee": null,
-    "type": "EXPENSE" 
+    "type": "EXPENSE"
+  },
+  {
+    "account_name": "Карта Tinkoff",
+    "dds_article_name": "Покупка техники и оборудования",
+    "date": "2025-07-20",
+    "amount": 12000.00,
+    "description": "Покупка ноутбука",
+    "contractor": "DNS",
+    "employee": null,
+    "type": "EXPENSE"
+  },
+  {
+    "account_name": "Кошелек",
+    "dds_article_name": "Реклама (онлайн и офлайн)",
+    "date": "2025-07-22",
+    "amount": 4000.00,
+    "description": "Контекстная реклама",
+    "contractor": "Яндекс.Директ",
+    "employee": null,
+    "type": "EXPENSE"
+  },
+  {
+    "account_name": "Карта Tinkoff",
+    "dds_article_name": "Покупка основных средств",
+    "date": "2025-07-25",
+    "amount": 25000.00,
+    "description": "Покупка принтера",
+    "contractor": "М.Видео",
+    "employee": null,
+    "type": "EXPENSE"
+  },
+  {
+    "account_name": "Кошелек",
+    "dds_article_name": "Выплаты по кредитам и займам",
+    "date": "2025-07-28",
+    "amount": 8000.00,
+    "description": "Погашение кредита",
+    "contractor": "Сбербанк",
+    "employee": null,
+    "type": "EXPENSE"
+  },
+  {
+    "account_name": "Кошелек",
+    "dds_article_name": "Прочее",
+    "date": "2025-07-30",
+    "amount": 2000.00,
+    "description": "Прочие расходы",
+    "contractor": null,
+    "employee": null,
+    "type": "EXPENSE"
   }
 ]

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app import crud, models, schemas
-from app.dependencies import get_db, get_current_active_user, get_current_active_workspace
+from app.dependencies import get_db, get_current_active_user, get_workspace_from_query
 from app.services.mapping_rule_service import mapping_rule_service
 from app.core.exceptions import (
     NotFoundError,
@@ -22,7 +22,7 @@ router = APIRouter(
 @router.get("/", response_model=schemas.MappingRulePage)
 def read_mapping_rules(
     db: Session = Depends(get_db),
-    workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
 ) -> Any:

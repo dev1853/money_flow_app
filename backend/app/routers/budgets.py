@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from .. import crud, models, schemas
-from ..dependencies import get_db, get_current_active_user, get_current_active_workspace
+from ..dependencies import get_db, get_current_active_user, get_workspace_from_query
 from app.services.budget_service import budget_service
 
 logger = logging.getLogger(__name__)
@@ -22,14 +22,13 @@ def read_budgets(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(get_current_active_user),
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ):
     """
     Получить список всех бюджетов для текущего рабочего пространства.
     """
     budgets = crud.budget.get_multi_by_workspace(
-        db, workspace_id=current_workspace.id, skip=skip, limit=limit
+        db, workspace_id=workspace.id, skip=skip, limit=limit
     )
     return budgets
 
@@ -37,38 +36,42 @@ def read_budgets(
 def create_budget(
     *,
     db: Session = Depends(get_db),
-    budget_in: schemas.BudgetCreate,
+    budget_in: schemas.BudgetCreate,  # Данные бюджета приходят здесь
     current_user: models.User = Depends(get_current_active_user),
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    # Мы убрали некорректную зависимость get_current_active_workspace
 ):
     """
     Создать новый бюджет.
-    Обработка дубликатов вынесена на уровень роутера для надежности.
     """
+    # --- НОВАЯ ЛОГИКА ПРОВЕРКИ ДОСТУПА ---
+    # 1. Проверяем, что воркспейс, указанный в данных формы, существует и доступен пользователю.
+    # Убедитесь, что у вас есть такая или похожая функция в crud.workspace
+    workspace = crud.workspace.get(db, id=budget_in.workspace_id)
+    if not workspace or workspace.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="У вас нет прав на создание бюджета в этом рабочем пространстве."
+        )
+    
+    # 2. Если проверка пройдена, вызываем сервис для создания бюджета
     try:
-        # Вызываем сервис, как и раньше
+        # Убедитесь, что ваш сервис budget_service правильно использует budget_in
         budget = budget_service.create_budget_with_items(
             db=db,
             budget_in=budget_in,
             user=current_user,
-            workspace_id=current_workspace.id,
+            workspace_id=budget_in.workspace_id
         )
         return budget
     except IntegrityError:
-        # Если сервис не справился и ошибка "протекла" досюда,
-        # мы ее поймаем и вернем правильный ответ.
-        db.rollback() # Важно откатить транзакцию
+        db.rollback() 
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Бюджет с таким названием и периодом уже существует в вашем рабочем пространстве.",
+            detail="Бюджет с таким названием и периодом уже существует.",
         )
     except Exception as e:
-        # Обработка других возможных ошибок из сервиса
         db.rollback()
-        # Предполагаем, что у вас есть кастомные исключения, но если нет - можно убрать
-        if "DdsArticleNotFoundError" in str(type(e)):
-             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-        # Для всех остальных непредвиденных ошибок
+        logger.exception("Непредвиденная ошибка при создании бюджета")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Произошла непредвиденная ошибка: {e}",
@@ -81,13 +84,13 @@ def update_budget(
     budget_id: int,
     budget_in: schemas.BudgetUpdate,
     current_user: models.User = Depends(get_current_active_user),
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ) -> Any:
     """
     Обновить существующий бюджет.
     """
     existing_budget = crud.budget.get(db, id=budget_id)
-    if not existing_budget or existing_budget.workspace_id != current_workspace.id:
+    if not existing_budget or existing_budget.workspace_id != workspace.id:
         # Убрал проверку owner_id, так как доступ к workspace уже проверяется
         # Если нужна проверка и на владельца бюджета, можно вернуть `or existing_budget.owner_id != current_user.id`
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Бюджет не найден или у вас нет доступа.")
@@ -98,7 +101,7 @@ def update_budget(
             budget_to_update=existing_budget,
             budget_in=budget_in,
             user=current_user,
-            workspace_id=current_workspace.id
+            workspace_id=workspace.id
         )
         # Коммит лучше делать в самом конце, если все прошло успешно
         db.commit()
@@ -161,13 +164,13 @@ def get_budget_status_endpoint(
     *,
     db: Session = Depends(get_db),
     budget_id: int,
-    current_workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ):
     """
     Получить детальный статус выполнения бюджета.
     """
     budget = crud.budget.get(db, id=budget_id)
-    if not budget or budget.workspace_id != current_workspace.id:
+    if not budget or budget.workspace_id != workspace.id:
         raise HTTPException(status_code=404, detail="Бюджет не найден")
 
     # Этот вызов должен теперь работать, так как метод есть в сервисе

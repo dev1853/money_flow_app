@@ -72,5 +72,21 @@ class CRUDAccount(CRUDBase[models.Account, AccountCreate, AccountUpdate]): # И�
         """Считает общую сумму на всех счетах в рабочем пространстве."""
         total = db.query(func.sum(self.model.balance)).filter(self.model.workspace_id == workspace_id).scalar()
         return total or Decimal('0.0')
+    
+    def create_with_workspace(
+        self, db: Session, *, obj_in: AccountCreate, workspace_id: int
+    ) -> Account:
+        """
+        Создает новый счет, привязанный к рабочему пространству.
+        """
+        # Преобразуем Pydantic-схему в словарь
+        obj_in_data = obj_in.model_dump()
+        # Создаем объект модели SQLAlchemy
+        db_obj = self.model(**obj_in_data, workspace_id=workspace_id)
+        
+        db.add(db_obj)
+        # Важно! Commit здесь делать не нужно, так как он будет сделан
+        # в конце всей операции в user_service.py
+        return db_obj
 
 account = CRUDAccount(models.Account)

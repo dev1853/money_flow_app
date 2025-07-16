@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from .. import crud, models, schemas
-from ..dependencies import get_db, get_current_active_user, get_current_active_workspace
+from ..dependencies import get_db, get_current_active_user, get_workspace_from_query, get_workspace_from_query
 from ..services.dds_article_service import dds_article_service
 from ..core.exceptions import (
     NotFoundError,
@@ -28,7 +28,7 @@ router = APIRouter(
 @router.get("/", response_model=List[schemas.DdsArticle])
 def read_dds_articles_tree(
     db: Session = Depends(get_db),
-    workspace: models.Workspace = Depends(get_current_active_workspace),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
 ) -> Any:
     """Получает иерархическое дерево статей ДДС для текущего рабочего пространства."""
     return crud.dds_article.get_dds_articles_tree(db=db, workspace_id=workspace.id)

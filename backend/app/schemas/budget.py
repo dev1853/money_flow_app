@@ -37,12 +37,12 @@ class BudgetItem(BudgetItemBase):
 # --- Схемы для Бюджета (Budget) ---
 class BudgetBase(BaseModel):
     name: str
-    description: Optional[str] = None
-    start_date: date
-    end_date: date
+    start_date: date = Field(..., description="Дата начала бюджета (ГГГГ-ММ-ДД)")
+    end_date: date  = Field(..., description="Дата окончания бюджета (ГГГГ-ММ-ДД)")
 
 class BudgetCreate(BudgetBase):
-    items: List[BudgetItemCreate]
+    workspace_id: int = Field(..., description="ID рабочего пространства")  
+    items: List[BudgetItemCreate] = Field(..., description="Список статей бюджета")
 
 class BudgetUpdate(BudgetBase):
     name: Optional[str] = Field(None)

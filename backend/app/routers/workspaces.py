@@ -9,7 +9,7 @@ from .. import crud, models, schemas
 from ..dependencies import (
     get_db,
     get_current_active_user,
-    get_current_active_workspace,
+    get_workspace_from_query,
     get_workspace_from_path # <-- Наша новая зависимость
 )
 # --- ИМПОРТИРУЕМ СЕРВИС ---
@@ -48,12 +48,12 @@ def read_workspaces(
 
 @router.get("/active", response_model=schemas.Workspace)
 def get_active_workspace(
-    current_workspace: models.Workspace = Depends(get_current_active_workspace)
+    workspace: models.Workspace = Depends(get_workspace_from_query)
 ) -> Any:
     """
     Получить информацию о текущем активном рабочем пространстве.
     """
-    return current_workspace
+    return workspace
 
 @router.post("/{workspace_id}/set-active", response_model=schemas.User)
 def set_active_workspace(

@@ -15,3 +15,4 @@ from .crud_report import report_crud
 from .crud_dashboard import dashboard_crud
 # from .crud_onboarding import onboarding_crud
 from .crud_contract import contract
+from .crud_role import role 

@@ -12,8 +12,6 @@ from .base import CRUDBase
 
 class CRUDBudget(CRUDBase[models.Budget, schemas.BudgetCreate, schemas.BudgetUpdate]):
 
-    # --- УБЕДИТЕСЬ, ЧТО У ВСЕХ МЕТОДОВ ОДИНАКОВЫЙ ОТСТУП ---
-
     def get_by_name_and_period(
         self, db: Session, *, name: str, workspace_id: int, start_date: date, end_date: date
     ) -> Optional[models.Budget]:
@@ -31,13 +29,23 @@ class CRUDBudget(CRUDBase[models.Budget, schemas.BudgetCreate, schemas.BudgetUpd
     def create_with_items(
         self, db: Session, *, obj_in: schemas.BudgetCreate, owner_id: int, workspace_id: int
     ) -> models.Budget:
-        budget_data = obj_in.model_dump(exclude_unset=True)
-        items_data = budget_data.pop("items")
+        
+        # 1. Извлекаем данные из схемы
+        budget_data = obj_in.model_dump()
+        items_data = budget_data.pop("items", [])
 
+        # --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
+        # 2. Безопасно удаляем ключ 'workspace_id' из словаря, так как мы передадим его явно.
+        # Это предотвратит ошибку "multiple values".
+        budget_data.pop('workspace_id', None)
+        
+        # 3. Теперь мы можем безопасно передать workspace_id как отдельный аргумент
         db_budget = self.model(**budget_data, owner_id=owner_id, workspace_id=workspace_id)
+        
         db.add(db_budget)
-        db.flush()
+        db.flush() # Используем flush, чтобы получить ID для db_budget
 
+        # 4. Создаем связанные элементы
         for item_data in items_data:
             db_item = models.BudgetItem(
                 **item_data,
@@ -58,8 +66,7 @@ class CRUDBudget(CRUDBase[models.Budget, schemas.BudgetCreate, schemas.BudgetUpd
         self, db: Session, *, workspace_id: int, skip: int = 0, limit: int = 100
     ) -> List[models.Budget]:
         """
-        Получает список бюджетов для рабочего пространства, жадно загружая их статьи
-        и рассчитывая общие запланированные, фактические суммы и отклонения.
+        Получает список бюджетов для рабочего пространства.
         """
         from app import crud
 
@@ -72,6 +79,7 @@ class CRUDBudget(CRUDBase[models.Budget, schemas.BudgetCreate, schemas.BudgetUpd
         if not budgets_list:
             return []
 
+        # Расчеты фактических/плановых сумм
         for budget in budgets_list:
             total_budgeted = sum(item.budgeted_amount for item in budget.budget_items)
             final_budgeted = total_budgeted if total_budgeted is not None else Decimal('0.0')
@@ -97,5 +105,4 @@ class CRUDBudget(CRUDBase[models.Budget, schemas.BudgetCreate, schemas.BudgetUpd
         return budgets_list
 
 
-# Эта строка должна быть без отступа, на уровне класса
 budget = CRUDBudget(models.Budget)

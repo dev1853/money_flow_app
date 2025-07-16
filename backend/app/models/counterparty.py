@@ -16,7 +16,7 @@ class Counterparty(Base, TimestampMixin):
     __tablename__ = "counterparties"
 
     id = Column(Integer, primary_key=True, index=True) 
-    name = Column(String, nullable=False, index=True, comment="Название контрагента")
+    name = Column(String, unique=True, index=True, nullable=True, comment="Название контрагента")
     type = Column(Enum(CounterpartyType), nullable=False, default=CounterpartyType.OTHER)
     
     inn = Column(String, nullable=True, unique=True, comment="ИНН")

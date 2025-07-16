@@ -8,6 +8,7 @@ from app.dependencies import (
     get_db,
     get_current_active_user,
     get_account_for_user,
+    get_workspace_from_query
 )
 from app.services.account_service import account_service
 from app.core.exceptions import PermissionDeniedError, AccountDeletionError
@@ -21,26 +22,41 @@ router = APIRouter(
 def create_account(
     *,
     db: Session = Depends(get_db),
-    account_in: schemas.AccountCreate,
+    account_in: schemas.AccountCreate, # FastAPI положит сюда данные из запроса
     current_user: models.User = Depends(get_current_active_user)
 ) -> Any:
     """Создает новый счет в указанном рабочем пространстве."""
+    
+    # --- ИСПРАВЛЕНИЕ: ДОБАВЛЯЕМ ПРОВЕРКУ ПРАВ ДОСТУПА ---
+    # 1. Проверяем, что воркспейс, указанный в данных формы, существует и доступен пользователю.
+    workspace = crud.workspace.get(db, id=account_in.workspace_id)
+    if not workspace or workspace.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="У вас нет прав на создание счета в этом рабочем пространстве."
+        )
+
+    # 2. Вызываем сервис/CRUD для создания счета
     try:
+        # account_service должен принять account_in, в котором уже есть все, что нужно
         account = account_service.create_account(
-            db=db, account_in=account_in, user_id=current_user.id
+            db=db, 
+            account_in=account_in, 
+            user_id=current_user.id
         )
         db.commit()
         db.refresh(account)
         return account
-    except PermissionDeniedError as e:
-        db.rollback()
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=e.detail)
-    except Exception:
-        db.rollback()
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Произошла непредвиденная ошибка.")
+    except Exception as e:
+        # Обработка других возможных ошибок
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Произошла непредвиденная ошибка: {e}",
+        )
 
 @router.get("/", response_model=List[schemas.Account])
 def read_accounts(
+    workspace: models.Workspace = Depends(get_workspace_from_query), 
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
     skip: int = Query(0, ge=0),
@@ -50,7 +66,7 @@ def read_accounts(
     if not current_user.active_workspace_id:
         return []
     return crud.account.get_multi_by_workspace(
-        db, workspace_id=current_user.active_workspace_id, skip=skip, limit=limit
+        db, workspace_id=workspace.id, skip=skip, limit=limit
     )
 
 @router.get("/{account_id}", response_model=schemas.Account)

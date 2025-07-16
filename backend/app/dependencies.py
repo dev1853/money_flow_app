@@ -1,6 +1,6 @@
 # /backend/app/dependencies.py
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, Query, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
@@ -148,3 +148,32 @@ def get_transaction_for_user(
     if transaction.created_by_user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Недостаточно прав для доступа к этой транзакции")
     return transaction
+
+def get_workspace_from_query(
+    workspace_id: int = Query(..., description="ID рабочего пространства для выполнения операции"),
+    current_user: models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+) -> models.Workspace:
+    """
+    Получает рабочее пространство по ID из query-параметра (?workspace_id=) 
+    и проверяет, что у текущего пользователя есть к нему доступ (является владельцем).
+    """
+    # Мы используем ваш существующий CRUD метод
+    workspace = crud.workspace.get(db, id=workspace_id)
+    
+    if not workspace:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Рабочее пространство с ID {workspace_id} не найдено."
+        )
+
+    # Проверяем, что пользователь является владельцем.
+    # Если у вас более сложная система с участниками (members),
+    # то проверка должна быть: `if current_user not in workspace.members:`
+    if workspace.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="У вас нет прав для доступа к этому рабочему пространству."
+        )
+        
+    return workspace
