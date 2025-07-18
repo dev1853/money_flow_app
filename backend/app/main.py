@@ -29,7 +29,8 @@ from app.routers import (
     planned_payments,
     payment_calendar,
     contracts,
-    counterparties
+    counterparties,
+    categorization_ml
 )
 from app.core.logging_config import setup_logging
 
@@ -118,3 +119,4 @@ app.include_router(planned_payments.router, prefix=f"{api_prefix}/planned-paymen
 app.include_router(payment_calendar.router, prefix=f"{api_prefix}/payment-calendar", tags=["payment_calendar"])
 app.include_router(contracts.router, prefix=f"{api_prefix}/contracts", tags=["contracts"])
 app.include_router(counterparties.router, prefix=f"{api_prefix}/counterparties", tags=["counterparties"])
+app.include_router(categorization_ml.router, prefix=f"{api_prefix}/categorization_ml", tags=["categorization_ml"])

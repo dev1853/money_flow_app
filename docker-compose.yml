@@ -3,12 +3,10 @@ services:
   postgres:
     image: postgres:15-alpine
     container_name: money_flow_db
-    # ВАЖНО: Для реального проекта лучше использовать .env файл,
-    # чтобы не хранить пароли в этом файле.
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Ghbdtnjvktn
-      POSTGRES_DB: money_flow_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Ghbdtnjvktn}
+      POSTGRES_DB: ${POSTGRES_DB:-money_flow_db}
     ports:
       - "5432:5432"
     volumes:
@@ -25,43 +23,35 @@ services:
   # --- Сервис Бэкенда (FastAPI) ---
   backend:
     container_name: money_flow_backend
-    # Указываем, что нужно собрать образ из папки ./backend
     build:
       context: ./backend
       dockerfile: Dockerfile
-    working_dir: /app # Указываем рабочую директорию
+    working_dir: /app
     ports:
-      # Пробрасываем порт 8000, на котором Nginx ожидает бэкенд
       - "8000:8000"
     environment:
-      # Строка подключения к БД. 'postgres' - это имя сервиса БД.
-      DATABASE_URL: "postgresql://postgres:Ghbdtnjvktn@postgres:5432/money_flow_db"
-      SECRET_KEY: "15b07f9af1e3f85afc6cd40ea4d6471b427ebe796d65ae2c043b23dae3a71c82"
-      ALGORITHM: "HS256"
-    # Явная команда запуска uvicorn. Она гарантирует, что он будет
-    # слушать все интерфейсы (0.0.0.0) на порту 8000 внутри контейнера.
-    # Также, сначала применяем миграции Alembic.
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:Ghbdtnjvktn@postgres:5432/money_flow_db}
+      SECRET_KEY: ${SECRET_KEY:-15b07f9af1e3f85afc6cd40ea4d6471b427ebe796d65ae2c043b23dae3a71c82}
+      ALGORITHM: ${ALGORITHM:-HS256}
     command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     volumes:
-      - ./backend:/app # Монтируем код, чтобы --reload работал
+      - ./backend:/app
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - money_flow_network
     restart: unless-stopped
+    env_file:
+      - ./env.development
 
   # --- Сервис Фронтенда (React + Vite) ---
   frontend:
     container_name: money_flow_frontend
-    # Теперь мы собираем образ из Dockerfile, который создали в папке frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      # Nginx внутри контейнера слушает порт 80.
-      # Мы по-прежнему пробрасываем его на порт 3000 хоста,
-      # чтобы ваш основной Nginx на сервере мог с ним связаться.
       - "3000:80"
     depends_on:
       - backend
@@ -69,11 +59,9 @@ services:
       - money_flow_network
     restart: unless-stopped
 
-# Определяем общую сеть для всех сервисов
 networks:
   money_flow_network:
     driver: bridge
 
-# Определяем том для постоянного хранения данных БД
 volumes:
   postgres_data:

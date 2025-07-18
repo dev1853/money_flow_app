@@ -17,7 +17,9 @@ import {
   BriefcaseIcon, // Новая иконка для Операций
   ScaleIcon, // Новая иконка для Планирования
 } from '@heroicons/react/24/outline';
-import QuickCashExpenseForm from './QuickCashExpenseForm';
+import ExpenseQuickInputMLContainer from './forms/ExpenseQuickInputMLContainer';
+import Modal from './Modal';
+import Button from './Button';
 
 
 // ==================================================================
@@ -74,6 +76,7 @@ function classNames(...classes) {
 export default function Sidebar({ setSidebarOpen }) { 
   const location = useLocation();
   const [openStates, setOpenStates] = useState(new Map());
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
 
   const isParentActive = useCallback((item) => {
     if (!item.children) return false;
@@ -108,7 +111,7 @@ export default function Sidebar({ setSidebarOpen }) {
             className="h-8 w-8 text-indigo-600 group-hover:text-indigo-500 transition-colors" 
             aria-hidden="true" 
           />
-          <span className="ml-3 text-2xl font-extrabold text-gray-900 dark:text-gray-100">ФинансПРО</span>
+          <span className="ml-3 text-2xl font-extrabold text-gray-900 dark:text-gray-100">ПОТОК ДЕНЕГ</span>
         </div>
       </div>
       <nav className="flex flex-1 flex-col">
@@ -202,9 +205,16 @@ export default function Sidebar({ setSidebarOpen }) {
       </nav>
 
       <div className="flex flex-col gap-y-3 border-t border-gray-200 dark:border-gray-700 pt-4 mt-auto">
-        <div className="flex items-center justify-between"> 
-          <QuickCashExpenseForm />
-        </div>
+        <Button
+          variant="primary"
+          fullWidth
+          onClick={() => setShowExpenseModal(true)}
+        >
+          Добавить расход (ИИ)
+        </Button>
+        <Modal isOpen={showExpenseModal} onClose={() => setShowExpenseModal(false)} title="Добавить расход (ИИ)">
+          <ExpenseQuickInputMLContainer onSave={() => setShowExpenseModal(false)} />
+        </Modal>
       </div>
     </div>
   );

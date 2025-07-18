@@ -1,0 +1,16 @@
+[
+    {
+      "description": "Пятёрочка",
+      "amount": 1200,
+      "counterparty": "Пятёрочка",
+      "date": "2024-06-01",
+      "category": "еда"
+    },
+    {
+      "description": "Uber",
+      "amount": 350,
+      "counterparty": "Uber",
+      "date": "2024-06-02",
+      "category": "транспорт"
+    }
+  ]

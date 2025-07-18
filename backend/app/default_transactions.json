@@ -60,42 +60,12 @@
     "type": "EXPENSE"
   },
   {
-    "account_name": "Кошелек",
-    "dds_article_name": "Реклама (онлайн и офлайн)",
-    "date": "2025-07-22",
-    "amount": 4000.00,
-    "description": "Контекстная реклама",
-    "contractor": "Яндекс.Директ",
-    "employee": null,
-    "type": "EXPENSE"
-  },
-  {
     "account_name": "Карта Tinkoff",
-    "dds_article_name": "Покупка основных средств",
-    "date": "2025-07-25",
-    "amount": 25000.00,
-    "description": "Покупка принтера",
-    "contractor": "М.Видео",
-    "employee": null,
-    "type": "EXPENSE"
-  },
-  {
-    "account_name": "Кошелек",
-    "dds_article_name": "Выплаты по кредитам и займам",
-    "date": "2025-07-28",
-    "amount": 8000.00,
-    "description": "Погашение кредита",
-    "contractor": "Сбербанк",
-    "employee": null,
-    "type": "EXPENSE"
-  },
-  {
-    "account_name": "Кошелек",
-    "dds_article_name": "Прочее",
-    "date": "2025-07-30",
-    "amount": 2000.00,
-    "description": "Прочие расходы",
-    "contractor": null,
+    "dds_article_name": "IT и программное обеспечение",
+    "date": "2025-07-23",
+    "amount": 7000.00,
+    "description": "Покупка подписки на AI-сервис",
+    "contractor": "OpenAI",
     "employee": null,
     "type": "EXPENSE"
   }

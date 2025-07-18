@@ -14,10 +14,7 @@ import Alert from '../Alert';
 import { TransactionType } from '../../utils/constants';
 import { flattenDdsArticles } from '../../utils/articleUtils';
 import { parseISO } from 'date-fns';
-
-const TransactionTypeRadio = ({ value, onChange }) => {
-    // ... этот компонент остается без изменений
-};
+import TransactionTypeToggle from '../TransactionTypeToggle';
 
 
 // --- 1. ПРИНИМАЕМ workspaceId КАК ПРОП ---
@@ -88,6 +85,16 @@ function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, i
         }
     }, [transactionToEdit, getInitialState]);
 
+    // Автоматически выставлять счет при смене типа транзакции
+    useEffect(() => {
+        if (formData.transaction_type === TransactionType.INCOME && !formData.to_account_id && accounts.length > 0) {
+            setFormData(prev => ({ ...prev, to_account_id: accounts[0].id }));
+        }
+        if (formData.transaction_type === TransactionType.EXPENSE && !formData.from_account_id && accounts.length > 0) {
+            setFormData(prev => ({ ...prev, from_account_id: accounts[0].id }));
+        }
+    }, [formData.transaction_type, accounts]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -98,12 +105,24 @@ function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, i
         setFormData(prev => ({ ...prev, transaction_date: date }));
     };
 
+    const [formError, setFormError] = useState("");
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        setFormError("");
+        // Фронтовая валидация счетов
+        if (formData.transaction_type === TransactionType.INCOME && !formData.to_account_id) {
+            setFormError("Для дохода необходимо выбрать счет-получатель.");
+            return;
+        }
+        if (formData.transaction_type === TransactionType.EXPENSE && !formData.from_account_id) {
+            setFormError("Для расхода необходимо выбрать счет списания.");
+            return;
+        }
         const dataToSend = {
             ...formData,
             amount: parseFloat(formData.amount),
-            transaction_date: formData.transaction_date.toISOString().split('T')[0],
+            transaction_date: formData.transaction_date.toLocaleDateString('en-CA'),
             // Отправляем null, если значение пустое
             from_account_id: formData.from_account_id || null,
             to_account_id: formData.to_account_id || null,
@@ -119,11 +138,34 @@ function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, i
     const counterpartyOptions = counterparties.map(cp => ({ value: cp.id, label: cp.name }));
     const contractOptions = contracts.map(c => ({ value: c.id, label: c.name }));
 
+    // Фильтрация статей ДДС по типу транзакции
+    const filteredDdsArticleOptions = useMemo(() => {
+        if (!ddsArticleOptions) return [];
+        if (formData.transaction_type === TransactionType.EXPENSE) {
+            return ddsArticleOptions.filter(opt => opt.article_type?.toLowerCase() === 'expense');
+        }
+        if (formData.transaction_type === TransactionType.INCOME) {
+            return ddsArticleOptions.filter(opt => opt.article_type?.toLowerCase() === 'income');
+        }
+        // Для перевода показываем все (или можно [] если не нужно)
+        return ddsArticleOptions;
+    }, [ddsArticleOptions, formData.transaction_type]);
+
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            {submissionError && <Alert type="error">{submissionError.message}</Alert>}
+            {submissionError && (
+                <Alert type="error">
+                    {submissionError.message}
+                    {submissionError.details && (
+                        <div className="mt-1 text-xs text-gray-400">{submissionError.details}</div>
+                    )}
+                </Alert>
+            )}
+            {formError && (
+                <Alert type="error">{formError}</Alert>
+            )}
             
-            <TransactionTypeRadio value={formData.transaction_type} onChange={handleChange} />
+            <TransactionTypeToggle value={formData.transaction_type} onChange={handleChange} />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input label="Сумма" name="amount" type="number" value={formData.amount} onChange={handleChange} required step="0.01" />
@@ -142,7 +184,7 @@ function TransactionForm({ transaction: transactionToEdit, onSubmit, onCancel, i
                     <Select label={formData.transaction_type === 'INCOME' ? "На счет" : "Со счета"} name={formData.transaction_type === 'INCOME' ? "to_account_id" : "from_account_id"} value={formData.transaction_type === 'INCOME' ? formData.to_account_id : formData.from_account_id} onChange={handleChange} options={accountOptions} required placeholder="Выберите счет" />
                     <Select label="Статья ДДС" name="dds_article_id" value={formData.dds_article_id} onChange={handleChange} disabled={ddsArticlesLoading} required>
                         <option value="">{ddsArticlesLoading ? 'Загрузка...' : 'Выберите статью'}</option>
-                        {ddsArticleOptions.map(opt => <option key={opt.id} value={opt.id}>{opt.name}</option>)}
+                        {filteredDdsArticleOptions.map(opt => <option key={opt.id} value={opt.id}>{opt.name}</option>)}
                     </Select>
                 </>
             )}

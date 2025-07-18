@@ -16,6 +16,7 @@ class User(Base):
     is_superuser = Column(Boolean(), default=False)
     
     role_id = Column(Integer, ForeignKey("roles.id"), nullable=True)
+    # Временно убираем для избежания циклической зависимости
     active_workspace_id = Column(Integer, ForeignKey("workspaces.id"), nullable=True)
 
     role = relationship("Role", back_populates="users")

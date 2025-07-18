@@ -15,6 +15,8 @@ import { PlusIcon, PencilIcon, TrashIcon, TableCellsIcon, CalendarDaysIcon, Chev
 import PaymentCalendarView from '../components/PaymentCalendarView';
 import PaymentCalendarTable from '../components/PaymentCalendarTable';
 import { useAuth } from '../contexts/AuthContext';
+import ConfirmationModal from '../components/ConfirmationModal';
+import ActionIconButtons from '../components/forms/ActionIconButtons';
 
 // Компонент PlannedPaymentItem остается без изменений, но с адаптированными стилями
 const PlannedPaymentItem = ({ payment, onEdit, onDelete }) => (
@@ -27,8 +29,15 @@ const PlannedPaymentItem = ({ payment, onEdit, onDelete }) => (
             <span className={`text-sm font-semibold ${payment.payment_type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                 {payment.payment_type === 'EXPENSE' ? '-' : '+'} {formatCurrency(payment.amount)}
             </span>
-            <Button variant="icon" size="sm" iconLeft={<PencilIcon className="h-4 w-4" />} onClick={() => onEdit(payment)} />
-            <Button variant="icon" size="sm" iconLeft={<TrashIcon className="h-4 w-4" />} className="text-red-500 hover:text-red-700 dark:hover:text-red-400" onClick={() => onDelete(payment.id)} />
+            <ActionIconButtons
+                onEdit={() => onEdit(payment)}
+                onDelete={() => onDelete(payment.id)}
+                editTitle="Редактировать платеж"
+                deleteTitle="Удалить платеж"
+                editAriaLabel="Редактировать платеж"
+                deleteAriaLabel="Удалить платеж"
+                size="sm"
+            />
         </div>
     </div>
 );
@@ -46,6 +55,10 @@ function PaymentCalendarPage() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [editingPayment, setEditingPayment] = useState(null);
+
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [paymentIdToDelete, setPaymentIdToDelete] = useState(null);
+    const [deleteError, setDeleteError] = useState(null);
 
     // --- ✔️ ИСПРАВЛЕННАЯ ЛОГИКА ЗАГРУЗКИ ДАННЫХ ---
     const fetchDataForMonth = useCallback(async (date, startBalanceOverride = null) => {
@@ -112,13 +125,31 @@ function PaymentCalendarPage() {
         setShowForm(true);
     };
 
-    const handleDelete = async (paymentId) => {
-        if (window.confirm('Вы уверены?')) {
-            await apiService.deletePlannedPayment(paymentId);
+    const handleDelete = (paymentId) => {
+        setPaymentIdToDelete(paymentId);
+        setIsConfirmModalOpen(true);
+        setDeleteError(null);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!paymentIdToDelete) return;
+        try {
+            setDeleteError(null);
+            await apiService.deletePlannedPayment(paymentIdToDelete, { workspace_id: activeWorkspace?.id });
+            setIsConfirmModalOpen(false);
+            setPaymentIdToDelete(null);
             handleDataMutation();
+        } catch (err) {
+            setDeleteError(err.message || 'Не удалось удалить запланированный платеж.');
         }
     };
 
+    const handleCancelDelete = () => {
+        setIsConfirmModalOpen(false);
+        setPaymentIdToDelete(null);
+        setDeleteError(null);
+    };
+    
     const handleSave = () => {
         setShowForm(false);
         setEditingPayment(null);
@@ -247,6 +278,15 @@ function PaymentCalendarPage() {
                     )}
                 </div>
             </Modal>
+
+            <ConfirmationModal
+                isOpen={isConfirmModalOpen}
+                onClose={handleCancelDelete}
+                onConfirm={handleConfirmDelete}
+                title="Подтвердите удаление"
+                message="Вы уверены, что хотите удалить этот запланированный платеж?"
+                errorAlertMessage={deleteError}
+            />
         </div>
     );
 }

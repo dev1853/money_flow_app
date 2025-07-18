@@ -86,8 +86,6 @@ function TransactionsPage() {
             size: ITEMS_PER_PAGE,
             start_date: filters.start_date ? format(filters.start_date, 'yyyy-MM-dd') : undefined,
             end_date: filters.end_date ? format(filters.end_date, 'yyyy-MM-dd') : undefined,
-            amount_from: filters.amount_from ? parseFloat(filters.amount_from) : undefined,
-            amount_to: filters.amount_to ? parseFloat(filters.amount_to) : undefined,
         };
         if (filters.account_id && filters.account_id !== 'all') {
             params.account_id = filters.account_id;
@@ -95,6 +93,13 @@ function TransactionsPage() {
         if (filters.counterparty_id && filters.counterparty_id !== 'all') {
             params.counterparty_id = filters.counterparty_id;
         }
+        if (filters.amount_from !== '') {
+            params.amount_from = parseFloat(filters.amount_from);
+        }
+        if (filters.amount_to !== '') {
+            params.amount_to = parseFloat(filters.amount_to);
+        }
+        console.log('Фильтры для запроса:', params);
         return apiService.getTransactions(params);
     }, [currentPage, filters, workspaceId]); // Добавляем workspaceId в зависимости
 
@@ -138,7 +143,7 @@ function TransactionsPage() {
     };
 
     const [deleteTransaction, { isLoading: isDeleting }] = useApiMutation(
-        (id) => apiService.deleteTransaction(id),
+        (id) => apiService.deleteTransaction(id, { workspace_id: activeWorkspace?.id }),
         {
             onSuccess: () => {
                 refetchTransactions();
@@ -208,21 +213,21 @@ function TransactionsPage() {
                     {row.amount ? row.amount.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' }) : ''}
                 </span>,
         },
+        {
+            key: 'dds_article_name',
+            label: 'Статья',
+            render: row => row.dds_article_name || '',
+        },
         { key: 'description', label: 'Описание' },
         {
             key: 'contractor',
             label: 'Контрагент',
-            render: row => row.contractor || '',
+            render: row => row.contractor || '', 
         },
         {
             key: 'contract',
             label: 'Договор',
             render: row => row.contract || '',
-        },
-        {
-            key: 'dds_article_name',
-            label: 'Статья',
-            render: row => row.dds_article_name || '',
         },
         {
             key: 'actions',
@@ -250,9 +255,12 @@ function TransactionsPage() {
 
     const tableData = useMemo(() => {
         const items = Array.isArray(transactionsData) ? transactionsData : (transactionsData?.items || []);
-        console.log('transactionsData:', transactionsData);
-        console.log('tableData items:', items);
-        return items.map(item => item);
+        return items.map(item => ({
+            ...item,
+            contractor: item.counterparty?.name || '',
+            contract: item.contract?.name || '',
+            dds_article_name: item.dds_article?.name || '',
+        }));
     }, [transactionsData]); 
 
     // Отображаем главный лоадер, если контекст еще не загрузился

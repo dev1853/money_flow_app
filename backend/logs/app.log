@@ -15763,3 +15763,1714 @@ DETAIL:  Key (inn)=() already exists.
 2025-07-16 21:02:43 - INFO - uvicorn.error - Application startup complete. None
 2025-07-16 21:22:57 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 2 пользователем true1853@yandex.ru None
 2025-07-16 21:22:57 - INFO - app.routers.transactions - Транзакция с ID 52 успешно создана для workspace 2. None
+2025-07-16 22:34:25 - INFO - uvicorn.error - Started server process [10] None
+2025-07-16 22:34:25 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-16 22:34:25 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-16 22:34:25 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-16 22:34:25 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-16 22:34:25 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-16 22:34:25 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-16 22:34:25 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-16 22:34:25 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-16 22:34:25 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-16 22:34:25 - INFO - uvicorn.error - Application startup complete. None
+2025-07-16 22:48:41 - INFO - uvicorn.error - Shutting down None
+2025-07-16 22:48:41 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-16 22:48:41 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-16 22:48:41 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-16 22:48:44 - INFO - uvicorn.error - Started server process [15] None
+2025-07-16 22:48:44 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-16 22:48:44 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-16 22:48:44 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-16 22:48:44 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-16 22:48:44 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-16 22:48:44 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-16 22:48:44 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-16 22:48:44 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-16 22:48:44 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-16 22:48:44 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 06:45:59 - INFO - uvicorn.error - Shutting down None
+2025-07-17 06:45:59 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-17 06:45:59 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-17 06:45:59 - INFO - uvicorn.error - Finished server process [15] None
+2025-07-17 07:17:59 - INFO - uvicorn.error - Started server process [12] None
+2025-07-17 07:17:59 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 07:17:59 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 07:17:59 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 07:17:59 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 07:17:59 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 07:17:59 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 07:17:59 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 07:17:59 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 07:17:59 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 07:17:59 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 07:18:02 - INFO - uvicorn.error - Started server process [16] None
+2025-07-17 07:18:02 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 07:18:02 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 07:18:02 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 07:18:02 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 07:18:02 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 07:18:02 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 07:18:02 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 07:18:02 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 07:18:02 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 07:18:02 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 07:18:13 - INFO - uvicorn.error - Started server process [10] None
+2025-07-17 07:18:13 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 07:18:13 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 07:18:13 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 07:18:13 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 07:18:13 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 07:18:13 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 07:18:13 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 07:18:13 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 07:18:13 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 07:18:13 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 07:18:14 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a29e0080>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:25:44 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a18dcd40>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:25:44 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a292dc00>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:29:21 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a18223c0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:29:21 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a181fa40>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:29:32 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a18288c0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:29:32 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a185e140>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:31:21 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a1835c00>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:31:21 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a33f6d00>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:34:19 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a183b340>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:34:19 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7b51a189b440>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 07:39:54 - INFO - uvicorn.error - Shutting down None
+2025-07-17 07:39:54 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-17 07:39:54 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-17 07:39:54 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-17 08:45:01 - INFO - uvicorn.error - Started server process [10] None
+2025-07-17 08:45:01 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 08:45:01 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 08:45:01 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 08:45:01 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 08:45:01 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 08:45:01 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 08:45:01 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 08:45:01 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 08:45:01 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 08:45:01 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 08:45:08 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7d368e389e40>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 08:50:25 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7d368d1a67c0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 09:17:16 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7d368d1097c0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 09:17:16 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7d368d114100>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 09:34:15 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7d368d130ac0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 09:34:49 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7d368d133dc0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 09:34:52 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7d368d1141c0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 09:34:52 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7d368d114dc0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 09:34:56 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7d368d182ac0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 09:34:56 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7d368d1195c0>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 11:32:54 - INFO - uvicorn.error - Started server process [10] None
+2025-07-17 11:32:54 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:32:54 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:32:54 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:32:54 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:32:54 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:32:54 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:32:54 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:32:54 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:32:54 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:32:54 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:33:35 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7c5a840a3780>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 11:33:59 - ERROR - app.main - Произошла необработанная ошибка на сервере (<class 'AttributeError'>, AttributeError("'User' object has no attribute 'active_workspace_id'"), <traceback object at 0x7c5a7e6a0b80>)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 159, in call_next
+    message = await recv_stream.receive()
+  File "/usr/local/lib/python3.9/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 75, in log_and_handle_exceptions_middleware
+    return await call_next(request)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 165, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.9/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.9/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.9/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/usr/local/lib/python3.9/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/app/app/routers/accounts.py", line 66, in read_accounts
+    if not current_user.active_workspace_id:
+AttributeError: 'User' object has no attribute 'active_workspace_id'
+2025-07-17 11:35:28 - INFO - uvicorn.error - Shutting down None
+2025-07-17 11:35:29 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-17 11:35:29 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-17 11:35:29 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-17 11:35:31 - INFO - uvicorn.error - Started server process [22] None
+2025-07-17 11:35:31 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:35:31 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:35:31 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:35:31 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:35:31 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:35:31 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:35:31 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:35:31 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:35:31 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:35:31 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:35:34 - INFO - uvicorn.error - Started server process [26] None
+2025-07-17 11:35:34 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:35:34 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:35:34 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:35:34 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:35:34 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:35:34 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:35:34 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:35:34 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:35:34 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:35:34 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:35:41 - INFO - uvicorn.error - Shutting down None
+2025-07-17 11:35:41 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-17 11:35:41 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-17 11:35:41 - INFO - uvicorn.error - Finished server process [26] None
+2025-07-17 11:35:44 - INFO - uvicorn.error - Started server process [30] None
+2025-07-17 11:35:44 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:35:44 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:35:44 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:35:44 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:35:44 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:35:44 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:35:44 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:35:44 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:35:44 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:35:44 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:35:46 - INFO - uvicorn.error - Started server process [34] None
+2025-07-17 11:35:46 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:35:46 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:35:46 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:35:46 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:35:46 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:35:46 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:35:46 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:35:46 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:35:46 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:35:46 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:35:55 - INFO - uvicorn.error - Shutting down None
+2025-07-17 11:35:55 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-17 11:35:55 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-17 11:35:55 - INFO - uvicorn.error - Finished server process [34] None
+2025-07-17 11:35:58 - INFO - uvicorn.error - Started server process [38] None
+2025-07-17 11:35:58 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:35:58 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:35:58 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:35:58 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:35:58 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:35:58 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:35:58 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:35:58 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:35:58 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:35:58 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:36:07 - INFO - uvicorn.error - Shutting down None
+2025-07-17 11:36:07 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-17 11:36:07 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-17 11:36:07 - INFO - uvicorn.error - Finished server process [38] None
+2025-07-17 11:36:09 - INFO - uvicorn.error - Started server process [42] None
+2025-07-17 11:36:09 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:36:09 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:36:09 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:36:09 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:36:10 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:36:10 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:36:10 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:36:10 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:36:10 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:36:10 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:37:16 - INFO - uvicorn.error - Shutting down None
+2025-07-17 11:37:16 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-17 11:37:16 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-17 11:37:16 - INFO - uvicorn.error - Finished server process [42] None
+2025-07-17 11:37:18 - INFO - uvicorn.error - Started server process [47] None
+2025-07-17 11:37:18 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:37:18 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:37:18 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:37:18 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:37:19 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:37:19 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:37:19 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:37:19 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:37:19 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:37:19 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:43:43 - INFO - uvicorn.error - Started server process [10] None
+2025-07-17 11:43:43 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:43:43 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:43:43 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:43:43 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:43:43 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:43:43 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:43:43 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:43:43 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:43:43 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:43:43 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:46:42 - INFO - uvicorn.error - Shutting down None
+2025-07-17 11:46:42 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-17 11:46:42 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-17 11:46:42 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-17 11:46:45 - INFO - uvicorn.error - Started server process [25] None
+2025-07-17 11:46:45 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:46:45 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:46:45 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:46:45 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:46:45 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:46:45 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:46:45 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:46:45 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:46:45 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:46:45 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:47:45 - INFO - uvicorn.error - Shutting down None
+2025-07-17 11:47:45 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-17 11:47:45 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-17 11:47:45 - INFO - uvicorn.error - Finished server process [25] None
+2025-07-17 11:47:48 - INFO - uvicorn.error - Started server process [41] None
+2025-07-17 11:47:48 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:47:48 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:47:48 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:47:48 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:47:48 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:47:48 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:47:48 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:47:48 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:47:48 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:47:48 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 11:48:17 - INFO - uvicorn.error - Started server process [10] None
+2025-07-17 11:48:17 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 11:48:17 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 11:48:17 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 11:48:17 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 11:48:17 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 11:48:17 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 11:48:17 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 11:48:17 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 11:48:17 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 11:48:17 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 12:45:35 - INFO - uvicorn.error - Shutting down None
+2025-07-17 12:45:35 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-17 12:45:35 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-17 12:45:35 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-17 12:45:38 - INFO - uvicorn.error - Started server process [71] None
+2025-07-17 12:45:38 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 12:45:38 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 12:45:38 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 12:45:38 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 12:45:38 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 12:45:38 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 12:45:38 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 12:45:38 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 12:45:38 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 12:45:38 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 12:46:04 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='такси', amount=500.0 None
+2025-07-17 12:46:04 - ERROR - app.services.transaction_ml_categorization_service - YandexGPT call failed: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion (<class 'requests.exceptions.HTTPError'>, HTTPError('401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion'), <traceback object at 0x7bd7d288fdc0>)
+Traceback (most recent call last):
+  File "/app/app/services/transaction_ml_categorization_service.py", line 48, in ml_categorize_transaction
+    category = yandex_gpt_categorize(description, amount)
+  File "/app/app/services/transaction_ml_categorization_service.py", line 35, in yandex_gpt_categorize
+    resp.raise_for_status()
+  File "/usr/local/lib/python3.9/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion
+2025-07-17 12:46:04 - INFO - app.services.transaction_ml_categorization_service - ML Categorization fallback: category='Прочее', confidence=0.0, alternatives=[] None
+2025-07-17 12:56:50 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 12:56:50 - ERROR - app.services.transaction_ml_categorization_service - YandexGPT call failed: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion (<class 'requests.exceptions.HTTPError'>, HTTPError('401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion'), <traceback object at 0x7bd7d289f480>)
+Traceback (most recent call last):
+  File "/app/app/services/transaction_ml_categorization_service.py", line 48, in ml_categorize_transaction
+    category = yandex_gpt_categorize(description, amount)
+  File "/app/app/services/transaction_ml_categorization_service.py", line 35, in yandex_gpt_categorize
+    resp.raise_for_status()
+  File "/usr/local/lib/python3.9/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion
+2025-07-17 12:56:50 - INFO - app.services.transaction_ml_categorization_service - ML Categorization fallback: category='Прочее', confidence=0.0, alternatives=[] None
+2025-07-17 12:57:46 - INFO - uvicorn.error - Started server process [10] None
+2025-07-17 12:57:46 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 12:57:46 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 12:57:46 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 12:57:46 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 12:57:46 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 12:57:46 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 12:57:46 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 12:57:46 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 12:57:46 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 12:57:46 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 12:57:51 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 12:57:52 - ERROR - app.services.transaction_ml_categorization_service - YandexGPT call failed: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion (<class 'requests.exceptions.HTTPError'>, HTTPError('401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion'), <traceback object at 0x70acc0436dc0>)
+Traceback (most recent call last):
+  File "/app/app/services/transaction_ml_categorization_service.py", line 48, in ml_categorize_transaction
+    category = yandex_gpt_categorize(description, amount)
+  File "/app/app/services/transaction_ml_categorization_service.py", line 35, in yandex_gpt_categorize
+    resp.raise_for_status()
+  File "/usr/local/lib/python3.9/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion
+2025-07-17 12:57:52 - INFO - app.services.transaction_ml_categorization_service - ML Categorization fallback: category='Прочее', confidence=0.0, alternatives=[] None
+2025-07-17 13:00:30 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='такси', amount=500.0 None
+2025-07-17 13:00:31 - ERROR - app.services.transaction_ml_categorization_service - YandexGPT call failed: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion (<class 'requests.exceptions.HTTPError'>, HTTPError('401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion'), <traceback object at 0x70acc01f1f40>)
+Traceback (most recent call last):
+  File "/app/app/services/transaction_ml_categorization_service.py", line 48, in ml_categorize_transaction
+    category = yandex_gpt_categorize(description, amount)
+  File "/app/app/services/transaction_ml_categorization_service.py", line 35, in yandex_gpt_categorize
+    resp.raise_for_status()
+  File "/usr/local/lib/python3.9/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion
+2025-07-17 13:00:31 - INFO - app.services.transaction_ml_categorization_service - ML Categorization fallback: category='Прочее', confidence=0.0, alternatives=[] None
+2025-07-17 13:05:35 - INFO - uvicorn.error - Started server process [10] None
+2025-07-17 13:05:35 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 13:05:35 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 13:05:35 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 13:05:35 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 13:05:35 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 13:05:35 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 13:05:35 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 13:05:35 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 13:05:35 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 13:05:35 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 13:06:18 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 13:06:19 - ERROR - app.services.transaction_ml_categorization_service - YandexGPT call failed: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion (<class 'requests.exceptions.HTTPError'>, HTTPError('401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion'), <traceback object at 0x76b8dc380ec0>)
+Traceback (most recent call last):
+  File "/app/app/services/transaction_ml_categorization_service.py", line 48, in ml_categorize_transaction
+    category = yandex_gpt_categorize(description, amount)
+  File "/app/app/services/transaction_ml_categorization_service.py", line 35, in yandex_gpt_categorize
+    resp.raise_for_status()
+  File "/usr/local/lib/python3.9/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion
+2025-07-17 13:06:19 - INFO - app.services.transaction_ml_categorization_service - ML Categorization fallback: category='Прочее', confidence=0.0, alternatives=[] None
+2025-07-17 13:07:58 - INFO - uvicorn.error - Started server process [10] None
+2025-07-17 13:07:58 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 13:07:58 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 13:07:58 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 13:07:58 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 13:07:59 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 13:07:59 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 13:07:59 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 13:07:59 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 13:07:59 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 13:07:59 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 13:32:52 - INFO - uvicorn.error - Started server process [10] None
+2025-07-17 13:32:52 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 13:32:52 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 13:32:52 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 13:32:52 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 13:32:52 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-17 13:32:52 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 13:32:52 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-17 13:32:52 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 13:32:52 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 13:32:52 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 13:34:21 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 13:34:21 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Связь и интернет' None
+2025-07-17 13:34:21 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Связь и интернет', confidence=0.95, alternatives=['Благотворительность и пожертвования', 'Обучение и развитие', 'Оплата поставщикам'] None
+2025-07-17 13:35:23 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='юрист', amount=7900.0 None
+2025-07-17 13:35:24 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Профессиональные услуги' None
+2025-07-17 13:35:24 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Профессиональные услуги', confidence=0.95, alternatives=['Реклама (онлайн и офлайн)', 'Инвестиционные расходы', 'Программное обеспечение и сервисы'] None
+2025-07-17 13:42:43 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='налоги', amount=800.0 None
+2025-07-17 13:42:43 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='налоги' None
+2025-07-17 13:42:43 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='налоги', confidence=0.95, alternatives=['Покупка техники и оборудования', 'Покупка нематериальных активов', 'Оплата поставщикам'] None
+2025-07-17 13:43:20 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='такси', amount=500.0 None
+2025-07-17 13:43:21 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Транспортные расходы' None
+2025-07-17 13:43:21 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Транспортные расходы', confidence=0.95, alternatives=['Коммунальные услуги', 'Аренда офиса/помещений', 'Выплаты по кредитам и займам'] None
+2025-07-17 13:43:46 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 13:43:47 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Связь и интернет' None
+2025-07-17 13:43:47 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Связь и интернет', confidence=0.95, alternatives=['Закупка товаров и материалов', 'Модернизация и ремонт', 'Аренда офиса/помещений'] None
+2025-07-17 13:45:46 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 13:45:47 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Связь и интернет' None
+2025-07-17 13:45:47 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Связь и интернет', confidence=0.95, alternatives=['Аренда офиса/помещений', 'Инвестиционные расходы', 'Обучение и развитие'] None
+2025-07-17 13:45:49 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 52 пользователем 1853true1853@yandex.ru None
+2025-07-17 13:45:49 - INFO - app.routers.transactions - Транзакция с ID 121 успешно создана для workspace 52. None
+2025-07-17 13:46:14 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='налоги', amount=800.0 None
+2025-07-17 13:46:15 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='налоги' None
+2025-07-17 13:46:15 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='налоги', confidence=0.95, alternatives=['Проценты по депозитам', 'ИТ расходы', 'Штрафы и пени'] None
+2025-07-17 13:49:47 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='оплата Cursor', amount=2000.0 None
+2025-07-17 13:49:48 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Прочие расходы' None
+2025-07-17 13:49:48 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Прочие расходы', confidence=0.95, alternatives=['Проценты по кредитам', 'Канцелярия и хозяйственные расходы', 'Реклама (онлайн и офлайн)'] None
+2025-07-17 13:52:28 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='юрист', amount=7900.0 None
+2025-07-17 13:52:29 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Профессиональные услуги' None
+2025-07-17 13:52:29 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Профессиональные услуги', confidence=0.95, alternatives=['Модернизация и ремонт', 'Доходы', 'Продажи товаров/услуг'] None
+2025-07-17 13:54:32 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='налоги', amount=800.0 None
+2025-07-17 13:54:32 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='налоги' None
+2025-07-17 13:54:32 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='налоги', confidence=0.95, alternatives=['Прочие операционные расходы', 'Доходы', 'Налоги и взносы'] None
+2025-07-17 13:58:34 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='такси', amount=500.0 None
+2025-07-17 13:58:34 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Транспортные расходы' None
+2025-07-17 13:58:34 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Транспортные расходы', confidence=0.95, alternatives=['Продажи товаров/услуг', 'Штрафы и пени', 'Обучение и развитие'] None
+2025-07-17 13:58:43 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 13:58:44 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Связь и интернет' None
+2025-07-17 13:58:44 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Связь и интернет', confidence=0.95, alternatives=['ИТ расходы', 'Закупка товаров и материалов', 'Покупка нематериальных активов'] None
+2025-07-17 13:58:46 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 52 пользователем 1853true1853@yandex.ru None
+2025-07-17 13:58:46 - INFO - app.routers.transactions - Транзакция с ID 122 успешно создана для workspace 52. None
+2025-07-17 13:58:54 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='такси', amount=500.0 None
+2025-07-17 13:58:55 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Транспортные расходы' None
+2025-07-17 13:58:55 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Транспортные расходы', confidence=0.95, alternatives=['Проценты по кредитам', 'Продажи товаров/услуг', 'Авансы от клиентов'] None
+2025-07-17 13:59:07 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 13:59:08 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Связь и интернет' None
+2025-07-17 13:59:08 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Связь и интернет', confidence=0.95, alternatives=['Организация мероприятий', 'Маркетинг', 'Финансовые расходы'] None
+2025-07-17 13:59:10 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 52 пользователем 1853true1853@yandex.ru None
+2025-07-17 13:59:10 - INFO - app.routers.transactions - Транзакция с ID 123 успешно создана для workspace 52. None
+2025-07-17 14:05:37 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='налоги', amount=800.0 None
+2025-07-17 14:05:38 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='налоги' None
+2025-07-17 14:05:38 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='налоги', confidence=0.95, alternatives=['Возвраты от поставщиков', 'Проценты по кредитам', 'Прочие расходы'] None
+2025-07-17 14:07:40 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 14:07:41 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Связь и интернет' None
+2025-07-17 14:07:41 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Связь и интернет', confidence=0.95, alternatives=['Благотворительность и пожертвования', 'Финансовые расходы', 'Реклама (онлайн и офлайн)'] None
+2025-07-17 14:07:42 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 52 пользователем 1853true1853@yandex.ru None
+2025-07-17 14:07:42 - INFO - app.routers.transactions - Транзакция с ID 124 успешно создана для workspace 52. None
+2025-07-17 14:07:46 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='офис', amount=700.0 None
+2025-07-17 14:07:47 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='офис' None
+2025-07-17 14:07:47 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='офис', confidence=0.95, alternatives=['Программное обеспечение и сервисы', 'Благотворительность и пожертвования', 'ИТ расходы'] None
+2025-07-17 14:08:07 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='офис', amount=700.0 None
+2025-07-17 14:08:08 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='офис' None
+2025-07-17 14:08:08 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='офис', confidence=0.95, alternatives=['Покупка нематериальных активов', 'Проценты по депозитам', 'Продвижение в соцсетях'] None
+2025-07-17 14:08:34 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='налоги', amount=800.0 None
+2025-07-17 14:08:35 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='налоги' None
+2025-07-17 14:08:35 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='налоги', confidence=0.95, alternatives=['Благотворительность и пожертвования', 'Прочие расходы', 'Дизайн и полиграфия'] None
+2025-07-17 14:08:58 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='офис', amount=700.0 None
+2025-07-17 14:09:01 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='офис' None
+2025-07-17 14:09:01 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='офис', confidence=0.95, alternatives=['Возвраты от поставщиков', 'Коммунальные услуги', 'Закупка товаров и материалов'] None
+2025-07-17 14:09:17 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='налоги', amount=800.0 None
+2025-07-17 14:09:19 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='налоги' None
+2025-07-17 14:09:19 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='налоги', confidence=0.95, alternatives=['Инвестиционные расходы', 'Операционные расходы', 'Оплата поставщикам'] None
+2025-07-17 14:10:51 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='офис', amount=700.0 None
+2025-07-17 14:10:52 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='офис' None
+2025-07-17 14:10:52 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='офис', confidence=0.95, alternatives=['Банковские комиссии', 'Проценты по кредитам', 'Доходы'] None
+2025-07-17 14:11:12 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='юрист', amount=7900.0 None
+2025-07-17 14:11:12 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Профессиональные услуги' None
+2025-07-17 14:11:12 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Профессиональные услуги', confidence=0.95, alternatives=['Благотворительность и пожертвования', 'Обслуживание и поддержка', 'Организация мероприятий'] None
+2025-07-17 14:11:28 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='офис', amount=700.0 None
+2025-07-17 14:11:29 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='офис' None
+2025-07-17 14:11:29 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='офис', confidence=0.95, alternatives=['Возвраты от поставщиков', 'Прочие расходы', 'Прочие операционные расходы'] None
+2025-07-17 14:14:03 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='покупка телевозора', amount=100000.0 None
+2025-07-17 14:14:04 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Крупная бытовая техника' None
+2025-07-17 14:14:04 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Крупная бытовая техника', confidence=0.95, alternatives=['Прочие операционные расходы', 'Продажи товаров/услуг', 'Канцелярия и хозяйственные расходы'] None
+2025-07-17 14:20:05 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 14:20:05 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Связь и интернет' None
+2025-07-17 14:20:05 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Связь и интернет', confidence=0.95, alternatives=['Покупка техники и оборудования', 'Коммунальные услуги', 'Выплаты по кредитам и займам'] None
+2025-07-17 14:20:07 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 52 пользователем 1853true1853@yandex.ru None
+2025-07-17 14:20:07 - INFO - app.routers.transactions - Транзакция с ID 125 успешно создана для workspace 52. None
+2025-07-17 14:24:52 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 14:24:52 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Связь и интернет' None
+2025-07-17 14:24:52 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Связь и интернет', confidence=0.95, alternatives=['Аренда офиса/помещений', 'ИТ расходы', 'Маркетинг'] None
+2025-07-17 14:25:02 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 52 пользователем 1853true1853@yandex.ru None
+2025-07-17 14:25:02 - INFO - app.routers.transactions - Транзакция с ID 126 успешно создана для workspace 52. None
+2025-07-17 14:25:06 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='офис', amount=700.0 None
+2025-07-17 14:25:07 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='офис' None
+2025-07-17 14:25:07 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='офис', confidence=0.95, alternatives=['ИТ расходы', 'Возвраты от поставщиков', 'Налоги и взносы'] None
+2025-07-17 14:25:33 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='аренда офиса', amount=15000.0 None
+2025-07-17 14:25:34 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Аренда офиса' None
+2025-07-17 14:25:34 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Аренда офиса', confidence=0.95, alternatives=['Продвижение в соцсетях', 'Прочие доходы', 'Возвраты от поставщиков'] None
+2025-07-17 14:25:48 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 52 пользователем 1853true1853@yandex.ru None
+2025-07-17 14:25:48 - INFO - app.routers.transactions - Транзакция с ID 127 успешно создана для workspace 52. None
+2025-07-17 14:26:19 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='аренда авто', amount=15000.0 None
+2025-07-17 14:26:20 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Транспортные расходы' None
+2025-07-17 14:26:20 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Транспортные расходы', confidence=0.95, alternatives=['Выплаты по кредитам и займам', 'Доходы', 'Продвижение в соцсетях'] None
+2025-07-17 14:26:38 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='аренда авто', amount=15000.0 None
+2025-07-17 14:26:39 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Транспортные расходы' None
+2025-07-17 14:26:39 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Транспортные расходы', confidence=0.95, alternatives=['Выплаты по кредитам и займам', 'Доходы', 'Прочее'] None
+2025-07-17 17:52:08 - INFO - uvicorn.error - Started server process [10] None
+2025-07-17 17:52:08 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-17 17:52:08 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-17 17:52:08 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-17 17:52:08 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-17 17:52:08 - INFO - app.initial_data - Запись 'admin' (ID: 1) для 'roles' подготовлена к созданию. None
+2025-07-17 17:52:08 - INFO - app.initial_data - Запись 'user' (ID: 2) для 'roles' подготовлена к созданию. None
+2025-07-17 17:52:08 - INFO - app.initial_data - Будет создано 2 новых записей в таблице 'roles'. None
+2025-07-17 17:52:08 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-17 17:52:08 - INFO - app.initial_data - Запись 'Банковский счет' (ID: 1) для 'account_types' подготовлена к созданию. None
+2025-07-17 17:52:08 - INFO - app.initial_data - Запись 'Касса' (ID: 2) для 'account_types' подготовлена к созданию. None
+2025-07-17 17:52:08 - INFO - app.initial_data - Будет создано 2 новых записей в таблице 'account_types'. None
+2025-07-17 17:52:08 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-17 17:52:08 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-17 17:52:08 - INFO - uvicorn.error - Application startup complete. None
+2025-07-17 17:52:51 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-17 17:52:52 - INFO - app.services.transaction_ml_categorization_service - YandexGPT response: category='Связь и интернет' None
+2025-07-17 17:52:52 - INFO - app.services.transaction_ml_categorization_service - ML Categorization result: category='Связь и интернет', confidence=0.95, alternatives=['Доходы', 'Благотворительность и пожертвования', 'Дизайн и полиграфия'] None
+2025-07-17 17:52:54 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 2 пользователем true1853@yandex.ru None
+2025-07-17 17:52:54 - INFO - app.routers.transactions - Транзакция с ID 7 успешно создана для workspace 2. None
+2025-07-18 07:16:03 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 2 пользователем true1853@yandex.ru None
+2025-07-18 07:16:03 - ERROR - app.routers.transactions - Непредвиденная ошибка при создании транзакции для workspace 2: Для дохода должен быть указан счет-получатель. (<class 'ValueError'>, ValueError('Для дохода должен быть указан счет-получатель.'), <traceback object at 0x7d6e56f78c00>)
+Traceback (most recent call last):
+  File "/app/app/routers/transactions.py", line 93, in create_transaction
+    transaction = transaction_service.create_transaction(
+  File "/app/app/services/transaction_service.py", line 60, in create_transaction
+    raise ValueError("Для дохода должен быть указан счет-получатель.")
+ValueError: Для дохода должен быть указан счет-получатель.
+2025-07-18 07:16:18 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 2 пользователем true1853@yandex.ru None
+2025-07-18 07:16:18 - ERROR - app.routers.transactions - Непредвиденная ошибка при создании транзакции для workspace 2: Для дохода должен быть указан счет-получатель. (<class 'ValueError'>, ValueError('Для дохода должен быть указан счет-получатель.'), <traceback object at 0x7d6e555d79c0>)
+Traceback (most recent call last):
+  File "/app/app/routers/transactions.py", line 93, in create_transaction
+    transaction = transaction_service.create_transaction(
+  File "/app/app/services/transaction_service.py", line 60, in create_transaction
+    raise ValueError("Для дохода должен быть указан счет-получатель.")
+ValueError: Для дохода должен быть указан счет-получатель.
+2025-07-18 07:17:37 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 2 пользователем true1853@yandex.ru None
+2025-07-18 07:17:37 - ERROR - app.routers.transactions - Непредвиденная ошибка при создании транзакции для workspace 2: Для дохода должен быть указан счет-получатель. (<class 'ValueError'>, ValueError('Для дохода должен быть указан счет-получатель.'), <traceback object at 0x7d6e55633c00>)
+Traceback (most recent call last):
+  File "/app/app/routers/transactions.py", line 93, in create_transaction
+    transaction = transaction_service.create_transaction(
+  File "/app/app/services/transaction_service.py", line 60, in create_transaction
+    raise ValueError("Для дохода должен быть указан счет-получатель.")
+ValueError: Для дохода должен быть указан счет-получатель.
+2025-07-18 07:17:44 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 2 пользователем true1853@yandex.ru None
+2025-07-18 07:17:44 - ERROR - app.routers.transactions - Непредвиденная ошибка при создании транзакции для workspace 2: Для дохода должен быть указан счет-получатель. (<class 'ValueError'>, ValueError('Для дохода должен быть указан счет-получатель.'), <traceback object at 0x7d6e55617440>)
+Traceback (most recent call last):
+  File "/app/app/routers/transactions.py", line 93, in create_transaction
+    transaction = transaction_service.create_transaction(
+  File "/app/app/services/transaction_service.py", line 60, in create_transaction
+    raise ValueError("Для дохода должен быть указан счет-получатель.")
+ValueError: Для дохода должен быть указан счет-получатель.
+2025-07-18 07:18:08 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 2 пользователем true1853@yandex.ru None
+2025-07-18 07:18:08 - INFO - app.routers.transactions - Транзакция с ID 8 успешно создана для workspace 2. None
+2025-07-18 07:21:17 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 2 пользователем true1853@yandex.ru None
+2025-07-18 07:21:17 - INFO - app.routers.transactions - Транзакция с ID 9 успешно создана для workspace 2. None

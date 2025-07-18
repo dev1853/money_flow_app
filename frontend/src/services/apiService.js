@@ -88,7 +88,7 @@ export const apiService = {
     getTransactions: (params) => request('get', 'transactions/', null, params),
     createTransaction: (data, params) => request('post', 'transactions/', data, params),
     updateTransaction: (id, data, params) => request('put', `transactions/${id}`, data, params),
-    deleteTransaction: (id) => request('delete', `transactions/${id}`),
+    deleteTransaction: (id, params) => request('delete', `transactions/${id}`, null, params),
     // --- СЧЕТА ---
     getAccounts: (params) => request('get', 'accounts/', null, params),
     createAccount: (data) => request('post', 'accounts/', data),
@@ -141,4 +141,7 @@ export const apiService = {
     createPlannedPayment: (data, params) => request('post', 'planned-payments/', data, params),
     updatePlannedPayment: (id, data, params) => request('put', `planned-payments/${id}`, data, params),
     deletePlannedPayment: (id, params) => request('delete', `planned-payments/${id}`, null, params),
+
+    // --- ML-КАТЕГОРИЗАЦИЯ ---
+    categorizeExpenseML: (amount, description, categories) => request('post', 'categorization_ml/transactions/categorize-ml', { amount, description, categories }),
 };

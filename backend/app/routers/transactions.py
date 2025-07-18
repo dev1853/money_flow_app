@@ -35,7 +35,9 @@ def read_transactions(
     limit: int = Query(100, ge=1, le=1000),
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
-    account_id: Optional[int] = Query(None)
+    account_id: Optional[int] = Query(None),
+    amount_from: Optional[float] = Query(None, description="Минимальная сумма транзакции"),
+    amount_to: Optional[float] = Query(None, description="Максимальная сумма транзакции")
 ):
     """
     Получить пагинированный список транзакций.
@@ -45,7 +47,9 @@ def read_transactions(
         workspace_id=workspace.id,
         start_date=start_date,
         end_date=end_date,
-        account_id=account_id
+        account_id=account_id,
+        amount_from=amount_from,
+        amount_to=amount_to
     )
     transactions = crud.transaction.get_multi_by_workspace(
         db,
@@ -54,7 +58,9 @@ def read_transactions(
         limit=limit,
         start_date=start_date,
         end_date=end_date,
-        account_id=account_id
+        account_id=account_id,
+        amount_from=amount_from,
+        amount_to=amount_to
     )
     # ИСПРАВЛЕНИЕ: Изменяем ключи 'transactions' на 'items' и 'total_count' на 'total'
     return {"items": transactions, "total": total_count}

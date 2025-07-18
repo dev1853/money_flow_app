@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 
 // Импорты UI
 import Label from './forms/Label';
@@ -15,6 +15,28 @@ const TransactionFilters = ({
   onFilterChange,
   onResetFilters,
 }) => {
+  const [amountErrors, setAmountErrors] = useState({ from: '', to: '' });
+
+  // Валидация суммы на лету
+  const handleAmountChange = (field, value) => {
+    let error = '';
+    if (value !== '' && (isNaN(value) || Number(value) < 0)) {
+      error = 'Введите неотрицательное число';
+    }
+    setAmountErrors(prev => ({ ...prev, [field]: error }));
+    onFilterChange(field === 'from' ? 'amount_from' : 'amount_to', value);
+  };
+
+  // Активные фильтры по сумме
+  const activeAmountFilter = useMemo(() => {
+    const from = filters.amount_from;
+    const to = filters.amount_to;
+    if (from !== '' && to !== '') return `Сумма: от ${from} до ${to}`;
+    if (from !== '') return `Сумма: от ${from}`;
+    if (to !== '') return `Сумма: до ${to}`;
+    return null;
+  }, [filters.amount_from, filters.amount_to]);
+
   const counterpartyOptions = [
     { value: 'all', label: 'Все контрагенты' },
     ...(counterparties || []).map(cp => ({
@@ -26,6 +48,11 @@ const TransactionFilters = ({
   return (
     // 1. Адаптируем фон, тень и границу контейнера
     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm dark:shadow-2xl dark:shadow-indigo-500/10 mb-4 border border-gray-200 dark:border-gray-700">
+      {activeAmountFilter && (
+        <div className="mb-2 text-sm text-indigo-700 dark:text-indigo-300 font-medium">
+          {activeAmountFilter}
+        </div>
+      )}
       <div className="flex flex-wrap items-end gap-4">
         
         <div>
@@ -72,21 +99,25 @@ const TransactionFilters = ({
               id="amount_from"
               placeholder="от"
               value={filters.amount_from}
-              onChange={e => onFilterChange('amount_from', e.target.value)}
+              onChange={e => handleAmountChange('from', e.target.value)}
+              min={0}
+              error={amountErrors.from}
             />
             <Input
               type="number"
               id="amount_to"
               placeholder="до"
               value={filters.amount_to}
-              onChange={e => onFilterChange('amount_to', e.target.value)}
+              onChange={e => handleAmountChange('to', e.target.value)}
+              min={0}
+              error={amountErrors.to}
             />
           </div>
         </div>
 
         <div className="ml-auto">
           {/* Этот Button уже должен быть адаптирован */}
-          <Button variant="icon" onClick={onResetFilters}>
+          <Button variant="icon" onClick={onResetFilters} title="Сбросить все фильтры">
             <XMarkIcon className="h-5 w-5 mr-2" />
             Сбросить
           </Button>

@@ -63,3 +63,12 @@ class Transaction(TransactionInDB):
 class TransactionPage(BaseModel):
     items: List[Transaction]
     total: int
+
+class CategorizeMLRequest(BaseModel):
+    amount: float
+    description: str
+
+class CategorizeMLResponse(BaseModel):
+    suggested_category: str
+    confidence: float
+    alternatives: Optional[List[str]] = None
