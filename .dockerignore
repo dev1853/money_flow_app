@@ -1,0 +1,24 @@
+# Общие файлы
+.git
+.gitignore
+Dockerfile
+.dockerignore
+
+# Node.js
+node_modules
+npm-debug.log
+frontend/node_modules
+
+# Python
+__pycache__
+*.pyc
+.venv
+backend/.venv
+backend/logs
+
+# Логи
+*.log
+
+# Прочее
+.env
+.env.* 

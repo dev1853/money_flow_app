@@ -149,7 +149,7 @@ function PaymentCalendarPage() {
         setPaymentIdToDelete(null);
         setDeleteError(null);
     };
-    
+
     const handleSave = () => {
         setShowForm(false);
         setEditingPayment(null);

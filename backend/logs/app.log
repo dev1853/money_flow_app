@@ -17474,3 +17474,101 @@ ValueError: Для дохода должен быть указан счет-по
 2025-07-18 07:18:08 - INFO - app.routers.transactions - Транзакция с ID 8 успешно создана для workspace 2. None
 2025-07-18 07:21:17 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 2 пользователем true1853@yandex.ru None
 2025-07-18 07:21:17 - INFO - app.routers.transactions - Транзакция с ID 9 успешно создана для workspace 2. None
+2025-07-18 07:47:58 - INFO - uvicorn.error - Started server process [10] None
+2025-07-18 07:47:58 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-18 07:47:58 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-18 07:47:58 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-18 07:47:58 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-18 07:47:58 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-18 07:47:58 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-18 07:47:58 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-18 07:47:58 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-18 07:47:58 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-18 07:47:58 - INFO - uvicorn.error - Application startup complete. None
+2025-07-18 08:00:05 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='интернет', amount=1000.0 None
+2025-07-18 08:00:06 - ERROR - app.services.transaction_ml_categorization_service - YandexGPT call failed: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion (<class 'requests.exceptions.HTTPError'>, HTTPError('401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion'), <traceback object at 0x796a4dfb67c0>)
+Traceback (most recent call last):
+  File "/app/app/services/transaction_ml_categorization_service.py", line 48, in ml_categorize_transaction
+    category = yandex_gpt_categorize(description, amount)
+  File "/app/app/services/transaction_ml_categorization_service.py", line 35, in yandex_gpt_categorize
+    resp.raise_for_status()
+  File "/usr/local/lib/python3.9/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion
+2025-07-18 08:00:06 - INFO - app.services.transaction_ml_categorization_service - ML Categorization fallback: category='Прочее', confidence=0.0, alternatives=[] None
+2025-07-18 08:27:03 - INFO - uvicorn.error - Shutting down None
+2025-07-18 08:27:03 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-18 08:27:03 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-18 08:27:03 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-18 08:27:09 - INFO - uvicorn.error - Started server process [20] None
+2025-07-18 08:27:09 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-18 08:27:09 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-18 08:27:09 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-18 08:27:09 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-18 08:27:09 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-18 08:27:09 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-18 08:27:09 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-18 08:27:09 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-18 08:27:09 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-18 08:27:09 - INFO - uvicorn.error - Application startup complete. None
+2025-07-18 08:27:32 - INFO - uvicorn.error - Shutting down None
+2025-07-18 08:27:32 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-18 08:27:32 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-18 08:27:32 - INFO - uvicorn.error - Finished server process [20] None
+2025-07-18 08:27:37 - INFO - uvicorn.error - Started server process [24] None
+2025-07-18 08:27:37 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-18 08:27:37 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-18 08:27:37 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-18 08:27:37 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-18 08:27:37 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-18 08:27:37 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-18 08:27:37 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-18 08:27:37 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-18 08:27:37 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-18 08:27:37 - INFO - uvicorn.error - Application startup complete. None
+2025-07-18 08:27:41 - INFO - uvicorn.error - Started server process [29] None
+2025-07-18 08:27:41 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-18 08:27:41 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-18 08:27:41 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-18 08:27:41 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-18 08:27:41 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-18 08:27:41 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-18 08:27:41 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-18 08:27:41 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-18 08:27:41 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-18 08:27:41 - INFO - uvicorn.error - Application startup complete. None
+2025-07-18 08:28:12 - INFO - uvicorn.error - Started server process [10] None
+2025-07-18 08:28:12 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-18 08:28:12 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-18 08:28:12 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-18 08:28:12 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-18 08:28:12 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-18 08:28:12 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-18 08:28:12 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-18 08:28:12 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-18 08:28:12 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-18 08:28:12 - INFO - uvicorn.error - Application startup complete. None
+2025-07-18 08:34:15 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='такси', amount=500.0 None
+2025-07-18 08:34:15 - ERROR - app.services.transaction_ml_categorization_service - YandexGPT call failed: name 'time' is not defined (<class 'NameError'>, NameError("name 'time' is not defined"), <traceback object at 0x7fda51129fc0>)
+Traceback (most recent call last):
+  File "/app/app/services/transaction_ml_categorization_service.py", line 70, in ml_categorize_transaction
+    category = yandex_gpt_categorize(description, amount)
+  File "/app/app/services/transaction_ml_categorization_service.py", line 43, in yandex_gpt_categorize
+    auth_header = f"Bearer {get_iam_token()}"
+  File "/app/app/services/transaction_ml_categorization_service.py", line 15, in get_iam_token
+    now = time.time()
+NameError: name 'time' is not defined
+2025-07-18 08:34:15 - INFO - app.services.transaction_ml_categorization_service - ML Categorization fallback: category='Прочее', confidence=0.0, alternatives=[] None
+2025-07-18 08:35:38 - INFO - app.services.transaction_ml_categorization_service - ML Categorization request: description='зарплата', amount=10000.0 None
+2025-07-18 08:35:38 - ERROR - app.services.transaction_ml_categorization_service - YandexGPT call failed: name 'time' is not defined (<class 'NameError'>, NameError("name 'time' is not defined"), <traceback object at 0x7fda5342dc00>)
+Traceback (most recent call last):
+  File "/app/app/services/transaction_ml_categorization_service.py", line 70, in ml_categorize_transaction
+    category = yandex_gpt_categorize(description, amount)
+  File "/app/app/services/transaction_ml_categorization_service.py", line 43, in yandex_gpt_categorize
+    auth_header = f"Bearer {get_iam_token()}"
+  File "/app/app/services/transaction_ml_categorization_service.py", line 15, in get_iam_token
+    now = time.time()
+NameError: name 'time' is not defined
+2025-07-18 08:35:38 - INFO - app.services.transaction_ml_categorization_service - ML Categorization fallback: category='Прочее', confidence=0.0, alternatives=[] None
+2025-07-18 08:35:51 - INFO - app.routers.transactions - Попытка создания транзакции для workspace 2 пользователем true1853@yandex.ru None
+2025-07-18 08:35:51 - INFO - app.routers.transactions - Транзакция с ID 10 успешно создана для workspace 2. None

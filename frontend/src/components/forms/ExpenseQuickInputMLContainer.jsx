@@ -84,7 +84,7 @@ export default function ExpenseQuickInputMLContainer({ onSave: onSaveProp, ...pr
         amount,
         description,
         transaction_type: "EXPENSE",
-        transaction_date: new Date().toISOString().slice(0, 10),
+        transaction_date: new Date().toLocaleDateString('en-CA'),
         from_account_id: fromAccountId,
         dds_article_id: ddsArticle.id,
       };

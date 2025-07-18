@@ -4,9 +4,34 @@ import random
 import json
 import logging
 
-YANDEX_API_KEY = os.getenv("YANDEX_API_KEY")
-YANDEX_IAM_TOKEN = os.getenv("YANDEX_IAM_TOKEN")
+YANDEX_ACCESS_KEY_ID = os.getenv("YANDEX_ACCESS_KEY_ID")
+YANDEX_SECRET_ACCESS_KEY = os.getenv("YANDEX_SECRET_ACCESS_KEY")
 YANDEX_FOLDER_ID = os.getenv("YANDEX_FOLDER_ID")
+
+# Кэш для IAM-токена
+_iam_token_cache = {"token": None, "expires_at": 0}
+
+def get_iam_token():
+    now = time.time()
+    # Если токен ещё валиден — используем его
+    if _iam_token_cache["token"] and _iam_token_cache["expires_at"] > now + 60:
+        return _iam_token_cache["token"]
+    # Получаем новый токен
+    resp = requests.post(
+        "https://iam.api.cloud.yandex.net/iam/v1/tokens",
+        json={
+            "access_key_id": YANDEX_ACCESS_KEY_ID,
+            "secret_access_key": YANDEX_SECRET_ACCESS_KEY,
+        },
+        timeout=10
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    token = data["iamToken"]
+    # Токен живёт 12 часов, но лучше обновлять заранее (через 11ч)
+    _iam_token_cache["token"] = token
+    _iam_token_cache["expires_at"] = now + 11 * 3600
+    return token
 
 # Функция для вызова YandexGPT
 
@@ -15,10 +40,7 @@ def yandex_gpt_categorize(description, amount):
         f"Категоризируй расход: '{description}', сумма: {amount}. "
         "Верни только название категории, без пояснений."
     )
-    if YANDEX_IAM_TOKEN:
-        auth_header = f"Bearer {YANDEX_IAM_TOKEN}"
-    else:
-        auth_header = f"Api-Key {YANDEX_API_KEY}"
+    auth_header = f"Bearer {get_iam_token()}"
     headers = {
         "Authorization": auth_header,
         "Content-Type": "application/json"
