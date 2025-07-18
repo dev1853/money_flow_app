@@ -20,4 +20,4 @@ frontend/yarn-error.log*
 .idea/
 .vscode/
 *.swp
-*.swo
+*.swoenv.development
