@@ -21,3 +21,4 @@ frontend/yarn-error.log*
 .vscode/
 *.swp
 *.swoenv.development
+env.development
