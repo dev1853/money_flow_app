@@ -203,7 +203,15 @@ function TransactionsPage() {
         {
             key: 'account_name',
             label: 'Счет',
-            render: row => row.account_name || '',
+            render: row => {
+                // Универсальный поиск счета по account_id, from_account_id, to_account_id
+                const acc = accounts?.find(acc =>
+                  String(acc.id) === String(row.account_id) ||
+                  String(acc.id) === String(row.from_account_id) ||
+                  String(acc.id) === String(row.to_account_id)
+                );
+                return row.account?.name || acc?.name || '';
+            },
         },
         {
             key: 'amount',
@@ -251,22 +259,26 @@ function TransactionsPage() {
                 </div>
             ),
         },
-    ], [handleOpenFormModal, handleDeleteRequest]);
+    ], [handleOpenFormModal, handleDeleteRequest, accounts]);
 
     const tableData = useMemo(() => {
         const items = Array.isArray(transactionsData) ? transactionsData : (transactionsData?.items || []);
         return items.map(item => ({
             ...item,
+            account_name: (item.account?.name) || (accounts?.find(acc => String(acc.id) === String(item.account_id))?.name) || '',
             contractor: item.counterparty?.name || '',
             contract: item.contract?.name || '',
             dds_article_name: item.dds_article?.name || '',
         }));
-    }, [transactionsData]); 
+    }, [transactionsData, accounts]); 
 
     // Отображаем главный лоадер, если контекст еще не загрузился
     if (authLoading) {
         return <Loader text="Инициализация..." />;
     }
+
+    console.log('accounts', accounts);
+    console.log('sample transaction', (transactionsData?.items?.[0] || transactionsData?.[0]));
 
     return (
         <React.Fragment>
@@ -278,7 +290,7 @@ function TransactionsPage() {
                         <ArrowUpOnSquareIcon className="h-5 w-5 mr-2" />
                         Импорт
                     </Button>
-                    <Button onClick={() => handleOpenFormModal()} className="bg-lime-600 hover:bg-lime-700 text-white">
+                    <Button onClick={() => handleOpenFormModal()} className="bg-lime-600 hover:bg-lime-700 text-white" data-tour="add-transaction">
                         <PlusIcon className="h-5 w-5 mr-2" />
                         Добавить
                     </Button>

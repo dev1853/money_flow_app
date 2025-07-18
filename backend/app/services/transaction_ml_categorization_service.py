@@ -3,20 +3,18 @@ import requests
 import random
 import json
 import logging
+import time
 
-YANDEX_ACCESS_KEY_ID = os.getenv("YANDEX_ACCESS_KEY_ID")
-YANDEX_SECRET_ACCESS_KEY = os.getenv("YANDEX_SECRET_ACCESS_KEY")
-YANDEX_FOLDER_ID = os.getenv("YANDEX_FOLDER_ID")
+def get_iam_token_from_metadata():
+    url = "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token"
+    headers = {"Metadata-Flavor": "Google"}
+    resp = requests.get(url, headers=headers, timeout=3)
+    resp.raise_for_status()
+    return resp.json()["access_token"]
 
-# Кэш для IAM-токена
-_iam_token_cache = {"token": None, "expires_at": 0}
-
-def get_iam_token():
-    now = time.time()
-    # Если токен ещё валиден — используем его
-    if _iam_token_cache["token"] and _iam_token_cache["expires_at"] > now + 60:
-        return _iam_token_cache["token"]
-    # Получаем новый токен
+def get_iam_token_from_env():
+    YANDEX_ACCESS_KEY_ID = os.getenv("YANDEX_ACCESS_KEY_ID")
+    YANDEX_SECRET_ACCESS_KEY = os.getenv("YANDEX_SECRET_ACCESS_KEY")
     resp = requests.post(
         "https://iam.api.cloud.yandex.net/iam/v1/tokens",
         json={
@@ -27,11 +25,29 @@ def get_iam_token():
     )
     resp.raise_for_status()
     data = resp.json()
-    token = data["iamToken"]
-    # Токен живёт 12 часов, но лучше обновлять заранее (через 11ч)
-    _iam_token_cache["token"] = token
-    _iam_token_cache["expires_at"] = now + 11 * 3600
-    return token
+    return data["iamToken"]
+
+YANDEX_FOLDER_ID = os.getenv("YANDEX_FOLDER_ID")
+
+# Кэш для IAM-токена (опционально, чтобы не делать лишних запросов)
+_iam_token_cache = {"token": None, "expires_at": 0}
+
+def get_iam_token():
+    now = time.time()
+    if _iam_token_cache["token"] and _iam_token_cache["expires_at"] > now + 60:
+        return _iam_token_cache["token"]
+    try:
+        token = get_iam_token_from_metadata()
+        # Токен обычно живёт 1 час
+        _iam_token_cache["token"] = token
+        _iam_token_cache["expires_at"] = now + 3500
+        return token
+    except Exception as e:
+        logging.warning(f"Metadata IAM token fetch failed: {e}. Trying env keys...")
+        token = get_iam_token_from_env()
+        _iam_token_cache["token"] = token
+        _iam_token_cache["expires_at"] = now + 3500
+        return token
 
 # Функция для вызова YandexGPT
 

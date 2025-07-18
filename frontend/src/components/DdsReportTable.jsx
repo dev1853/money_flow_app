@@ -41,9 +41,8 @@ const DdsReportTable = ({ data, onArticleClick }) => {
       key: 'article_name',
       label: 'Группа статей / Статья ДДС',
       rowspan: 2,
-      className: 'text-left w-1/3',
+      className: 'text-left w-1/3 border-r border-gray-200 dark:border-gray-700',
       render: (row) => (
-        // 1. Adapt the clickable article name
         <span
           className={`cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300`}
           onClick={() => onArticleClick(row.article_id, row.article_name, row.article_type)}
@@ -56,31 +55,29 @@ const DdsReportTable = ({ data, onArticleClick }) => {
       key: 'initial_balance',
       label: 'Входящее сальдо',
       rowspan: 2,
-      className: 'text-right',
+      className: 'text-right border-r border-gray-200 dark:border-gray-700',
       render: (row) => formatCurrency(row.initial_balance),
     },
     {
       label: 'Оборот за период',
       colspan: 2,
-      className: 'text-center',
+      className: 'text-center border-r border-gray-200 dark:border-gray-700',
       children: [
         {
           key: 'inflows',
           label: 'Поступления',
           className: 'text-right',
-          // 2. Adapt income text color
           render: (row) => (row.article_type === 'income' ? <span className="text-green-600 dark:text-green-400">{formatCurrency(row.turnover)}</span> : ''),
         },
         {
           key: 'outflows',
           label: 'Выбытия',
           className: 'text-right',
-          // 3. Adapt expense text color
           render: (row) => (row.article_type === 'expense' ? <span className="text-red-600 dark:text-red-400">{formatCurrency(Math.abs(row.turnover))}</span> : ''),
         },
       ],
     },
-    { key: 'final_balance', label: 'Исходящее сальдо', rowspan: 2, className: 'text-right', render: (row) => formatCurrency(row.final_balance) },
+    { key: 'final_balance', label: 'Исходящее сальдо', rowspan: 2, className: 'text-right border-r border-gray-200 dark:border-gray-700', render: (row) => formatCurrency(row.final_balance) },
     { key: 'percentage_of_total', label: '% от оборота', rowspan: 2, className: 'text-right', render: (row) => `${parseFloat(row.percentage_of_total).toFixed(2)}%` },
   ];
 

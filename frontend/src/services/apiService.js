@@ -121,6 +121,7 @@ export const apiService = {
     getDashboardSummary: (params) => request('get', 'dashboard/summary', null, params),
     getDashboardCashflowTrend: (params) => request('get', 'dashboard/cashflow-trend', null, params),
     getPaymentCalendar: (params) => request('get', '/payment-calendar/', null, params),
+    getExpensesByCounterparties: (params) => request('get', 'dashboard/expenses-by-counterparties', null, params),
 
     // --- ВЫПИСКИ ---
     uploadStatement: (formData) => apiClient.post('statement/upload', formData, {

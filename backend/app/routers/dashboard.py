@@ -55,3 +55,22 @@ def get_dashboard_cashflow_trend(
         end_date=end_date,
         period_type=period_type
     )
+
+@router.get("/expenses-by-counterparties")
+def get_expenses_by_counterparties(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_active_user),
+    workspace: models.Workspace = Depends(get_workspace_from_query),
+    start_date: date = Query(..., description="Дата начала периода (ГГГГ-ММ-ДД)"),
+    end_date: date = Query(..., description="Дата окончания периода (ГГГГ-ММ-ДД)")
+):
+    """
+    Получает расходы по контрагентам за выбранный период.
+    """
+    return crud.report_crud.get_expenses_by_counterparty(
+        db=db,
+        owner_id=current_user.id,
+        workspace_id=workspace.id,
+        start_date=start_date,
+        end_date=end_date
+    )

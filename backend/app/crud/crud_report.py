@@ -160,4 +160,30 @@ class CRUDReport(CRUDBase[models.Transaction, schemas.TransactionCreate, schemas
             net_profit=net_profit
         )
 
+    def get_expenses_by_counterparty(
+        self, db: Session, *, owner_id: int, workspace_id: int, start_date: date, end_date: date
+    ) -> List[Dict[str, Any]]:
+        from app.models import Transaction, Counterparty, DdsArticle
+        from sqlalchemy import func
+
+        results = db.query(
+            Counterparty.name.label("counterparty_name"),
+            func.sum(Transaction.amount).label("total_amount")
+        ).join(Transaction, Transaction.counterparty_id == Counterparty.id)\
+         .join(DdsArticle, Transaction.dds_article_id == DdsArticle.id)\
+         .filter(
+            Transaction.workspace_id == workspace_id,
+            Transaction.user_id == owner_id,
+            Transaction.transaction_date >= start_date,
+            Transaction.transaction_date <= end_date,
+            DdsArticle.article_type == 'expense',
+            Transaction.amount > 0,
+            Counterparty.name != None
+        ).group_by(Counterparty.name).all()
+
+        return [
+            {"counterparty_name": row.counterparty_name, "total_amount": -float(row.total_amount)}
+            for row in results if row.total_amount is not None
+        ]
+
 report_crud = CRUDReport(models.Transaction)

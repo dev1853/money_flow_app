@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-countup": "^6.5.3",
+    "react-joyride": "^2.9.3"
+  }
+}

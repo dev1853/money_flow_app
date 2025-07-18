@@ -90,7 +90,9 @@ const BudgetsPage = () => {
         <div className="dark:text-gray-200">
             <div className="flex justify-between items-center mb-6">
                 <PageTitle title="Бюджеты" />
-                <Button onClick={() => handleOpenFormModal()}>Создать бюджет</Button>
+                <Button onClick={() => handleOpenFormModal()} data-tour="add-budget">
+                    Создать бюджет
+                </Button>
             </div>
 
             {error && <Alert type="error">{error.message}</Alert>}

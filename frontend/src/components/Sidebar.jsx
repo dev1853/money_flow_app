@@ -160,6 +160,9 @@ export default function Sidebar({ setSidebarOpen }) {
                           <li key={child.name}>
                             <NavLink
                               to={child.href}
+                              {...(child.href === '/payment-calendar' ? { 'data-tour': 'calendar' } : {})}
+                              {...(child.href === '/reports/dds' ? { 'data-tour': 'dds-report' } : {})}
+                              {...(child.href === '/counterparties' ? { 'data-tour': 'counterparties' } : {})}
                               onClick={() => setSidebarOpen && setSidebarOpen(false)} 
                               className={({ isActive }) => classNames( 
                                 isActive

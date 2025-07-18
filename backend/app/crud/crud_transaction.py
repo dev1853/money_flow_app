@@ -121,7 +121,8 @@ class CRUDTransaction(CRUDBase[models.Transaction, schemas.TransactionCreate, sc
         end_date: Optional[date] = None,
         account_id: Optional[int] = None,
         amount_from: Optional[float] = None,
-        amount_to: Optional[float] = None
+        amount_to: Optional[float] = None,
+        dds_article_id: Optional[int] = None
     ) -> int:
         query = db.query(self.model).filter(models.Transaction.workspace_id == workspace_id)
         if start_date:
@@ -139,6 +140,8 @@ class CRUDTransaction(CRUDBase[models.Transaction, schemas.TransactionCreate, sc
             query = query.filter(models.Transaction.amount >= amount_from)
         if amount_to is not None:
             query = query.filter(models.Transaction.amount <= amount_to)
+        if dds_article_id is not None:
+            query = query.filter(models.Transaction.dds_article_id == dds_article_id)
         return query.count()
         
     def get_multi_by_workspace(
@@ -154,7 +157,8 @@ class CRUDTransaction(CRUDBase[models.Transaction, schemas.TransactionCreate, sc
         counterparty_id: Optional[int] = None,
         contract_id: Optional[int] = None,
         amount_from: Optional[float] = None,
-        amount_to: Optional[float] = None
+        amount_to: Optional[float] = None,
+        dds_article_id: Optional[int] = None
     ) -> List[models.Transaction]:
         query = db.query(self.model)\
             .options(
@@ -182,6 +186,8 @@ class CRUDTransaction(CRUDBase[models.Transaction, schemas.TransactionCreate, sc
             query = query.filter(models.Transaction.amount >= amount_from)
         if amount_to is not None:
             query = query.filter(models.Transaction.amount <= amount_to)
+        if dds_article_id is not None:
+            query = query.filter(models.Transaction.dds_article_id == dds_article_id)
 
         return (
             query.order_by(models.Transaction.transaction_date.desc(), models.Transaction.id.desc())

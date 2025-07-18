@@ -17,6 +17,7 @@ import PaymentCalendarTable from '../components/PaymentCalendarTable';
 import { useAuth } from '../contexts/AuthContext';
 import ConfirmationModal from '../components/ConfirmationModal';
 import ActionIconButtons from '../components/forms/ActionIconButtons';
+import { addDays, startOfWeek, endOfWeek, endOfYear } from 'date-fns';
 
 // Компонент PlannedPaymentItem остается без изменений, но с адаптированными стилями
 const PlannedPaymentItem = ({ payment, onEdit, onDelete }) => (
@@ -60,16 +61,16 @@ function PaymentCalendarPage() {
     const [paymentIdToDelete, setPaymentIdToDelete] = useState(null);
     const [deleteError, setDeleteError] = useState(null);
 
-    // --- ✔️ ИСПРАВЛЕННАЯ ЛОГИКА ЗАГРУЗКИ ДАННЫХ ---
-    const fetchDataForMonth = useCallback(async (date, startBalanceOverride = null) => {
+    // Новый универсальный fetchData, всегда до конца года
+    const fetchData = useCallback(async (date, startBalanceOverride = null) => {
         setIsLoading(true);
         setError(null);
         try {
-            const startDate = getFirstDayOfMonth(date);
-            const endDate = getLastDayOfMonth(date);
-            const params = { 
+            const startDate = date;
+            const endDate = endOfYear(new Date(date.getFullYear(), date.getMonth(), date.getDate()));
+            const params = {
                 workspace_id: activeWorkspace?.id,
-                start_date: toISODateString(startDate), 
+                start_date: toISODateString(startDate),
                 end_date: toISODateString(endDate),
                 ...(startBalanceOverride !== null && { start_balance: startBalanceOverride })
             };
@@ -82,34 +83,47 @@ function PaymentCalendarPage() {
         }
     }, [activeWorkspace]);
 
-    // Первичная загрузка данных - запускается только один раз при монтировании
     useEffect(() => {
-        fetchDataForMonth(currentMonth);
+        fetchData(currentMonth);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Быстрые переходы
+    const goToPreviousWeek = () => {
+        const prevWeek = addDays(currentMonth, -7);
+        setCurrentMonth(prevWeek);
+        fetchData(prevWeek);
+    };
+    const goToNextWeek = () => {
+        const nextWeek = addDays(currentMonth, 7);
+        setCurrentMonth(nextWeek);
+        fetchData(nextWeek);
+    };
+    const goToToday = () => {
+        const today = new Date();
+        setCurrentMonth(today);
+        fetchData(today);
+    };
     const goToPreviousMonth = () => {
         const prevMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
         setCurrentMonth(prevMonth);
-        fetchDataForMonth(prevMonth);
+        fetchData(prevMonth);
     };
-
     const goToNextMonth = () => {
         const endBalance = calendarData?.end_balance;
         if (endBalance !== null && endBalance !== undefined) {
             const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
             setCurrentMonth(nextMonth);
-            fetchDataForMonth(nextMonth, endBalance);
+            fetchData(nextMonth, endBalance);
         }
     };
-    
     const handleMonthChange = (date) => {
         setCurrentMonth(date);
-        fetchDataForMonth(date);
+        fetchData(date);
     };
 
     const handleDataMutation = () => {
         if (calendarData) {
-            fetchDataForMonth(currentMonth, calendarData.start_balance);
+            fetchData(currentMonth, calendarData.start_balance);
         }
     };
 
@@ -169,9 +183,18 @@ function PaymentCalendarPage() {
                 <PageTitle title="Платежный календарь" />
                 <div className="flex items-center justify-end gap-2 sm:gap-4 flex-wrap">
 
-                    <div className="flex items-center justify-center p-1 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-center p-1 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 gap-1">
                         <Button variant="icon" size="sm" onClick={goToPreviousMonth} title="Предыдущий месяц">
                            <ChevronLeftIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                        </Button>
+                        <Button variant="icon" size="sm" onClick={goToPreviousWeek} title="← Неделя">
+                           <span className="text-xs font-bold">-7д</span>
+                        </Button>
+                        <Button variant="icon" size="sm" onClick={goToToday} title="Сегодня">
+                           <span className="text-xs font-bold">Сегодня</span>
+                        </Button>
+                        <Button variant="icon" size="sm" onClick={goToNextWeek} title="→ Неделя">
+                           <span className="text-xs font-bold">+7д</span>
                         </Button>
                         <DatePicker
                             selected={currentMonth}
@@ -226,7 +249,7 @@ function PaymentCalendarPage() {
             {error && <Alert type="error">{error}</Alert>}
 
             {calendarData && (
-                <div>
+                <div className={viewMode === 'table' ? 'w-full max-w-none px-0' : ''}>
                     {viewMode === 'calendar' ? (
                         <PaymentCalendarView 
                             calendarData={calendarData} 
@@ -237,6 +260,7 @@ function PaymentCalendarPage() {
                         <PaymentCalendarTable 
                             calendarData={calendarData} 
                             onDayClick={handleDayClick} 
+                            fullWidth={true}
                         />
                     )}
                 </div>

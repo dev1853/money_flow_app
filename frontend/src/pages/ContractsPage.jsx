@@ -209,17 +209,37 @@ function ContractsPage() {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {contracts.map(contract => (
-            <div key={contract.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-              <h3 className="font-semibold dark:text-gray-100">{contract.name}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{formatCurrency(contract.amount, contract.currency)}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Начало: {formatDate(contract.start_date)}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Окончание: {formatDate(contract.end_date)}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Статус: {getStatusLabel(contract.status)}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Контрагент: {contract.counterparty?.name || 'Без контрагента'}</p>
-              <div className="flex space-x-2 mt-4">
-                {/* ИСПРАВЛЕНО: Кнопки действий унифицированы в Grid View */}
-                <Button variant="icon" onClick={() => handleOpenEditModal(contract)} title="Редактировать"><PencilSquareIcon className="h-5 w-5"/></Button>
-                <Button variant="icon" onClick={() => handleDeleteRequest(contract)} className="text-red-600 hover:text-red-800 dark:text-red-500 dark:hover:text-red-400" title="Удалить"><TrashIcon className="h-5 w-5"/></Button>
+            <div
+              key={contract.id}
+              className="group relative flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden cursor-pointer hover:border-indigo-500 dark:hover:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-500"
+              tabIndex={0}
+              // onClick={() => ... переход к деталям, если нужно}
+            >
+              <div className="absolute top-3 right-3 flex space-x-1 z-10">
+                <Button variant="icon" onClick={e => { e.stopPropagation(); handleOpenEditModal(contract); }} title="Редактировать"><PencilSquareIcon className="h-5 w-5"/></Button>
+                <Button variant="icon" onClick={e => { e.stopPropagation(); handleDeleteRequest(contract); }} className="text-red-600 hover:text-red-800 dark:text-red-500 dark:hover:text-red-400" title="Удалить"><TrashIcon className="h-5 w-5"/></Button>
+              </div>
+              <div className="p-6 flex-1 flex flex-col justify-between">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+                  {contract.name}
+                </h3>
+                <div className="mb-2">
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${(() => {
+                    switch (contract.status) {
+                      case ContractStatus.ACTIVE: return 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200';
+                      case ContractStatus.COMPLETED: return 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200';
+                      case ContractStatus.ARCHIVED: return 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200';
+                      case ContractStatus.PENDING: return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200';
+                      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200';
+                    }
+                  })()}`}>{getStatusLabel(contract.status)}</span>
+                </div>
+                <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                  <p><span className="font-medium text-gray-500 dark:text-gray-400">Сумма:</span> {formatCurrency(contract.amount, contract.currency)}</p>
+                  <p><span className="font-medium text-gray-500 dark:text-gray-400">Начало:</span> {formatDate(contract.start_date)}</p>
+                  <p><span className="font-medium text-gray-500 dark:text-gray-400">Окончание:</span> {formatDate(contract.end_date)}</p>
+                  <p><span className="font-medium text-gray-500 dark:text-gray-400">Контрагент:</span> {contract.counterparty?.name || 'Без контрагента'}</p>
+                </div>
               </div>
             </div>
           ))}

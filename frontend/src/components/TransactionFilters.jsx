@@ -6,7 +6,7 @@ import Input from './forms/Input';
 import Select from './forms/Select';
 import DateRangePicker from './forms/DateRangePicker';
 import Button from './Button';
-import { XMarkIcon } from '@heroicons/react/24/solid';
+import { XMarkIcon, CalendarIcon, BanknotesIcon, UserIcon } from '@heroicons/react/24/outline';
 
 const TransactionFilters = ({
   filters,
@@ -46,25 +46,25 @@ const TransactionFilters = ({
   ];
 
   return (
-    // 1. Адаптируем фон, тень и границу контейнера
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm dark:shadow-2xl dark:shadow-indigo-500/10 mb-4 border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg dark:shadow-indigo-500/10 border border-gray-200 dark:border-gray-700 mb-4 animate-fade-in-up">
       {activeAmountFilter && (
         <div className="mb-2 text-sm text-indigo-700 dark:text-indigo-300 font-medium">
           {activeAmountFilter}
         </div>
       )}
-      <div className="flex flex-wrap items-end gap-4">
-        
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
         <div>
           <Label>Период</Label>
-          <DateRangePicker
-            startDate={filters.start_date}
-            endDate={filters.end_date}
-            onStartDateChange={date => onFilterChange('start_date', date)}
-            onEndDateChange={date => onFilterChange('end_date', date)}
-          />
+          <div className="relative mt-1">
+            <DateRangePicker
+              startDate={filters.start_date}
+              endDate={filters.end_date}
+              onStartDateChange={date => onFilterChange('start_date', date)}
+              onEndDateChange={date => onFilterChange('end_date', date)}
+              icon={CalendarIcon}
+            />
+          </div>
         </div>
-
         <div>
           <Label htmlFor="account_id">Счет</Label>
           <Select
@@ -78,9 +78,9 @@ const TransactionFilters = ({
                 label: acc.name
               }))
             ]}
+            icon={BanknotesIcon}
           />
         </div>
-
         <div>
           <Label htmlFor="counterparty_id">Контрагент</Label>
           <Select
@@ -88,9 +88,9 @@ const TransactionFilters = ({
             value={filters.counterparty_id}
             onChange={e => onFilterChange('counterparty_id', e.target.value)}
             options={counterpartyOptions}
+            icon={UserIcon}
           />
         </div>
-
         <div>
           <Label>Сумма</Label>
           <div className="flex items-center gap-2">
@@ -102,6 +102,7 @@ const TransactionFilters = ({
               onChange={e => handleAmountChange('from', e.target.value)}
               min={0}
               error={amountErrors.from}
+              icon={BanknotesIcon}
             />
             <Input
               type="number"
@@ -111,15 +112,19 @@ const TransactionFilters = ({
               onChange={e => handleAmountChange('to', e.target.value)}
               min={0}
               error={amountErrors.to}
+              icon={BanknotesIcon}
             />
           </div>
         </div>
-
-        <div className="ml-auto">
-          {/* Этот Button уже должен быть адаптирован */}
-          <Button variant="icon" onClick={onResetFilters} title="Сбросить все фильтры">
-            <XMarkIcon className="h-5 w-5 mr-2" />
-            Сбросить
+        <div className="flex justify-end">
+          <Button
+            variant="icon"
+            onClick={onResetFilters}
+            title="Сбросить фильтры"
+            className="p-2 rounded-full bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <XMarkIcon className="h-5 w-5 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400" />
+            <span className="sr-only">Сбросить фильтры</span>
           </Button>
         </div>
       </div>
