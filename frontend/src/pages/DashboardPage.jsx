@@ -21,7 +21,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { useTheme } from '../contexts/ThemeContext';
 import TrendLineChart from '../components/dashboard/TrendLineChart';
 import OnboardingChecklist from '../components/OnboardingChecklist';
-import Joyride, { STATUS } from 'react-joyride';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/solid';
 
 function safeSplit(str, delimiter) {
