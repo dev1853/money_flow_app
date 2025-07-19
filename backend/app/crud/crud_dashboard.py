@@ -35,7 +35,7 @@ class CRUDDashboard(CRUDBase[models.Transaction, schemas.TransactionCreate, sche
             *common_filters
         ).scalar() or 0.0
 
-        net_profit_loss = total_income_result - total_expense_result
+        net_profit_loss = float(total_income_result) - float(total_expense_result)
 
         summary_item = schemas.SummaryItem( # Убедитесь, что 'SummaryItem' здесь доступен
             currency="RUB",

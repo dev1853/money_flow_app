@@ -18753,3 +18753,33 @@ requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://ia
 2025-07-19 09:52:37 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
 2025-07-19 09:52:37 - INFO - app.main - Инициализация базы данных успешно завершена. None
 2025-07-19 09:52:37 - INFO - uvicorn.error - Application startup complete. None
+2025-07-19 10:15:04 - INFO - uvicorn.error - Shutting down None
+2025-07-19 10:15:05 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-19 10:15:05 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-19 10:15:05 - INFO - uvicorn.error - Finished server process [10] None
+2025-07-19 10:15:08 - INFO - uvicorn.error - Started server process [21] None
+2025-07-19 10:15:08 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-19 10:15:08 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-19 10:15:08 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-19 10:15:08 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-19 10:15:09 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-19 10:15:09 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-19 10:15:09 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-19 10:15:09 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-19 10:15:09 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-19 10:15:09 - INFO - uvicorn.error - Application startup complete. None
+2025-07-19 10:15:17 - INFO - uvicorn.error - Shutting down None
+2025-07-19 10:15:17 - INFO - uvicorn.error - Waiting for application shutdown. None
+2025-07-19 10:15:17 - INFO - uvicorn.error - Application shutdown complete. None
+2025-07-19 10:15:17 - INFO - uvicorn.error - Finished server process [21] None
+2025-07-19 10:15:20 - INFO - uvicorn.error - Started server process [25] None
+2025-07-19 10:15:20 - INFO - uvicorn.error - Waiting for application startup. None
+2025-07-19 10:15:20 - INFO - app.main - Выполняется запуск приложения... None
+2025-07-19 10:15:20 - INFO - app.initial_data - Запуск инициализации базовых данных... None
+2025-07-19 10:15:20 - INFO - app.initial_data - Проверка и создание данных для таблицы 'roles'... None
+2025-07-19 10:15:20 - INFO - app.initial_data - Все необходимые записи в таблице 'roles' уже существуют. None
+2025-07-19 10:15:20 - INFO - app.initial_data - Проверка и создание данных для таблицы 'account_types'... None
+2025-07-19 10:15:20 - INFO - app.initial_data - Все необходимые записи в таблице 'account_types' уже существуют. None
+2025-07-19 10:15:20 - INFO - app.initial_data - Инициализация базовых данных успешно завершена. None
+2025-07-19 10:15:20 - INFO - app.main - Инициализация базы данных успешно завершена. None
+2025-07-19 10:15:20 - INFO - uvicorn.error - Application startup complete. None
